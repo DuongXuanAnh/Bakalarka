@@ -1,0 +1,172 @@
+
+@import '../../../../styles/global';
+
+.attributeClosure-container{
+
+    text-align: center;
+    white-space: normal;
+    overflow-wrap: break-word;
+    h2{
+        color: #ffffff;
+    }
+
+    .attributesArea, .attributesAreaResult {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr); // 4 sloupce, každý bude mít rovnou část dostupné šířky
+        gap: 10px; // Mezera mezi položkami
+        width: 70%;
+        margin: 0 auto;
+        background-color: #ccc;
+        border-radius: 5px;
+        padding: 5px; // Přidává padding uvnitř kontejneru
+        box-sizing: border-box;
+    
+        .attributeTag, .addAttrComboBox {
+            height: 30px;
+            line-height: 30px;
+            background-color: #773B81;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 5px 10px;
+            border-radius: 4px;
+            margin: 5px; // Můžete upravit podle potřeby, ale nezapomeňte, že to ovlivní uspořádání
+            
+         
+            .text{
+                text-align: left;
+                width: 100px; /* Omezení šířky na základě odhadu, kolik textu by se mělo zobrazit */
+                white-space: nowrap; /* Zabrání zalamování textu */
+                overflow: hidden; /* Skryje text, který přesahuje šířku elementu */
+                text-overflow: ellipsis; /* Přidá trojtečku na konec zkráceného textu */
+            }
+            
+    
+            .removeBtn {
+                background-color: red;
+                border: none;
+                color: white;
+                border-radius: 50%;
+                width: 20px;
+                height: 20px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                cursor: pointer;
+            }
+        }
+    }
+    
+    .rightAttributes {
+        margin-left: 10px;
+    }
+    
+    .removeDependencyBtn {
+        background-color: #e74c3c;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        padding: 8px 16px;
+        font-size: 0.9em;
+        cursor: pointer;
+        transition: background-color 0.2s;
+    
+        &:hover {
+            background-color: #c0392b;
+        }
+    
+        &:active {
+            background-color: #a93226;
+        }
+    
+        &:focus {
+            outline: none;
+            box-shadow: 0 0 5px rgba(231, 76, 60, 0.5);
+        }
+    }
+    
+    .addAttrComboBox {
+        background-color: #fff !important;
+    }
+
+    .attributeClosure{
+        margin-top: 2em;
+
+        .btn_ExplainResult{
+            @include explainButton();
+            margin: 2em;
+            margin-top: 0;
+        }
+
+    }
+
+.btn_showAttributeClosureWrapper{
+   width: 100%;
+   text-align: center;
+   margin-top: 2rem;
+}
+
+.btn_showAttributeClosure{
+    @include button();
+}
+.btn_practiceAttributeClosure{
+    @include button();
+    margin-left: 1rem;
+}
+
+.practiceAttributeClosureWrapper{
+    width: 100%;
+    text-align: center;
+    margin-top: 3rem;
+
+    .btnSubmit_practiceAttributeClosure{
+        @include button();
+        margin: 0 auto;
+        margin-top: 2em;
+        margin-bottom: 2em;
+    }
+}
+
+.attributeClosureResult{
+    width: 70%;
+    background: #cccccc;
+    margin: 0 auto;
+    font-size: 2em;
+    border-radius: 5px;
+    padding: 0.5em;
+    text-align: center;
+    margin-top: 1em;
+    margin-bottom: 1em;
+}
+
+
+.problemContainer{
+    p{
+        font-size: 24px;
+        margin: 1em;
+    }
+}
+
+.StepsContainer{
+    width: 75%;
+    margin: 0 auto;
+    font-size: 1.1em;
+    margin-bottom: 2em;
+    .step{
+        padding: 0.5em;
+        border-bottom: 1px solid #000;
+        border-radius: 5px;
+        background: #ccc;
+
+    }
+}
+
+.btn_ShowNextStep{
+    @include NextStepButton();
+}
+
+.fillAllAttributesBtn{
+    width: 60%;
+}
+}
+    

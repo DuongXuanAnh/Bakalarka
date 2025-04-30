@@ -1,0 +1,62 @@
+
+@import '../../../../styles/global';
+
+@include maxWidth(991px){
+    .derivability-container{
+
+       // overflow-x: hidden;
+        width: 100%;
+        
+
+        .checkDerivability-container
+        {
+
+            .derivability-dependency{
+                display: block;
+                .leftAttributes, .rightAttributes{
+                    margin: 0;
+                    width: 100%;
+                    .attributeTag{
+                        .text{
+                            width: 100px; /* Omezení šířky na základě odhadu, kolik textu by se mělo zobrazit */
+                            white-space: nowrap; /* Zabrání zalamování textu */
+                            overflow: hidden; /* Skryje text, který přesahuje šířku elementu */
+                            text-overflow: ellipsis; /* Přidá trojtečku na konec zkráceného textu */
+                        }
+                    }
+                }
+               
+            }
+            .showRedundantManually_btn{
+                width: 90%;
+            }
+
+        }
+
+        .fPlus-container{
+            .derivability-attributesArea{
+                width: 100%;
+                margin: 0;
+                display: flex;
+                flex-wrap: wrap;
+                
+                .attributeTag{
+                    .text{
+                        width: 100px; /* Omezení šířky na základě odhadu, kolik textu by se mělo zobrazit */
+                        white-space: nowrap; /* Zabrání zalamování textu */
+                        overflow: hidden; /* Skryje text, který přesahuje šířku elementu */
+                        text-overflow: ellipsis; /* Přidá trojtečku na konec zkráceného textu */
+                    }
+                }
+            }
+
+            .showFplus_btn{
+                width: 90%;
+            }
+        }
+        .explainFplusResult_btn{
+            width: 90%;
+        }
+
+    }
+}

@@ -1,0 +1,21 @@
+@import '../../../../styles/global';
+
+.dependencyContainer{
+
+    background-color: #3F3B6A;
+
+    .btn-addDependency{
+        @include button();
+        width: 85%;
+        margin-top: 2em;
+        margin-bottom: 2em;
+    }
+  
+    
+    .dependencyWrapper{
+        width: 100% !important;
+        box-sizing: border-box;
+    }
+    
+}
+

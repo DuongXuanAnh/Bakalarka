@@ -1,0 +1,139 @@
+@import '../../../styles/global';
+
+.attributeContainer{
+    overflow-x: hidden;
+    background-color: #3F3B6A;
+    position: relative;
+    padding: 1em;
+    overflow-y: auto;
+
+    .title{
+        display: none;
+    }
+
+    .newAttrTextBox{
+        margin-top: 1em;
+        font-size: 1.5rem;
+        padding: 0.5em;
+        background-color: #95629D;
+        color: #fff;
+        
+        &::placeholder {
+            color: #fff;
+            font-style: italic;
+            opacity: 0.7;
+        }
+    }
+
+    .btn-addNewAttribute{
+        @include button();
+        margin-top: 1.5em;
+        margin-bottom: 2em;
+    }
+
+    @include maxWidth(991px){
+        .btn-loadExample{
+            @include button();
+            width: 85%;
+            margin-top: 2em;
+            margin-left: 50%;
+            transform: translateX(-50%);
+        }
+    
+        .btn-uploadFile{
+            @include button();
+            width: 85%;
+            margin-top: 2em;
+            margin-left: 50%;
+            transform: translateX(-50%);
+        }
+
+        .newAttrTextBox{
+            width: 80%;
+            margin-left: 50%;
+            transform: translateX(-50%);
+            
+            &::placeholder {
+                color: #fff;
+                font-style: italic;
+                opacity: 0.7;
+            }
+        }
+    
+        .btn-addNewAttribute{
+            @include button();
+            width: 80%;
+            margin-left: 50%;
+            transform: translateX(-50%);
+        }
+    }
+    
+
+    .label{
+        color: #fff;
+        padding-top: 1.5em;
+        font-size: 1.5em;
+    }
+
+    .area-attributes{
+        width: 100%;
+        margin-bottom: 1em;
+        color: #fff;
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        ul{
+            list-style: none;
+            // padding: 5px;
+            li{
+                padding: 2px;
+            }
+        }
+        & > div {
+            justify-content: space-between;
+            & > div {
+                display: flex;
+                flex: 1;
+                border: 1px solid #fff;
+            }
+        }
+        .wholeAttribute {
+            display: flex;
+            background-color: #95629D;
+            flex: 1 1 auto;
+            
+            .attributeName { 
+                display: flex;
+                flex: 1;
+                justify-content: center;
+                font-size: 1.25rem;
+                padding: 0.5em;
+            }
+        
+            .removeButton {
+                min-width: 30px;
+                min-height: 25px;
+                border: 0;
+                background-color: transparent;
+                color: white;
+                background-color: red;
+                font-weight: bold;
+                font-size: 1rem; 
+                
+
+            }
+        }
+    }
+
+    .schema{
+        color: #fff;
+        font-size: 1.5em;
+        margin-bottom: 1em;
+    }
+
+    .btn-nextPageDependency{
+        @include button();
+        width: 100%;
+        margin-bottom: 1em;
+    }
+}

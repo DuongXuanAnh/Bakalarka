@@ -1,0 +1,41 @@
+.mergeTablesAfterDecompose-container{
+    .table{
+        padding: 1em;
+        width: 90%;
+        border-radius: 15px;
+        padding: 10px;
+        margin: 0 auto !important;
+        margin-bottom: 5px !important;
+        color: #000;
+        text-align: center;
+        width: 90% !important;
+       
+    }
+
+    .SubsetTable{
+        opacity: 0.5;
+        background-color: #000;
+    }
+
+    .note, .tableKeys{
+        font-size: smaller;
+    }
+
+    .tableAttrs{
+        font-size: larger;
+        white-space: nowrap; /* Zabrání zalamování textu */
+        overflow: hidden; /* Skryje text, který přesahuje šířku elementu */
+        text-overflow: ellipsis; /* Přidá trojtečku na konec zkráceného textu */
+    }
+
+    .addButton{
+        margin-top: 1em;
+        margin-left: 1em;
+        padding: 5px;
+        border-radius: 5px;
+        &:hover{
+            cursor: pointer;
+        }
+    }
+    
+}

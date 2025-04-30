@@ -1,0 +1,64 @@
+@import '../../../../styles/global';
+
+
+h2{
+    color: #fff;
+}
+
+.allKeys{
+    padding: 5px;
+    margin: 1em;
+   text-align: center;
+}
+
+.allKeysStepByStep{
+    width: 75%;
+    margin: 0 auto;
+    font-size: 1.1em;
+    margin-bottom: 2em;
+    margin-top: 2em;
+    .step{
+        padding: 0.5em;
+        border-bottom: 1px solid #000;
+        border-radius: 5px;
+        background: #ccc;
+        margin:1px;
+        text-align: center;
+        overflow-wrap: break-word;
+    }
+}
+
+.explainButtons{
+    text-align: center;
+    .btn_PracticeButton{
+        @include NextStepButton();
+        background-color: #5c7cfa;
+        margin: 0 auto;
+        margin-top: 1em;
+        margin-bottom: 2em;
+    }
+    .btn_ExplainResult{
+        @include explainButton();
+        margin: 1em;
+        margin-top: 1em;
+        margin-bottom: 2em;
+
+    }
+}
+
+.dependency-checkbox{
+    font-size: larger;
+    margin-bottom: 0.5em;
+}
+
+.checkbox{
+    margin-right: 1em;
+}
+
+.confimButton{
+    @include button();
+    background-color: #5c7cfa;
+    margin: 0 auto;
+    margin-top: 1em;
+    margin-bottom: 2em;
+}

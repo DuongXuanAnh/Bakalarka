@@ -1,0 +1,73 @@
+@import '../../../../styles/global';
+
+.addDependencyContainer{
+    h1{
+        text-align: center;
+        margin: 20px;
+    }
+
+    h2{
+        padding: 10px;
+    }
+
+    .leftAttributes, .rightAttributes {
+        flex: 0 0 40%;
+        box-sizing: border-box;
+        display: flex;
+        flex-wrap: wrap;
+        background-color: #ccc;
+        margin-right: 10px;
+        border-radius: 5px;
+        min-height: 30px;
+        margin-bottom: 20px;
+
+        .attributeTag, .addAttrComboBox {
+            height: 30px;
+            line-height: 30px;
+            flex: 0 0 calc(33.33% - 20px); // Zvětšit odsazení v calc()
+            margin: 5px 10px; // Odsazení pouze z vrchu a spodu
+            background-color: #773B81;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 5px 10px;
+            border-radius: 4px;
+            margin: 5px;
+
+            .removeBtn {
+                background-color: red;
+                border: none;
+                color: white;
+                border-radius: 50%;
+                width: 20px;
+                height: 20px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                cursor: pointer;
+                margin-left: 5px;
+            }
+        }
+    }
+
+    .addAttrComboBox {
+        background-color: #fff !important;
+    }
+
+    .addBtn{
+        @include button();
+        width: 85%;
+        display: block;
+        margin: 0 auto;
+        margin-top: 20px;
+    }
+
+    .backBtn{
+        @include button();
+        width: 85%;
+        display: block;
+        margin: 0 auto;
+        margin-top: 20px;
+        background-color: rgb(255, 38, 38);
+    }
+}

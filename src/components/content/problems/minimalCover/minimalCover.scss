@@ -1,0 +1,153 @@
+@import '../../../../styles/global';
+
+
+.removedTrivialFDsContainer{
+    margin-top: 1em;
+}
+
+.functionalDependency {
+    border: 1px solid #d1d1d1;
+    width: 90%;
+    margin: 0 auto;
+    border-radius: 5px;
+    font-weight: bold;
+    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.1);
+    padding: 8px 16px;
+    margin-bottom: 8px;
+    background-color: #ccc;
+    color: #333;
+    font-family: 'Arial', sans-serif;
+    cursor: pointer;
+
+    &:hover{
+        background-color: #e9e9e9;
+    }
+  }
+
+  h3{
+    color: #ffffff;
+    width: 90%;
+    margin: 0 auto;
+    padding: 8px 16px;
+  }
+
+  .line-through {
+    text-decoration: line-through;
+    color: red !important;
+  }
+
+  .hight-light-red {
+    color: red;
+  }
+  
+ .redundant {
+    text-decoration: line-through;
+    color: red;
+  }
+
+  .dependency-group {
+    display: flex; 
+    align-items: center; 
+    flex-wrap: nowrap; 
+    font-size: 1.2em;
+  }
+  
+  .dependency-checkbox {
+    display: flex; 
+    align-items: center; 
+    margin-right: 5px; 
+  }
+
+  .controlButtons{
+
+    text-align: center;
+
+    .showStepByStep_btn{
+      @include NextStepButton();
+      margin: 0 auto;
+      margin-top: 1em;
+      margin-bottom: 2em;
+
+    }
+
+    .practiceNextStep_btn{
+      @include NextStepButton();
+      background-color: #5c7cfa;
+      margin: 0 auto;
+      margin-top: 1em;
+      margin-bottom: 2em;
+      margin-left: 1em;
+
+    }
+
+    .showAllStep_btn{
+      @include explainButton();
+        margin: 1em;
+        margin-top: 1em;
+        margin-bottom: 3em;
+
+    }
+  }
+
+  .minimal-cover-modal{
+
+    text-align: center;
+
+    .modalTitle{
+      color: #000000;
+      padding: 5px;
+    }
+
+    .dependency-checkbox-container{
+      margin-top: 1em;
+      margin-bottom: 1em;
+      text-align: center;
+
+      max-height: 350px; 
+      overflow-y: auto; 
+  
+  
+      .checkbox-label, .dependency-right {
+        margin-left: 10px;
+        font-size: 1.3em;
+      }
+  
+     
+    }
+    .submitAnswerButton{
+      @include button();
+      margin-top: 1em;
+      margin-bottom: 1em;
+      width: 80%;
+    }
+  }
+
+  .MinimalCoverFinalResult{
+    text-align: center;
+    .note{
+      width: 100%;
+      margin: 0 auto;
+    }
+  }
+
+  .center{
+    text-align: center;
+  }
+  
+  .DependenciesOneRigthAttrContainer, .removedTrivialFDsContainer, .minimizeLHS, .removeRedundantFDs{
+    text-align: center;
+  }
+
+  .DependenciesOneRigthAttrContainer{
+    .reverse_btn{
+      background-color: #fbff00;
+      border: solid 1px #000000;
+      border-radius: 5px;
+      padding: 5px;
+      margin-right: 1em;
+      &:hover{
+        cursor: pointer;
+        box-shadow: none;
+    }
+    }
+  }

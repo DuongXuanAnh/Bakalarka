@@ -1,0 +1,104 @@
+@import '../../../../styles/global';
+
+.systhesis-container{
+    
+    text-align: center;
+    display: flex;
+    white-space: normal;
+    overflow-wrap: break-word;
+
+    @include maxWidth(991px) {
+        flex-direction: column;
+        align-items: center;
+      }
+
+    .dragDependenciesArea{
+  
+        padding: 1em;
+        width: 30%;
+        
+        //    Případně umístí dolů
+            @include maxWidth(991px) {
+                order: 2;
+            }
+
+        .reverse_btn, .mixRandom_btn{
+            margin-top: 1em;
+            margin-bottom: 1em;
+            background-color: #fbff00;
+            border: solid 1px #000000;
+            border-radius: 5px;
+            padding: 5px;
+            margin-right: 1em;
+            &:hover{
+              cursor: pointer;
+              box-shadow: none;
+          }
+      
+        }
+
+        // .functionalDependenciesContainer{
+        //     .functionalDependency{
+
+        //     }
+        // }
+    }
+
+    .systhesisResultArea{
+        
+        display: flex;
+        flex-direction: column;
+        flex-grow: 1;
+        max-width: 100%;
+    
+        .MinimalCover, .MinimalCoverCondensed{
+            // font-weight: bold;
+            font-size: 1.5em;
+            text-align: center;
+            color: #fff;
+            margin: 10px;
+        }
+        
+        .Tables{
+            .TableButton{
+                padding: 1em;
+                font-size: 1.5em;
+                width: 90%;
+                border-radius: 15px;
+                padding: 10px;
+                margin: 0 auto !important;
+                margin-bottom: 5px !important;
+
+                .tableKeys{
+                    font-size: smaller;
+                    margin: 0.5em;
+                    color: hsl(0, 100%, 50%);
+                }
+
+                :hover{
+                    cursor: pointer;
+                    box-shadow: none;
+                }
+            }
+
+            .SubsetTable{
+                opacity: 0.5;
+              
+            }
+        
+            .note{
+                font-size: 12px;
+                text-align: center;
+            }
+        }
+    }
+
+   
+    @include maxWidth(991px) {
+        .dragDependenciesArea{
+            width: 90%;
+        }
+    }
+}
+
+

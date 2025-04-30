@@ -1,0 +1,169 @@
+@import '../../../../styles/global';
+
+.decomposition-container{
+
+    .container {
+        display: grid;
+        grid-template-columns: 2fr 1fr; /* Left div is 2x the size of the right */
+        grid-template-rows: 1fr 1fr;    /* Two rows of equal height */
+        gap: 10px;                      /* Space between divs */
+        height: 400px;                  /* Set the total height of the grid */
+      }
+      
+    color: #ffffff;
+
+    .header {
+        padding: 15px;
+        display: flex;
+        gap: 10px; /* Space between left and right sections */
+      }
+      
+      .lostDependenciesArea {
+        display: flex;
+        flex-direction: column; /* Stack the `<h1>` and `.lostDependencies` vertically */
+      }
+      
+      .lostDependencies {
+        flex: 0 1 auto; /* Allow auto width and height based on content */
+        padding: 10px; /* Optional padding for better visibility */
+        width: 500px;
+        max-height: 200px;
+        overflow-y: auto;
+        overflow-x: auto;
+      }
+      
+      .right {
+        display: flex;
+        flex-direction: column; /* Arrange its children vertically */
+        gap: 10px; /* Space between upper and lower divs */
+        flex: 1; /* Allow it to take remaining space in width */
+      }
+      
+      .right-upper,
+      .right-lower {
+        flex: 1; /* Makes both divs share the height equally */
+        display: flex; /* Enables Flexbox for the content */
+        flex-direction: column; /* Stack children vertically */
+        justify-content: flex-start; /* Align items to the top */
+        align-items: flex-start; /* Align items to the start (left) */
+        padding-left: 10px; /* Optional: add padding for left spacing */
+        max-height: 80px;
+        min-height: 80px;
+      
+        .randomDecomposition_btn {
+          @include button();
+        }
+        .showMergeTableModal_btn {
+          @include button();
+          background-color: indianred;
+          margin-bottom: 10px;
+
+        }
+      }
+
+      .right-upper{
+        line-height: 80px;
+      }
+
+    .reactFlowContainer {
+        width: 99%;
+        height: 80vh; 
+        z-index: 10;
+      
+        border: 1px solid #000000;
+        margin: 0 auto;
+        margin-top: 1em;
+        margin-bottom: 1em;
+        // background-image: radial-gradient(black 1px, transparent 0);
+        // background-size: 40px 40px;
+        // background-position: -19px -19px;
+      }    
+    
+    .howButton{
+        @include howButton();
+        margin-top: 1em;
+        margin-left: 1em;
+    }
+}
+
+
+
+.normalFormPracticeArea{
+    margin-top: 0.5em;
+    margin-bottom: 0.5em;
+
+    .radioButtonsArea{
+        display: flex;
+        gap: 10px;
+        align-items: center
+    }
+    .buttonsArea{
+        margin-top: 0.5em;
+        .checkButton{
+            @include howButton();
+            background-color: hwb(132 0% 0%);
+            margin-right: 1em;
+            width: 100px;
+            font-weight: bold;
+        }
+        .howButton{
+            @include howButton();
+            margin-left: 1em;
+        }
+    }
+}
+
+.practiceDependenciesArea{
+    margin-top: 1em;
+    text-align: center;
+    .practiceDependencies{
+        max-height: 300px;
+        max-width: 400px;
+        overflow-y: auto;
+        overflow-x: auto;
+    }
+    .practiceDependenisWrapperUL{
+        margin-top: 0.5em;
+        .practiceDependencyRow{
+            // background-color: rgb(26, 70, 193);
+            .practiceDependency{
+                width: 230px;
+                // background-color: indianred;
+                white-space: nowrap; /* Zabrání zalomení textu do nového řádku */
+                overflow: hidden; /* Skryje text, který přesahuje šířku elementu */
+                text-overflow: ellipsis; /* Přidá "..." na konec přesahujícího textu */
+            }
+        }
+    }
+    .checkButton{
+        @include howButton();
+        background-color: hwb(132 0% 0%);
+        margin-right: 1em;
+        width: 80%;
+        font-weight: bold;
+        margin-top: 0.5em;
+    }
+
+    .cBox_normalForm{
+        width: 20px;
+    }
+}
+
+@include maxWidth(991px) {
+    .decomposition-container{
+        overflow-x: hidden;
+        .header{
+            flex-direction: column;
+            .lostDependencies{
+                width: 100%;
+                max-height: 120px;
+                overflow-y: auto;
+            }
+            .right{
+                width: 100%;
+            }
+        }
+    }
+  }
+
+

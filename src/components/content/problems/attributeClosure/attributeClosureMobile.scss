@@ -1,0 +1,55 @@
+
+@import '../../../../styles/global';
+
+
+@include maxWidth(991px){
+
+    .attributeClosure-container{
+        width: 100%;
+        overflow-x: hidden;
+
+        .attributesArea, .attributesAreaResult {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr); // 4 sloupce, každý bude mít rovnou část dostupné šířky
+
+            .attributeTag{
+                .text{
+                    text-align: left;
+                    width: 50px; /* Omezení šířky na základě odhadu, kolik textu by se mělo zobrazit */
+                    white-space: nowrap; /* Zabrání zalamování textu */
+                    overflow: hidden; /* Skryje text, který přesahuje šířku elementu */
+                    text-overflow: ellipsis; /* Přidá trojtečku na konec zkráceného textu */
+                }
+            }
+        }
+
+
+        .btn_showAttributeClosure{
+            margin-bottom: 2em;
+            width: 80%;
+        }
+    
+        .btn_practiceAttributeClosure{
+            margin-top: 2em;
+            margin: 0 auto;
+            width: 80%;
+        
+        }
+
+        .attributeClosure{
+            .attributeClosure{
+                margin-top: 2em;
+                width: 80%;
+            }
+        
+            .btn_ExplainResult{
+                width: 80%;
+            }
+        }
+    
+       
+    }
+
+    
+
+}

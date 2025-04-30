@@ -1,0 +1,79 @@
+@import '../../../../styles/global';
+
+.redundantDependency-container{
+    white-space: normal;
+    overflow-wrap: break-word;
+    .centerContent{
+        text-align: center;
+    }
+    .functionalDependency{
+        border: 1px solid #d1d1d1; 
+        width: 90%;
+        margin: 0 auto;
+        border-radius: 5px;
+        font-weight: bold;
+        box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.1); 
+        padding: 8px 16px; 
+        margin-bottom: 8px;
+        background-color: #ccc; 
+        color: #333; 
+        font-family: 'Arial', sans-serif; 
+    
+        input[type="checkbox"] {
+        margin-right: 10px; /* Přidává odstup mezi checkboxem a textem */
+        }
+    
+    
+    }
+    
+    .h2Title{
+        color: #fff;
+        margin: 1em;
+    }
+    
+    .btnWrapper{
+        text-align: center;
+        margin: 2em;
+        .btnCheckResult, .btnShowResult{
+            @include button();
+            margin: 5px;
+        }
+    }
+    
+    .btnReverseDependencies{
+        @include button();
+        background-color: #ff9500;
+    }
+    
+    .showRedundantDependenciesResultArea{
+        margin-top: 2em;
+        margin-bottom: 2em;
+        width: 80%;
+        margin: 0 auto;
+
+        .area{
+            font-size: xx-large;
+            margin-top: 0.5em;
+            margin-bottom: 1em;
+            background-color: #ccc;
+            color: #000000;
+            padding: 15px;
+            border-radius: 5px;
+        }
+
+        .explainArea{
+            color: #fff;
+            text-align: left;
+            margin-bottom: 2em;
+            p{
+                margin-top: 0.5em;
+                font-size: x-large;
+            }
+        }
+
+    }
+    
+}
+
+ 
+  

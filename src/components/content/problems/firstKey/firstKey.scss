@@ -1,0 +1,162 @@
+@import '../../../../styles/global';
+.first-key-container {
+    // background: #f8f8f8;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    font-family: 'Arial', sans-serif;
+    margin: 20px;
+    text-align: center;
+
+    .reverseMix_btn{
+      margin-bottom: 1em;
+    }
+
+    .allKeysDisplay {
+      font-size: 1.5em;
+      text-align: center;
+      margin-bottom: 25px;
+      padding-bottom: 1em;
+      border-bottom: 1px solid #ccc;
+      margin-top: 1em;
+    }
+  
+    .step-group {
+      background: #fff;
+      border: 1px solid #e1e1e1;
+      padding: 15px;
+      border-radius: 6px;
+      margin-bottom: 10px;
+      position: relative;
+  
+      &:not(:last-child):after {
+        content: '';
+        display: block;
+        height: 1px;
+        background-color: #ccc;
+        position: absolute;
+        bottom: -10px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: calc(100% - 30px); /* Adjust width according to the padding */
+      }
+  
+      p {
+        color: #555;
+        font-size: 0.95em;
+        line-height: 1.6;
+        margin: 0 0 10px;
+  
+        &:last-child {
+          margin-bottom: 0;
+        }
+      }
+  
+      .key-line {
+        font-weight: bold;
+        color: #222;
+      }
+  
+      .attribute-closure {
+        background-color: #eef;
+        border-left: 4px solid #5c7cfa;
+        padding: 4px 8px;
+        font-style: italic;
+      }
+  
+      .redundant-attr, .non-redundant-attr {
+        font-size: 0.9em;
+        display: inline-block;
+        margin-top: 5px;
+        padding: 2px 5px;
+        border-radius: 4px;
+        color: #fff;
+        &.redundant-attr {
+          background-color: #f56c6c;
+        }
+        &.non-redundant-attr {
+          background-color: #67c23a;
+        }
+      }
+    }
+
+    .toggle-steps-btn {
+        display: block;
+        margin: 20px auto;
+        padding: 10px 20px;
+        font-size: 1em;
+        color: #fff;
+        background-color: hsl(10deg 95% 58%);
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background-color 0.3s;
+    
+        &:hover {
+          background-color: hsl(10, 94%, 57%);
+        }
+      }
+
+      .steps-container {
+        
+        width: 75%;
+        margin: 0 auto;
+        font-size: 1.1em;
+        margin-bottom: 2em;
+        .step{
+            padding: 0.5em;
+            border-bottom: 1px solid #000;
+            border-radius: 5px;
+            background: #ccc;
+            margin:1px;
+            text-align: center;
+            overflow-wrap: break-word;
+        }
+      }
+
+    .btn_ExplainResult{
+        @include explainButton();
+        margin: 1em;
+        margin-top: 1em;
+        margin-bottom: 3em;
+
+        
+    }
+
+    .btn_NextStep{
+        @include NextStepButton();
+        margin: 0 auto;
+        margin-top: 1em;
+        margin-bottom: 2em;
+    }
+
+    .btn_PracticeButton{
+        @include NextStepButton();
+        background-color: #5c7cfa;
+        margin: 0 auto;
+        margin-top: 1em;
+        margin-bottom: 2em;
+      }
+  }
+  
+    .attributesContainer ul {
+      display: flex;
+      padding: 0;
+      margin: 0;
+      list-style-type: none;
+      overflow-x: auto;
+      width: 80%;
+      margin: 0 auto;
+  }
+
+  .attributesContainer li {
+      margin-right: 8px;
+      padding: 5px;
+      border: 1px solid #ccc;
+      background-color: #f0f0f0;
+      width: 100%;
+      text-align: center;
+      font-weight: bold;
+      cursor: grab;
+  }
+

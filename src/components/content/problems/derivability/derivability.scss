@@ -1,0 +1,285 @@
+@import '../../../../styles/global';
+
+.derivability-container{
+
+    color: #fff;
+    text-align: center;
+
+    hr {
+        width: 80%;
+        margin: 0 auto;
+        display: block;
+      }
+      
+
+    .checkDerivability-container{
+       margin-top: 2em;
+       margin-bottom: 2em;     
+       h2{
+        margin-top: 1em;
+        margin-bottom: 1em;
+       } 
+    }
+
+    .problemContainer{
+        font-size: 1.5em;
+    }
+
+    .derivability-dependency{
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 100%;
+        box-sizing: border-box;
+        margin-bottom: 5px;
+    
+        .leftAttributes, .rightAttributes {
+            flex: 0 0 40%;
+            box-sizing: border-box;
+            display: flex;
+            flex-wrap: wrap;
+            background-color: #ccc;
+            margin-right: 10px;
+            border-radius: 5px;
+            min-height: 30px;
+    
+            .attributeTag, .addAttrComboBox {
+                height: 30px;
+                line-height: 30px;
+                flex: 0 0 25%;
+                background-color: #773B81;
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                padding: 5px 10px;
+                border-radius: 4px;
+                margin: 5px;
+    
+                .removeBtn {
+                    background-color: red;
+                    border: none;
+                    color: white;
+                    border-radius: 50%;
+                    width: 20px;
+                    height: 20px;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    cursor: pointer;
+                    margin-left: 5px;
+                }
+            }
+        }
+    
+        .arrow {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            font-size: 24px;
+            margin: 0 10px;
+            padding: 5px;
+        }
+    
+        .rightAttributes {
+            margin-left: 10px;
+        }
+    
+        .removeDependencyBtn {
+            background-color: #e74c3c;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            padding: 8px 16px;
+            font-size: 0.9em;
+            cursor: pointer;
+            transition: background-color 0.2s;
+    
+            &:hover {
+                background-color: #c0392b;
+            }
+    
+            &:active {
+                background-color: #a93226;
+            }
+    
+            &:focus {
+                outline: none;
+                box-shadow: 0 0 5px rgba(231, 76, 60, 0.5);
+            }
+        }
+    
+        .addAttrComboBox {
+            background-color: #fff !important;
+        }
+}
+
+.addDependencyH2title{
+    margin-bottom: 1em;
+}
+
+.showRedundantManually_btn{
+   @include button();
+    margin-top: 2em;
+    margin-bottom: 2em;
+    width: 30%;
+}
+
+.fPlus-container{
+    h1{
+        margin-top: 1.5em;
+    }
+
+    h2{
+        margin-top: 1em;
+    }
+}
+
+.derivability-attributesArea {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr); // 4 sloupce, každý bude mít rovnou část dostupné šířky
+        gap: 10px; // Mezera mezi položkami
+        width: 70%;
+        margin: 0 auto;
+        background-color: #ccc;
+        border-radius: 5px;
+        padding: 5px; // Přidává padding uvnitř kontejneru
+        box-sizing: border-box;
+
+        .attributeTag, .addAttrComboBox {
+            height: 30px;
+            line-height: 30px;
+            background-color: #773B81;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 5px 10px;
+            border-radius: 4px;
+            margin: 5px; // Můžete upravit podle potřeby, ale nezapomeňte, že to ovlivní uspořádání
+
+            .removeBtn {
+                background-color: red;
+                border: none;
+                color: white;
+                border-radius: 50%;
+                width: 20px;
+                height: 20px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                cursor: pointer;
+            }
+        }
+    }
+    .addAttrComboBox {
+        background-color: #ffffff !important;
+    }
+
+
+    .showFplus_btn{
+        @include button();
+        margin-top: 2em;
+        margin-bottom: 2em;
+        width: 30%;
+    }
+
+    .fplusResult{
+        width: 80%;
+        margin: 0 auto;
+        border-radius: 15px;
+        border: 1px solid #fff;
+        margin-top: 2em;
+        margin-bottom: 2em;
+        .fplusDependency{
+            font-size: 1.5em;
+            margin: 0.5em;
+        }
+    }
+
+    .FplusExplainStep1{
+        .powerSetSubetContainer{
+            width: 80%;
+            margin: 0 auto;
+            border-radius: 15px;
+            border: 1px solid #fff;
+            margin-top: 2em;
+            margin-bottom: 2em;
+            .powerSetSubset{
+                font-size: 1.5em;
+                margin: 0.2em;
+            }
+        }
+    }
+
+    .FplusExplainStep2{
+        .powerSetSubsetContainer{
+            width: 80%;
+            margin: 0 auto;
+            border-radius: 15px;
+            border: 1px solid #fff;
+            margin-top: 2em;
+            margin-bottom: 2em;
+            .powerSetSubset{
+                font-size: 1.5em;
+                margin: 0.2em;
+            }
+        }
+    }
+
+    .FplusExplainStep3{
+        .powerSetSubsetContainer{
+            width: 80%;
+            margin: 0 auto;
+            border-radius: 15px;
+            border: 1px solid #fff;
+            margin-top: 2em;
+            margin-bottom: 2em;
+            .powerSetSubset{
+                font-size: 1.5em;
+                margin: 0.2em;
+            }
+        }
+    }
+
+    .FplusExplainStep4{
+        .fplusDependencyContainer{
+            width: 80%;
+            margin: 0 auto;
+            border-radius: 15px;
+            border: 1px solid #fff;
+            margin-top: 2em;
+            margin-bottom: 2em;
+            .fplusDependency{
+                font-size: 1.5em;
+                margin: 0.2em;
+            }
+        }
+    }
+
+    .FplusExplainStep5{
+        .fplusDependencyContainer{
+            width: 80%;
+            margin: 0 auto;
+            border-radius: 15px;
+            border: 1px solid #fff;
+            margin-top: 2em;
+            margin-bottom: 2em;
+            .fplusDependency{
+                font-size: 1.5em;
+                margin: 0.2em;
+            }
+        }
+    }
+
+    .explainFplusResult_btn{
+        @include explainButton();
+        margin-bottom: 2em;
+        width: 30%;
+    }
+
+    #fillAllAttributesBtnFplus{
+        margin-top: 2em;
+        width: 60%;
+    }
+}
+

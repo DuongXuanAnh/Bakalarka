@@ -1,0 +1,79 @@
+@import '../../../../../styles/global';
+
+
+.ownDependencyContainer{
+    
+    .leftAttributes, .rightAttributes, .leftSubRelation, .rightSubRelation {
+        display: flex;
+        flex-wrap: wrap; /* Povoluje zalomení prvků */
+        align-items: center;
+        justify-content: flex-start; /* Zarovnání prvků na začátek */
+        margin-bottom: 10px; /* Dodává prostor mezi řádky */
+        background-color: #ccc;
+
+        .attributeTag, .addAttrComboBox  {
+            width: 22%; /* Šířka jednoho tagu */
+            margin: 5px; /* Okraj kolem tagu */
+            height: 30px; /* Výška tagu */
+            display: flex; /* Flexbox pro vnitřní prvky */
+            align-items: center;
+            justify-content: space-between; /* Rozložení vnitřního obsahu */
+            padding: 5px 10px; /* Vnitřní odsazení */
+            border-radius: 4px; /* Zaoblené rohy */
+            background-color: #773B81; /* Barva pozadí */
+            .text{
+                width: 100px; /* Omezení šířky na základě odhadu, kolik textu by se mělo zobrazit */
+                white-space: nowrap; /* Zabrání zalamování textu */
+                overflow: hidden; /* Skryje text, který přesahuje šířku elementu */
+                text-overflow: ellipsis; /* Přidá trojtečku na konec zkráceného textu */
+            }
+        }
+
+        .removeBtn {
+            width: 20px;
+            height: 20px;
+            background-color: red;
+            border: none;
+            color: white;
+            border-radius: 50%; /* Kruhový tvar */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            margin-left: 5px; /* Odsazení od předchozího textu */
+        }
+
+        .addAttrComboBox{
+            background-color: #fff;
+            width: 27%;
+        }
+    }
+
+    .arrow {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #000;
+        font-size: 24px;
+        margin: 0 10px;
+        padding: 5px;
+    }
+
+    .decompositeBtn{
+        @include button;
+        width: 93%;
+        // height: 40px;
+        // background-color: #773B81;
+        // color: white;
+        // border: none;
+        // border-radius: 4px;
+        // cursor: pointer;
+        // bottom: 11px;
+        // padding: 0;
+        // position: absolute;
+        // margin: 0;
+
+    }
+
+}
+

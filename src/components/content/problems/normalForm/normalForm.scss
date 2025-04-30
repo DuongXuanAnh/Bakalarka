@@ -1,0 +1,146 @@
+@import '../../../../styles/global';
+
+.normalForm-container{
+        text-align: center;
+        h2{
+            color: #ffffff;
+        }
+
+
+    .attributesArea {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr); // 4 sloupce, každý bude mít rovnou část dostupné šířky
+        gap: 10px; // Mezera mezi položkami
+        width: 70%;
+        margin: 0 auto;
+        background-color: #ccc;
+        border-radius: 5px;
+        padding: 5px; // Přidává padding uvnitř kontejneru
+        box-sizing: border-box;
+    
+        .attributeTag, .addAttrComboBox {
+            height: 30px;
+            line-height: 30px;
+            background-color: #773B81;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 5px 10px;
+            border-radius: 4px;
+            margin: 5px; // Můžete upravit podle potřeby, ale nezapomeňte, že to ovlivní uspořádání
+            
+         
+            .text{
+                text-align: left;
+                width: 100px; /* Omezení šířky na základě odhadu, kolik textu by se mělo zobrazit */
+                white-space: nowrap; /* Zabrání zalamování textu */
+                overflow: hidden; /* Skryje text, který přesahuje šířku elementu */
+                text-overflow: ellipsis; /* Přidá trojtečku na konec zkráceného textu */
+            }
+            
+    
+            .removeBtn {
+                background-color: red;
+                border: none;
+                color: white;
+                border-radius: 50%;
+                width: 20px;
+                height: 20px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                cursor: pointer;
+            }
+        }
+        .addAttrComboBox {
+            background-color: #fff !important;
+        }
+    
+    }
+
+    .showNormalForm_btn{
+        @include button;
+        margin-top: 2em;
+        margin-bottom: 2em;
+    }
+
+    .resultArea{
+        background-color: #ccc;
+        border-radius: 5px;
+        padding: 5px;
+        width: 70%;
+        margin: 0 auto;
+        box-sizing: border-box;
+        margin-bottom: 2em;
+        h2, h3{
+            color: #000000;
+        }
+
+        .fplusInfo{
+            max-height: 200px;
+            overflow-y: auto;
+            overflow-x: auto;
+        }
+
+        .normalFormInfo{
+            font-weight: bold;
+            font-size: larger;
+            margin-top: 1em;
+        }
+
+        .faultlyDependenciesInfo{
+            max-height: 200px;
+            overflow-y: auto;
+            overflow-x: auto;
+            .faultyDependency{
+                padding: 5px;
+            }
+        }
+    }
+
+    .howButton{
+        @include howButton;
+    }
+
+    .fillAllAttributesBtn{
+        margin-top: 2em;
+        width: 60%;
+    }
+}
+
+
+@include maxWidth(991px){
+
+    .normalForm-container{
+        width: 100%;
+        overflow-x: hidden;
+
+        .attributesArea {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr); // 4 sloupce, každý bude mít rovnou část dostupné šířky
+
+            .attributeTag{
+                .text{
+                    text-align: left;
+                    width: 50px; /* Omezení šířky na základě odhadu, kolik textu by se mělo zobrazit */
+                    white-space: nowrap; /* Zabrání zalamování textu */
+                    overflow: hidden; /* Skryje text, který přesahuje šířku elementu */
+                    text-overflow: ellipsis; /* Přidá trojtečku na konec zkráceného textu */
+                }
+            }
+        }
+
+        .showNormalForm_btn{
+            width: 80%;
+        }
+
+        .resultArea{
+            width: 90%;
+            overflow-x: hidden;
+      
+       
+            
+        }
+       
+    }
+}

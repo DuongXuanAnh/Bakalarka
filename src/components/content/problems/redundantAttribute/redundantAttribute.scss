@@ -1,0 +1,186 @@
+@import '../../../../styles/global';
+
+.redundantAttribute-container{
+    text-align: center;
+    color: #fff;
+    white-space: normal;
+    overflow-wrap: break-word;
+    .problemContainer{
+        font-size: 1.5em;
+    }
+    .redundantAttribute-dependency{
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 100%;
+        box-sizing: border-box;
+        margin-bottom: 5px;
+        
+        .leftAttributes, .rightAttributes {
+            flex: 0 0 40%;
+            box-sizing: border-box;
+            display: flex;
+            flex-wrap: wrap;
+            background-color: #ccc;
+            margin-right: 10px;
+            border-radius: 5px;
+            min-height: 30px;
+        
+            .attributeTag, .addAttrComboBox {
+                height: 30px;
+                line-height: 30px;
+                flex: 0 0 25%;
+                background-color: #773B81;
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                padding: 5px 10px;
+                border-radius: 4px;
+                margin: 5px;
+                width: 100px;
+                
+                .removeBtn {
+                    background-color: red;
+                    border: none;
+                    color: white;
+                    border-radius: 50%;
+                    width: 20px;
+                    height: 20px;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    cursor: pointer;
+                    margin-left: 5px;
+                }
+            }
+
+           
+        }
+
+        .leftAttributes{
+            .reverse_btn,.mixRandom_btn{
+                width: 50%;
+                margin: 0;
+            }
+        }
+
+        .arrow {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            font-size: 24px;
+            margin: 0 10px;
+            padding: 5px;
+        }
+        
+        .rightAttributes {
+            margin-left: 10px;
+        }
+        
+        .removeDependencyBtn {
+            background-color: #e74c3c;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            padding: 8px 16px;
+            font-size: 0.9em;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        
+            &:hover {
+                background-color: #c0392b;
+            }
+        
+            &:active {
+                background-color: #a93226;
+            }
+        
+            &:focus {
+                outline: none;
+                box-shadow: 0 0 5px rgba(231, 76, 60, 0.5);
+            }
+        }
+        
+        .addAttrComboBox {
+            background-color: #fff !important;
+        }
+
+        .leftAttributes{
+            .attributesContainer{
+                display: flex;
+                flex-wrap: wrap;
+            }
+        }
+    }
+    
+    .buttons{
+        text-align: center;
+        width: 100%;
+        margin-top: 2em;
+        margin-bottom: 2em;
+        
+        .btn_showRedundantAutomatically, .btn_showRedundantManually{
+            @include button();
+            margin: 1em;
+        }
+    
+    }
+    
+    .inputDependencyTitleText{
+        margin-bottom: 1em;
+    }
+    
+    .btn_checkSelectedAttributes{
+        @include button();
+        margin: 1em;
+        margin-bottom: 2em;
+    }
+
+    .checkBox{
+        font-size: 1.5em;
+
+        .checkBox-label{
+            margin-left: 5px;
+            
+        }
+    }
+
+    .text{
+        width: 100px;
+        white-space: nowrap; /* Zabrání zalomení textu do nového řádku */
+        overflow: hidden; /* Skryje text, který přesahuje šířku elementu */
+        text-overflow: ellipsis; /* Přidá "..." na konec přesahujícího textu */
+    }
+
+    .showRedundantAttributesResultArea{
+        margin-top: 2em;
+        margin-bottom: 2em;
+        width: 80%;
+        margin: 0 auto;
+        .area{
+            font-size: xx-large;
+            margin-top: 0.5em;
+            margin-bottom: 1em;
+            background-color: #ccc;
+            color: #000000;
+            padding: 15px;
+            border-radius: 5px;
+        }
+
+        .explainArea{
+            // background-color: #ccc;
+            text-align: left;
+            margin-bottom: 2em;
+            p{
+                margin-top: 0.5em;
+                font-size: large;
+            }
+           
+        }
+    }
+}
+
+@include maxWidth(991px){
+    
+}
