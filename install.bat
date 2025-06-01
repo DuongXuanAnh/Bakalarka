@@ -36,13 +36,13 @@ if not exist .env (
         echo REACT_APP_COLECTION_NAME=problems
         echo.
         echo # Firebase configuration
-        echo REACT_APP_API_KEY=AIzaSyDwhybGV01eVHNx5DTKWLSbCe-cYvL5p18
-        echo REACT_APP_AUTH_DOMAIN=bakalarka-8bdbb.firebaseapp.com
-        echo REACT_APP_PROJECT_ID=bakalarka-8bdbb
-        echo REACT_APP_STORAGE_BUCKET=bakalarka-8bdbb.appspot.com
-        echo REACT_APP_MESSAGING_SENDER_ID=607356537300
-        echo REACT_APP_APP_ID=1:607356537300:web:09437815081055284b6e41
-        echo REACT_APP_MEASUREMENT_ID=G-EZK2PS1MTE
+        echo REACT_APP_API_KEY=AIzaSyDljkqx3EewmYAMTThpKunY99y-EtsSDfI
+        echo REACT_APP_AUTH_DOMAIN=testdatabase-8216f.firebaseapp.com
+        echo REACT_APP_PROJECT_ID=testdatabase-8216f
+        echo REACT_APP_STORAGE_BUCKET=testdatabase-8216f.firebasestorage.app
+        echo REACT_APP_MESSAGING_SENDER_ID=813596756604
+        echo REACT_APP_APP_ID=1:813596756604:web:7d07700479db64f8b917f9
+        echo REACT_APP_MEASUREMENT_ID=G-PZHE6VKZLY
     ) > .env
     echo .env file created successfully. You may need to edit it with your specific configuration.
 ) else (
