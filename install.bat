@@ -8,18 +8,9 @@ if %ERRORLEVEL% NEQ 0 (
     exit /b 1
 )
 
-REM Check if npm is installed
-where npm >nul 2>&1
-if %ERRORLEVEL% NEQ 0 (
-    echo npm is not installed. Please install npm before proceeding.
-    exit /b 1
-)
-
 REM Display Node.js and npm versions
 echo Node.js version:
 node -v
-echo npm version:
-npm -v
 
 REM Install dependencies
 echo Installing dependencies...

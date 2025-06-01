@@ -8,15 +8,8 @@ if ! command -v node &> /dev/null; then
     exit 1
 fi
 
-# Check if npm is installed
-if ! command -v npm &> /dev/null; then
-    echo "npm is not installed. Please install npm before proceeding."
-    exit 1
-fi
-
 # Display Node.js and npm versions
 echo "Node.js version: $(node -v)"
-echo "npm version: $(npm -v)"
 
 # Install dependencies
 echo "Installing dependencies..."
