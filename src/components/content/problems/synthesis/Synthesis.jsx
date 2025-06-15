@@ -26,7 +26,6 @@ const normalFormInstance = new NormalFormALG();
 
 function Synthesis() {
   const { t } = useTranslation();
-  // const navigate = useNavigate();
 
   const { attributes } = useAttributeContext();
   const { dependencies, setDependencies } = useDependencyContext();
@@ -374,260 +373,251 @@ function Synthesis() {
   };
 
   return (
-    <>
-      <div className="systhesis-container">
-        <div className="dragDependenciesArea">
-          <div className="note">{t("problem-synthesis.note1")}</div>
-          <button onClick={reverseDependencies} className="reverse_btn">
-            {t("problem-synthesis.reverseDependencies")}
-          </button>
-          <button onClick={mixRandomDependencies} className="mixRandom_btn">
-            {t("global.mixDependenciesRandomly")}
-          </button>
-          <DragDropContext onDragEnd={onDragEndDependencies}>
-            <Droppable droppableId="droppable">
+    <div className="systhesis-container">
+      <div className="dragDependenciesArea">
+        <div className="note">{t("problem-synthesis.note1")}</div>
+        <button onClick={reverseDependencies} className="reverse_btn">
+          {t("problem-synthesis.reverseDependencies")}
+        </button>
+        <button onClick={mixRandomDependencies} className="mixRandom_btn">
+          {t("global.mixDependenciesRandomly")}
+        </button>
+        <DragDropContext onDragEnd={onDragEndDependencies}>
+          <Droppable droppableId="droppable">
+            {(provided) => (
+              <div
+                {...provided.droppableProps}
+                ref={provided.innerRef}
+                className="functionalDependenciesContainer"
+              >
+                {rewrittenFDs.map((fd, index) => (
+                  <Draggable
+                    key={index}
+                    draggableId={`fd-${index}`}
+                    index={index}
+                  >
+                    {(provided) => (
+                      <div
+                        ref={provided.innerRef}
+                        {...provided.draggableProps}
+                        {...provided.dragHandleProps}
+                        className="functionalDependency"
+                      >
+                        {showFunctionsInstance.showTextDependencyWithArrow(fd)}
+                      </div>
+                    )}
+                  </Draggable>
+                ))}
+                {provided.placeholder}
+              </div>
+            )}
+          </Droppable>
+        </DragDropContext>
+      </div>
+
+      <div className="systhesisResultArea">
+        <div className="MinimalCoverFinalResult">
+          <h3>
+            <u>{t("problem-synthesis.minimalCover")}</u>
+          </h3>
+          <div className="MinimalCover">
+            G ={" "}
+            {`{ ${showFunctionsInstance.dependenciesArrayToText(
+              removeRedundant_FDs
+            )} }`}
+          </div>
+        </div>
+
+        <div className="MinimalCoverAfterEdit">
+          <h3>
+            <u>{t("problem-synthesis.minimalCoverAfterMerge")}</u>
+          </h3>
+          <div className="MinimalCoverCondensed">
+            G' ={" "}
+            {`{ ${showFunctionsInstance.dependenciesArrayToText(
+              condensedFDs
+            )} }`}
+          </div>
+        </div>
+
+        <div className="originalKeys">
+          <h3>
+            <u>{t("problem-synthesis.allKeys")}</u>: [{" "}
+            {showFunctionsInstance.showKeysAsText(originKeys)} ]
+          </h3>
+        </div>
+
+        <div className="Tables">
+          <h3>{t("problem-synthesis.explainText1")}</h3>
+          <DragDropContext
+            onDragStart={onDragTableStart}
+            onDragUpdate={onDragUpdate}
+            onDragEnd={onDragEndTables}
+          >
+            <Droppable droppableId="droppableTables">
               {(provided) => (
-                <div
-                  {...provided.droppableProps}
-                  ref={provided.innerRef}
-                  className="functionalDependenciesContainer"
-                >
-                  {rewrittenFDs.map((fd, index) => (
+                <div {...provided.droppableProps} ref={provided.innerRef}>
+                  {enrichedTablesInfo.map((table, index) => (
                     <Draggable
-                      key={index}
-                      draggableId={`fd-${index}`}
+                      key={tablesInfo[index].id}
+                      draggableId={`table${tablesInfo[index].id}`}
                       index={index}
                     >
-                      {(provided) => (
+                      {(provided, snapshot) => (
                         <div
                           ref={provided.innerRef}
                           {...provided.draggableProps}
                           {...provided.dragHandleProps}
-                          className="functionalDependency"
+                          className={`TableButton ${
+                            table.isSubset ? "SubsetTable" : ""
+                          }`}
+                          disabled={table.isSubset} // Nastavení disabled na základě příznaku isSubset
+                          onClick={() => {
+                            showInformationModal(table);
+                          }}
+                          style={{
+                            userSelect: "none",
+                            padding: 16,
+                            margin: "0 0 8px 0",
+                            backgroundColor:
+                              index === draggingOverIndex &&
+                              index !== draggingItemIndex
+                                ? "#ccc"
+                                : tableBackgroundColor(table.normalForm.type),
+                            border: "1px solid #ddd",
+                            ...provided.draggableProps.style,
+                            transform: snapshot.isDragging
+                              ? provided.draggableProps.style.transform
+                              : "none",
+                          }}
                         >
-                          {showFunctionsInstance.showTextDependencyWithArrow(
-                            fd
-                          )}
+                          <div>
+                            <p>
+                              {t("problem-synthesis.table")} {index + 1}:
+                            </p>
+                            <p>
+                              R{index + 1}({table.attributes.join(",")})
+                            </p>
+                            <p className="tableKeys">
+                              {t("problem-synthesis.keys")}: [{" "}
+                              {showFunctionsInstance.showKeysAsText(table.keys)}{" "}
+                              ]
+                            </p>
+                            {table.isSubset && (
+                              <p>
+                                {
+                                  <span
+                                    className="note"
+                                    style={{ color: "red" }}
+                                  >
+                                    {t(
+                                      "problem-synthesis.unnecessaryTableSubet",
+                                      {
+                                        index1: index + 1,
+                                        index2: table.subsetOfTableIndex,
+                                      }
+                                    )}
+                                    .
+                                  </span>
+                                }
+                              </p>
+                            )}
+                          </div>
                         </div>
                       )}
                     </Draggable>
                   ))}
                   {provided.placeholder}
+                  {!checkIfTablesContainOriginKey() && (
+                    <div
+                      className="TableButton"
+                      style={{
+                        userSelect: "none",
+                        padding: 16,
+                        margin: "0 0 8px 0",
+                        backgroundColor: tableBackgroundColor("BCNF"),
+                        border: "1px solid #ddd",
+                        transform: "none",
+                      }}
+                    >
+                      <p>
+                        {t("problem-synthesis.table")} {tablesInfo.length + 1}:
+                      </p>
+                      R{tablesInfo.length + 1} ({originKeys[0].join(",")})
+                      <p className="tableKeys">
+                        {t("problem-synthesis.keys")}: [{" "}
+                        {"{" + originKeys[0].join(",") + "}"} ]
+                      </p>
+                      <p>
+                        {
+                          <span className="note" style={{ color: "red" }}>
+                            {t(
+                              "problem-synthesis.noteText_originKeyNotContained"
+                            )}
+                          </span>
+                        }
+                      </p>
+                    </div>
+                  )}
                 </div>
               )}
             </Droppable>
           </DragDropContext>
         </div>
-
-        <div className="systhesisResultArea">
-          <div className="MinimalCoverFinalResult">
-            <h3>
-              <u>{t("problem-synthesis.minimalCover")}</u>
-            </h3>
-            <div className="MinimalCover">
-              G ={" "}
-              {`{ ${showFunctionsInstance.dependenciesArrayToText(
-                removeRedundant_FDs
-              )} }`}
-            </div>
-          </div>
-
-          <div className="MinimalCoverAfterEdit">
-            <h3>
-              <u>{t("problem-synthesis.minimalCoverAfterMerge")}</u>
-            </h3>
-            <div className="MinimalCoverCondensed">
-              G' ={" "}
-              {`{ ${showFunctionsInstance.dependenciesArrayToText(
-                condensedFDs
-              )} }`}
-            </div>
-          </div>
-
-          <div className="originalKeys">
-            <h3>
-              <u>{t("problem-synthesis.allKeys")}</u>: [{" "}
-              {showFunctionsInstance.showKeysAsText(originKeys)} ]
-            </h3>
-          </div>
-
-          <div className="Tables">
-            <h3>{t("problem-synthesis.explainText1")}</h3>
-            <DragDropContext
-              onDragStart={onDragTableStart}
-              onDragUpdate={onDragUpdate}
-              onDragEnd={onDragEndTables}
-            >
-              <Droppable droppableId="droppableTables">
-                {(provided) => (
-                  <div {...provided.droppableProps} ref={provided.innerRef}>
-                    {enrichedTablesInfo.map((table, index) => (
-                      <Draggable
-                        key={tablesInfo[index].id}
-                        draggableId={`table${tablesInfo[index].id}`}
-                        index={index}
-                      >
-                        {(provided, snapshot) => (
-                          <div
-                            ref={provided.innerRef}
-                            {...provided.draggableProps}
-                            {...provided.dragHandleProps}
-                            className={`TableButton ${
-                              table.isSubset ? "SubsetTable" : ""
-                            }`}
-                            disabled={table.isSubset} // Nastavení disabled na základě příznaku isSubset
-                            onClick={() => {
-                              showInformationModal(table);
-                            }}
-                            style={{
-                              userSelect: "none",
-                              padding: 16,
-                              margin: "0 0 8px 0",
-                              backgroundColor:
-                                index === draggingOverIndex &&
-                                index !== draggingItemIndex
-                                  ? "#ccc"
-                                  : tableBackgroundColor(table.normalForm.type),
-                              border: "1px solid #ddd",
-                              ...provided.draggableProps.style,
-                              transform: snapshot.isDragging
-                                ? provided.draggableProps.style.transform
-                                : "none",
-                            }}
-                          >
-                            <div>
-                              <p>
-                                {t("problem-synthesis.table")} {index + 1}:
-                              </p>
-                              <p>
-                                R{index + 1}({table.attributes.join(",")})
-                              </p>
-                              <p className="tableKeys">
-                                {t("problem-synthesis.keys")}: [{" "}
-                                {showFunctionsInstance.showKeysAsText(
-                                  table.keys
-                                )}{" "}
-                                ]
-                              </p>
-                              {table.isSubset && (
-                                <p>
-                                  {
-                                    <span
-                                      className="note"
-                                      style={{ color: "red" }}
-                                    >
-                                      {t(
-                                        "problem-synthesis.unnecessaryTableSubet",
-                                        {
-                                          index1: index + 1,
-                                          index2: table.subsetOfTableIndex,
-                                        }
-                                      )}
-                                      .
-                                    </span>
-                                  }
-                                </p>
-                              )}
-                            </div>
-                          </div>
-                        )}
-                      </Draggable>
-                    ))}
-                    {provided.placeholder}
-                    {!checkIfTablesContainOriginKey() && (
-                      <div
-                        className="TableButton"
-                        style={{
-                          userSelect: "none",
-                          padding: 16,
-                          margin: "0 0 8px 0",
-                          backgroundColor: tableBackgroundColor("BCNF"),
-                          border: "1px solid #ddd",
-                          transform: "none",
-                        }}
-                      >
-                        <p>
-                          {t("problem-synthesis.table")} {tablesInfo.length + 1}
-                          :
-                        </p>
-                        R{tablesInfo.length + 1} ({originKeys[0].join(",")})
-                        <p className="tableKeys">
-                          {t("problem-synthesis.keys")}: [{" "}
-                          {"{" + originKeys[0].join(",") + "}"} ]
-                        </p>
-                        <p>
-                          {
-                            <span className="note" style={{ color: "red" }}>
-                              {t(
-                                "problem-synthesis.noteText_originKeyNotContained"
-                              )}
-                            </span>
-                          }
-                        </p>
-                      </div>
-                    )}
-                  </div>
-                )}
-              </Droppable>
-            </DragDropContext>
-          </div>
-        </div>
-
-        <ReactModal
-          isOpen={isModalOpen}
-          onRequestClose={() => setIsModalOpen(false)}
-          className="custom-modal"
-        >
-          <div className="modal-header">
-            <h2 className="black">{t("problem-synthesis.tableDetail")}</h2>
-            <button
-              onClick={() => setIsModalOpen(false)}
-              className="close-button"
-            >
-              X
-            </button>
-          </div>
-          <div className="modal-content">
-            <div>
-              {t("problem-synthesis.key")}:{" "}
-              {showFunctionsInstance.showKeysAsText(modalContent.keys)}
-            </div>
-            <div>
-              {t("problem-synthesis.dependencies")}:
-              {modalContent.FDs &&
-                modalContent.FDs.map((fd, index) => (
-                  <p key={index}>
-                    {showFunctionsInstance.showTextDependencyWithArrow(fd)}
-                  </p>
-                ))}
-            </div>
-
-            <div>
-              {t("problem-synthesis.normalForm")}:{" "}
-              {modalContent.normalForm.type === "BCNF"
-                ? "BCNF"
-                : modalContent.normalForm.type + " NF"}
-            </div>
-            {modalContent.normalForm.faultyDependencies.length > 0 && (
-              <>
-                <ul>
-                  {modalContent.normalForm.faultyDependencies.map(
-                    (fd, index) => (
-                      <li key={index}>
-                        {showFunctionsInstance.showTextDependencyWithArrow(
-                          fd.dependency
-                        )}{" "}
-                        - {t("problem-synthesis.violates")} {fd.violates}
-                      </li>
-                    )
-                  )}
-                </ul>
-              </>
-            )}
-          </div>
-        </ReactModal>
       </div>
-    </>
+
+      <ReactModal
+        isOpen={isModalOpen}
+        onRequestClose={() => setIsModalOpen(false)}
+        className="custom-modal"
+      >
+        <div className="modal-header">
+          <h2 className="black">{t("problem-synthesis.tableDetail")}</h2>
+          <button
+            onClick={() => setIsModalOpen(false)}
+            className="close-button"
+          >
+            X
+          </button>
+        </div>
+        <div className="modal-content">
+          <div>
+            {t("problem-synthesis.key")}:{" "}
+            {showFunctionsInstance.showKeysAsText(modalContent.keys)}
+          </div>
+          <div>
+            {t("problem-synthesis.dependencies")}:
+            {modalContent.FDs &&
+              modalContent.FDs.map((fd, index) => (
+                <p key={index}>
+                  {showFunctionsInstance.showTextDependencyWithArrow(fd)}
+                </p>
+              ))}
+          </div>
+
+          <div>
+            {t("problem-synthesis.normalForm")}:{" "}
+            {modalContent.normalForm.type === "BCNF"
+              ? "BCNF"
+              : modalContent.normalForm.type + " NF"}
+          </div>
+          {modalContent.normalForm.faultyDependencies.length > 0 && (
+            <>
+              <ul>
+                {modalContent.normalForm.faultyDependencies.map((fd, index) => (
+                  <li key={index}>
+                    {showFunctionsInstance.showTextDependencyWithArrow(
+                      fd.dependency
+                    )}{" "}
+                    - {t("problem-synthesis.violates")} {fd.violates}
+                  </li>
+                ))}
+              </ul>
+            </>
+          )}
+        </div>
+      </ReactModal>
+    </div>
   );
 }
 
