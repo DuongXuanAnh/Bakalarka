@@ -822,8 +822,8 @@ const Decomposition = () => {
             position="top-right"
           />
           <Controls position="top-left" />
-          {/* <Background color="#ffffff" variant="lines" gap={0} /> */}
-          <Background color="#ffffff" variant="dots" gap={14} />
+          <Background color="#ffffff" variant="lines" gap={0} />
+          {/* <Background color="#ffffff" variant="dots" gap={14} /> */}
         </ReactFlow>
 
         <ReactModal
