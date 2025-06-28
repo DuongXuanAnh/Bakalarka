@@ -110,7 +110,102 @@ export default function Attribute() {
         reader.onload = (e) => {
           const fileContent = e.target.result;
 
-          // Zde provádíme zpracování obsahu souboru a získáme atributy a závislosti
+          // Function to validate file format
+          const validateFileFormat = (content) => {
+            try {
+              const attributesRegex = /Attributes:\s*\[([^\]]+)\]/;
+              const dependenciesRegex =
+                /Dependencies:\s*(\[\s*{[\s\S]*?}\s*\])/;
+
+              const attributesMatches = attributesRegex.exec(content);
+              const dependenciesMatches = dependenciesRegex.exec(content);
+
+              if (!attributesMatches || !dependenciesMatches) {
+                return {
+                  isValid: false,
+                  error: t("content-attribute.alert_fileFormat_wrong"),
+                };
+              }
+
+              const attributesStr = attributesMatches[1];
+              if (!attributesStr || attributesStr.trim() === "") {
+                return {
+                  isValid: false,
+                  error: "Attributes section cannot be empty",
+                };
+              }
+
+              const dependenciesStr = dependenciesMatches[1];
+              let dependencies;
+              try {
+                dependencies = JSON.parse(dependenciesStr);
+              } catch (jsonError) {
+                return {
+                  isValid: false,
+                  error: "Dependencies section contains invalid JSON",
+                };
+              }
+
+              if (!Array.isArray(dependencies)) {
+                return {
+                  isValid: false,
+                  error: "Dependencies must be an array",
+                };
+              }
+
+              for (let i = 0; i < dependencies.length; i++) {
+                const dep = dependencies[i];
+                if (!dep || typeof dep !== "object") {
+                  return {
+                    isValid: false,
+                    error: `Dependency ${i + 1} is not a valid object`,
+                  };
+                }
+
+                if (
+                  !dep.hasOwnProperty("left") ||
+                  !dep.hasOwnProperty("right")
+                ) {
+                  return {
+                    isValid: false,
+                    error: `Dependency ${
+                      i + 1
+                    } must have both 'left' and 'right' properties`,
+                  };
+                }
+
+                if (!Array.isArray(dep.left) || !Array.isArray(dep.right)) {
+                  return {
+                    isValid: false,
+                    error: `Dependency ${
+                      i + 1
+                    }: 'left' and 'right' must be arrays`,
+                  };
+                }
+              }
+
+              return { isValid: true };
+            } catch (error) {
+              return {
+                isValid: false,
+                error: "Error parsing file content",
+              };
+            }
+          };
+
+          const validation = validateFileFormat(fileContent);
+
+          if (!validation.isValid) {
+            Swal.fire({
+              title: t("content-attribute.alert_fileFormat_title"),
+              text: validation.error,
+              icon: "error",
+              confirmButtonText: "OK",
+            });
+            event.target.value = "";
+            return;
+          }
+
           const attributesRegex = /Attributes:\s*\[([^\]]+)\]/;
           const dependenciesRegex = /Dependencies:\s*(\[\s*{[\s\S]*?}\s*\])/;
 
@@ -120,18 +215,23 @@ export default function Attribute() {
           if (attributesMatches && attributesMatches.length >= 2) {
             const fileAttributes = attributesMatches[1]
               .split(",")
-              .map((attr) => attr.trim());
+              .map((attr) => attr.trim().replace(/"/g, ""));
 
-            // Aktualizujeme stav atributů ve vaší aplikaci
             setAttributes(fileAttributes);
           }
 
           if (dependenciesMatches && dependenciesMatches.length >= 2) {
             const fileDependencies = JSON.parse(dependenciesMatches[1]);
-            console.log(fileDependencies);
-            // Aktualizujeme stav závislostí ve vaší aplikaci pomocí funkce z DependencyContext
             setDependencies(fileDependencies);
           }
+
+          Swal.fire({
+            title: t("content-attribute.alert_fileFormat_correct"),
+            text: t("content-attribute.alert_fileFormat_correct_text"),
+            icon: "success",
+            timer: 2000,
+            showConfirmButton: false,
+          });
         };
 
         reader.readAsText(file);
