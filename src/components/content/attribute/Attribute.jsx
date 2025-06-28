@@ -222,7 +222,6 @@ export default function Attribute() {
 
           if (dependenciesMatches && dependenciesMatches.length >= 2) {
             const fileDependencies = JSON.parse(dependenciesMatches[1]);
-            console.log(fileDependencies);
             setDependencies(fileDependencies);
           }
 

@@ -45,7 +45,7 @@ describe("FunctionalDependencyFunctions", () => {
       const Y = ["C"];
 
       const result = fdFunctions.isDependencyInClosure(F, X, Y);
-      expect(result).toBe(true); // A -> C is derivable
+      expect(result).toBe(true);
     });
 
     test("should return false when dependency is not in closure", () => {

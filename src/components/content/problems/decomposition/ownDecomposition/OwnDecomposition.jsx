@@ -131,8 +131,6 @@ function OwnDecomposition({
         }
       });
     } else {
-      console.log(selectedNode.data.candidateKeys);
-      console.log(leftSideAttributes);
       const dependency = {
         left: leftSideAttributes,
         right: rightSideAttributes,

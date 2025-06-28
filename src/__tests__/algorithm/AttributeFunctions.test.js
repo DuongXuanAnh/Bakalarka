@@ -50,6 +50,39 @@ describe("AttributeFunctions", () => {
     });
   });
 
+  describe("attributeClosureL9", () => {
+    test("should compute closure correctly for L9", () => {
+      const FDs = [
+        {
+          right: ["c", "s", "j", "d", "p", "q", "v"],
+          left: ["c"],
+        },
+        {
+          right: ["p"],
+          left: ["s", "d"],
+        },
+        {
+          right: ["d"],
+          left: ["p"],
+        },
+        {
+          right: ["c"],
+          left: ["j", "p"],
+        },
+        {
+          right: ["s"],
+          left: ["j"],
+        },
+      ];
+      const attributes = ["s", "j", "d"];
+
+      const closure = attributeFunctions.attributeClosure(FDs, attributes);
+      expect(closure.sort()).toEqual(
+        ["s", "j", "d", "p", "c", "q", "v"].sort()
+      );
+    });
+  });
+
   describe("attributeClosureWithExplain", () => {
     test("should compute closure and store explanation", () => {
       const FDs = [{ left: ["A"], right: ["B"] }];
@@ -76,6 +109,37 @@ describe("AttributeFunctions", () => {
 
       const nonTrivial = attributeFunctions.nonTrivialClosure(FDs, attributes);
       expect(nonTrivial.sort()).toEqual(["B", "C"].sort());
+    });
+  });
+
+  describe("nonTrivialClosureL9", () => {
+    test("should return only non-trivially derived attributes", () => {
+      const FDs = [
+        {
+          right: ["c", "s", "j", "d", "p", "q", "v"],
+          left: ["c"],
+        },
+        {
+          right: ["p"],
+          left: ["s", "d"],
+        },
+        {
+          right: ["d"],
+          left: ["p"],
+        },
+        {
+          right: ["c"],
+          left: ["j", "p"],
+        },
+        {
+          right: ["s"],
+          left: ["j"],
+        },
+      ];
+      const attributes = ["s", "j", "d"];
+
+      const nonTrivial = attributeFunctions.nonTrivialClosure(FDs, attributes);
+      expect(nonTrivial.sort()).toEqual(["p", "c", "q", "v"].sort());
     });
   });
 });

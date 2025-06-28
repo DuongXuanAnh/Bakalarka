@@ -39,6 +39,37 @@ describe("FindingKeysFunctions", () => {
     });
   });
 
+  describe("findFirstKeyL9", () => {
+    test("should find a minimal key for L9", () => {
+      const F = [
+        {
+          right: ["c", "s", "j", "d", "p", "q", "v"],
+          left: ["c"],
+        },
+        {
+          right: ["p"],
+          left: ["s", "d"],
+        },
+        {
+          right: ["d"],
+          left: ["p"],
+        },
+        {
+          right: ["c"],
+          left: ["j", "p"],
+        },
+        {
+          right: ["s"],
+          left: ["j"],
+        },
+      ];
+      const schema = ["c", "s", "j", "d", "p", "q", "v"];
+
+      const key = findingKeysFunctions.findFirstKey(F, schema);
+      expect(key).toEqual(["j", "p"]);
+    });
+  });
+
   describe("getAllKeys", () => {
     test("should find all candidate keys for simple case", () => {
       const FDs = [
@@ -50,6 +81,38 @@ describe("FindingKeysFunctions", () => {
       const keys = findingKeysFunctions.getAllKeys(FDs, A);
 
       expect(keys).toContainEqual(["A"]);
+    });
+  });
+
+  describe("getAllKeysL9", () => {
+    test("should find all candidate keys for L9", () => {
+      const FDs = [
+        {
+          right: ["c", "s", "j", "d", "p", "q", "v"],
+          left: ["c"],
+        },
+        {
+          right: ["p"],
+          left: ["s", "d"],
+        },
+        {
+          right: ["d"],
+          left: ["p"],
+        },
+        {
+          right: ["c"],
+          left: ["j", "p"],
+        },
+        {
+          right: ["s"],
+          left: ["j"],
+        },
+      ];
+      const A = ["c", "s", "j", "d", "p", "q", "v"];
+
+      const keys = findingKeysFunctions.getAllKeys(FDs, A);
+
+      expect(keys).toContainEqual(["j", "p"], ["c"], ["j", "d"]);
     });
   });
 });

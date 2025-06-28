@@ -23,4 +23,39 @@ describe("FPlusFunctions", () => {
       ]);
     });
   });
+
+  describe("FPlusL9", () => {
+    test("should compute F+ for L9", () => {
+      const FDs = [
+        {
+          right: ["c", "s", "j", "d", "p", "q", "v"],
+          left: ["c"],
+        },
+        {
+          right: ["p"],
+          left: ["s", "d"],
+        },
+        {
+          right: ["d"],
+          left: ["p"],
+        },
+        {
+          right: ["c"],
+          left: ["j", "p"],
+        },
+        {
+          right: ["s"],
+          left: ["j"],
+        },
+      ];
+      const attributes = ["j", "s", "v", "d"];
+
+      const fPlus = fPlusFunctions.FPlus(FDs, attributes);
+
+      expect(fPlus).toEqual([
+        { left: ["j"], right: ["s"] },
+        { left: ["j", "d"], right: ["s", "v"] },
+      ]);
+    });
+  });
 });

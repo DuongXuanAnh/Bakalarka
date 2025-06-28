@@ -11,7 +11,6 @@ import "./AlgorithmIntegration.test.js";
 
 describe("Complete Algorithm Test Suite", () => {
   test("all algorithm test files should be loaded", () => {
-    // This test ensures all test files are included in the test suite
     expect(true).toBe(true);
   });
 });

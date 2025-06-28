@@ -13,6 +13,14 @@ describe("HelperSetFunctions", () => {
     });
   });
 
+  describe("notSubset", () => {
+    test("should return true when setA is not a subset of setB", () => {
+      expect(helperSetFunctions.subset(["A", "E"], ["A", "B", "C"])).toBe(
+        false
+      );
+    });
+  });
+
   describe("onlyUnique", () => {
     test("should filter unique values from array", () => {
       const array = ["A", "B", "A", "C", "B"];
@@ -61,6 +69,21 @@ describe("HelperSetFunctions", () => {
     test("should return power set of given array", () => {
       const result = helperSetFunctions.powerSet(["A", "B"]);
       expect(result).toEqual([["A"], ["B"], ["A", "B"]]);
+    });
+  });
+
+  describe("powerSet2", () => {
+    test("should return power set of given array", () => {
+      const result = helperSetFunctions.powerSet(["A", "B", "C"]);
+      expect(result).toEqual([
+        ["A"],
+        ["B"],
+        ["C"],
+        ["A", "B"],
+        ["A", "C"],
+        ["B", "C"],
+        ["A", "B", "C"],
+      ]);
     });
   });
 });
