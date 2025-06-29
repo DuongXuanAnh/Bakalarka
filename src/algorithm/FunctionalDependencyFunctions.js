@@ -73,27 +73,24 @@ export class FunctionalDependencyFunctions {
     let minimizedFDs = [];
 
     for (let fd of FDs) {
-      let currentLHS = fd.left;
+      let currentLHS = [...fd.left];
       let currentRHS = fd.right;
 
-      // Check for trivial dependency before minimization
       if (!helperSetFunctionsInstance.subset(currentRHS, currentLHS)) {
-        // Only attempt to minimize if not a trivial FD
-
-        for (let j = 0; j < currentLHS.length; j++) {
-          // Temporarily remove the attribute
+        let j = 0;
+        while (j < currentLHS.length) {
           let tempLHS = [...currentLHS];
           tempLHS.splice(j, 1);
 
-          // Compute the closure of the temporary LHS
           let closure = attributeFunctionsInstance.attributeClosure(
             FDs,
             tempLHS
           );
 
-          // Check if the closure still contains the RHS
           if (helperSetFunctionsInstance.subset(currentRHS, closure)) {
             currentLHS = tempLHS; // The removed attribute is redundant
+          } else {
+            j++;
           }
         }
       }
