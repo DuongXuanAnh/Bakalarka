@@ -23,6 +23,30 @@ describe("MinimalCoverFunction", () => {
     });
   });
 
+  describe("minimalCover_Test_A_2023", () => {
+    test("should compute minimal cover for Test A 2023", () => {
+      const FDs = [
+        { left: ["a"], right: ["b"] },
+        { left: ["b"], right: ["a"] },
+        { left: ["c"], right: ["d"] },
+        { left: ["c", "d", "e"], right: ["a", "g"] },
+        { left: ["d"], right: ["e", "f"] },
+      ];
+
+      const minimalCover = minimalCoverFunction.minimalCover(FDs);
+
+      expect(minimalCover).toEqual([
+        { left: ["a"], right: ["b"] },
+        { left: ["b"], right: ["a"] },
+        { left: ["c"], right: ["d"] },
+        { left: ["c"], right: ["a"] },
+        { left: ["c"], right: ["g"] },
+        { left: ["d"], right: ["e"] },
+        { left: ["d"], right: ["f"] },
+      ]);
+    });
+  });
+
   describe("minimalCoverL9", () => {
     test("should compute minimal cover for L9", () => {
       const FDs = [
