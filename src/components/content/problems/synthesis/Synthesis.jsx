@@ -233,11 +233,20 @@ function Synthesis() {
 
       tablesInfo.forEach((otherTable, otherIndex) => {
         if (
-          index !== otherIndex &&
-          helperSetFunctionsInstance.subset(
-            table.attributes,
-            otherTable.attributes
-          )
+          (index < otherIndex &&
+            helperSetFunctionsInstance.subset(
+              table.attributes,
+              otherTable.attributes
+            ) &&
+            !helperSetFunctionsInstance.subset(
+              otherTable.attributes,
+              table.attributes
+            )) ||
+          (index > otherIndex &&
+            helperSetFunctionsInstance.subset(
+              table.attributes,
+              otherTable.attributes
+            ))
         ) {
           isSubset = true;
           subsetOfTableIndex = otherIndex + 1; // Uložení indexu nadřazené tabulky
