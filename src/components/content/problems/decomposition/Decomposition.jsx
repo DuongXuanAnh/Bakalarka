@@ -25,7 +25,7 @@ import { Trans, useTranslation } from "react-i18next";
 import { normalFormColor } from "../../../../constantValues/constantValues";
 import "reactflow/dist/style.css";
 import "./decomposition.scss";
-import CustomNode from "./CustomNode";
+import CustomNode, { nodeBackgroundColor }  from "./CustomNode";
 import OwnDecomposition from "./ownDecomposition/OwnDecomposition";
 import OwnDecompositionPractice from "./ownDecomposition/OwnDecompositionPractice";
 import MergeTablesAfterDecompose from "./mergeTablesAfterDecompose/MergeTablesAfterDecompose";
@@ -206,6 +206,16 @@ const Decomposition = () => {
   const [nodesArray, setNodesArray] = useState([initialNode(attributes)]);
 
   const [edgesArray, setEdgesArray] = useState([]);
+
+  // MKOP 2025/09/09 pokud se změnil practiceMode, přidej/odeber výstrahu z labelů hran
+  edgesArray.forEach((edge) => {
+    if (edge.label && practiceMode && edge.label[0]==String.fromCharCode(0x26A0)) { // MKOP 2025/09/14 Warning Sign U+26A0 (&#x26A0;)
+      edge.label = edge.label.substring(2);
+    };
+    if (edge.label && edge.lost && !practiceMode && edge.label[0]!=String.fromCharCode(0x26A0)) { // MKOP 2025/09/14 Warning Sign U+26A0 (&#x26A0;)
+      edge.label = edge.lost+edge.label;
+    };
+  });
 
   let { nodes: layoutedNodes, edges: layoutedEdges } = getLayoutedElements(
     nodesArray,
@@ -467,12 +477,39 @@ const Decomposition = () => {
 
       setNodesArray((prevNodes) => [...prevNodes, newNode1, newNode2]);
 
+      // MKOP 2025/09/09
+      // Neztratila se tímto krokem dekompozice žádná FD?
+      const newUpperFplus = fPlusFunctionsInstance.FPlus(node.data.FDs, attributes);
+      const newUpperFplusSingleRHS =
+        functionalDependencyFunctionsInstance.rewriteFDSingleRHS(newUpperFplus);
+      let newLowerFDs = [];
+      newLowerFDs.push(...newNode1.data.FDs);
+      newLowerFDs.push(...newNode2.data.FDs);
+      const newLowerFplus = fPlusFunctionsInstance.FPlus(newLowerFDs, attributes);
+      const newLowerFplusSingleRHS =
+        functionalDependencyFunctionsInstance.rewriteFDSingleRHS(newLowerFplus);
+      let lostFlag = '';
+      minimalCover.map((fd, index) => {
+        const attrUpperClosure = attributeFunctionsInstance.attributeClosure(
+          newUpperFplusSingleRHS,
+          fd.left
+        );
+        const attrLowerClosure = attributeFunctionsInstance.attributeClosure(
+          newLowerFplusSingleRHS,
+          fd.left
+        );
+        if (lostFlag=='' && !helperSetFunctionsInstance.subset(attrUpperClosure, attrLowerClosure)) {
+          lostFlag = String.fromCharCode(0x26A0)+' '; // MKOP 2025/09/14 Warning Sign U+26A0 (&#x26A0;)
+        }
+      });
+
       const newEdge1 = {
         id: newNode1.id,
         source: node.id,
         target: newNode1.id,
         type: edgeType,
         label: showFunctionsInstance.showTextDependencyWithArrow(dependency),
+        lost: lostFlag, // MKOP 2025/09/09
       };
 
       const newEdge2 = {
@@ -494,22 +531,6 @@ const Decomposition = () => {
     setIsPracticeModalOpen(false);
 
     currLeafNodesList = updatedLeafNodes;
-  };
-
-  const nodeBackgroundColor = (type, practiceMode) => {
-    if (practiceMode) {
-      return normalFormColor.practice; // White color when in practice mode
-    }
-
-    if (type === "BCNF") {
-      return normalFormColor.BCNF; // Zelená
-    } else if (type === "3") {
-      return normalFormColor["3NF"]; // Zelená
-    } else if (type === "2") {
-      return normalFormColor["2NF"]; // Oranžová
-    } else if (type === "1") {
-      return normalFormColor["1NF"]; // Červená
-    }
   };
 
   const randomDecomposition = () => {
@@ -781,6 +802,9 @@ const Decomposition = () => {
                     "practiceMode",
                     JSON.stringify(isChecked)
                   );
+                  // MKOP 2025/09/10 Zajistí překreslení grafu včetně změn v labelech hran
+                  // MKOP TODO: zároveň se udělá nový layout a ztratí se tak případné vzájemné posuny uzlů
+                  setEdgesArray((prevEdges) => [...prevEdges]);
                 }}
               />
             </label>
@@ -822,7 +846,9 @@ const Decomposition = () => {
             position="top-right"
           />
           <Controls position="top-left" />
-          {/* <Background color="#ffffff" variant="lines" gap={0} /> */}
+      {/* <Background color="#ffffff" variant="lines" gap={0} /> */}
+      {/* MKOP 2025/09/10 pokusné jednolité světle šedé pozadí grafu */}
+      {/* <Background color="#ffffff" variant="dots"  gap={1} /> */}
           <Background color="#ffffff" variant="dots" gap={14} />
         </ReactFlow>
 
@@ -1022,7 +1048,7 @@ const Decomposition = () => {
                           </button>
                         </li>
                       )}
-                    {selectedNode.data.type !== "BCNF" && (
+                    {/*selectedNode.data.type !== "BCNF" &&*/ ( // MKOP 2025/09/10 v practice módu zobraz tlačítko i pro BCNF relaci
                       <li id="dm">
                         <button
                           onClick={() => setIsModalDecompositeOwnWayOpen(true)}

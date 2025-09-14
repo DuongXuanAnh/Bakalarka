@@ -6,7 +6,8 @@ import { ShowFunctions } from "../../../../algorithm/ShowFunctions";
 
 const nodeWidth = "200px"; // Nastavení šířky
 
-const nodeBackgroundColor = (type, practiceMode) => {
+// MKOP 2025/09/11 explicitní export funkce
+export const nodeBackgroundColor = (type, practiceMode) => {
   if (practiceMode) {
     return normalFormColor.practice; // White color when in practice mode
   }
