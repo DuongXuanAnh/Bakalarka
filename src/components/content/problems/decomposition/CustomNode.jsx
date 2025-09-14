@@ -1,27 +1,12 @@
 import React, { memo } from "react";
 import { Handle, Position } from "reactflow";
-import { normalFormColor } from "../../../../constantValues/constantValues";
+import { HelperColorFunctions } from "../../../../algorithm/HelperColorFunctions";
 import { useTranslation } from "react-i18next";
 import { ShowFunctions } from "../../../../algorithm/ShowFunctions";
 
+const helperColorFunctionsInstance = new HelperColorFunctions();
+
 const nodeWidth = "200px"; // Nastavení šířky
-
-// MKOP 2025/09/11 explicitní export funkce
-export const nodeBackgroundColor = (type, practiceMode) => {
-  if (practiceMode) {
-    return normalFormColor.practice; // White color when in practice mode
-  }
-
-  if (type === "BCNF") {
-    return normalFormColor.BCNF; // Zelená
-  } else if (type === "3") {
-    return normalFormColor["3NF"]; // Zelená
-  } else if (type === "2") {
-    return normalFormColor["2NF"]; // Oranžová
-  } else if (type === "1") {
-    return normalFormColor["1NF"]; // Červená
-  }
-};
 
 export default memo(({ node, practiceMode }) => {
   const { t } = useTranslation();
@@ -39,7 +24,7 @@ export default memo(({ node, practiceMode }) => {
         display: "flex",
         flexDirection: "column",
         alignItems: "center", // Vycentrování obsahu
-        background: nodeBackgroundColor(node.data.type, practiceMode),
+        background: helperColorFunctionsInstance.nodeBackgroundColor(node.data.type, practiceMode),
         opacity: node.data.subsetOf.length > 0 ? 0.5 : 1,
         color: "#000",
       }}

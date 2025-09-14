@@ -22,10 +22,10 @@ import dagre from "dagre";
 import ReactModal from "react-modal";
 import Swal from "sweetalert2";
 import { Trans, useTranslation } from "react-i18next";
-import { normalFormColor } from "../../../../constantValues/constantValues";
+import { HelperColorFunctions } from "../../../../algorithm/HelperColorFunctions";
 import "reactflow/dist/style.css";
 import "./decomposition.scss";
-import CustomNode, { nodeBackgroundColor }  from "./CustomNode";
+import CustomNode from "./CustomNode";
 import OwnDecomposition from "./ownDecomposition/OwnDecomposition";
 import OwnDecompositionPractice from "./ownDecomposition/OwnDecompositionPractice";
 import MergeTablesAfterDecompose from "./mergeTablesAfterDecompose/MergeTablesAfterDecompose";
@@ -36,9 +36,11 @@ import { MinimalCoverFunction } from "../../../../algorithm/MinimalCoverFunction
 import { FunctionalDependencyFunctions } from "../../../../algorithm/FunctionalDependencyFunctions";
 import { FindingKeysFunctions } from "../../../../algorithm/FindingKeysFunctions";
 import { ShowFunctions } from "../../../../algorithm/ShowFunctions";
+
 const fPlusFunctionsInstance = new FPlusFunctions();
 const attributeFunctionsInstance = new AttributeFunctions();
 const helperSetFunctionsInstance = new HelperSetFunctions();
+const helperColorFunctionsInstance = new HelperColorFunctions();
 const minimalCoverFunctionInstance = new MinimalCoverFunction();
 const functionalDependencyFunctionsInstance =
   new FunctionalDependencyFunctions();
@@ -768,7 +770,7 @@ const Decomposition = () => {
                       <button
                         className="howButton"
                         style={{
-                          backgroundColor: nodeBackgroundColor(
+                          backgroundColor: helperColorFunctionsInstance.nodeBackgroundColor(
                             typeNF,
                             practiceMode
                           ),

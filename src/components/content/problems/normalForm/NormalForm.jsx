@@ -6,12 +6,13 @@ import { Trans, useTranslation } from "react-i18next";
 import Swal from "sweetalert2";
 import { useNavigate } from "react-router-dom";
 import { useLocation } from "react-router-dom";
-import { normalFormColor } from "../../../../constantValues/constantValues";
+import { HelperColorFunctions } from "../../../../algorithm/HelperColorFunctions";
 import "./normalForm.scss";
 import { FPlusFunctions } from "../../../../algorithm/FPlusFunctions";
 import { ShowFunctions } from "../../../../algorithm/ShowFunctions";
 import { FindingKeysFunctions } from "../../../../algorithm/FindingKeysFunctions";
 
+const helperColorFunctionsInstance = new HelperColorFunctions();
 const normalFormInstance = new NormalFormALG();
 const fPlusFunctionsInstance = new FPlusFunctions();
 const showFunctionsInstance = new ShowFunctions();
@@ -63,18 +64,6 @@ function NormalForm() {
         icon: "warning",
         text: t("problem-normalForm.chooseAtleastOneAttribute"),
       });
-    }
-  };
-
-  const resultBackgroundColor = (type) => {
-    if (type == "BCNF") {
-      return normalFormColor.BCNF;
-    } else if (type == "3") {
-      return normalFormColor["3NF"];
-    } else if (type == "2") {
-      return normalFormColor["2NF"];
-    } else {
-      return normalFormColor["1NF"];
     }
   };
 
@@ -176,7 +165,7 @@ function NormalForm() {
         <div
           className="resultArea"
           style={{
-            backgroundColor: resultBackgroundColor(result.normalFormInfo.type),
+            backgroundColor: helperColorFunctionsInstance.nodeBackgroundColor(result.normalFormInfo.type, false),
           }}
         >
           <h2>{t("problem-normalForm.result")}</h2>

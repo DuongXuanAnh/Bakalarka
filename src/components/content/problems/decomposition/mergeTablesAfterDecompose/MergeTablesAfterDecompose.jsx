@@ -4,7 +4,7 @@ import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
 import { useAttributeContext } from "../../../../../contexts/AttributeContext";
 import { useDependencyContext } from "../../../../../contexts/DependencyContext";
 import Swal from "sweetalert2";
-import { normalFormColor } from "../../../../../constantValues/constantValues";
+import { HelperColorFunctions } from "../../../../../algorithm/HelperColorFunctions";
 import { useTranslation } from "react-i18next";
 import "./mergeTablesAfterDecompose.scss";
 import { FPlusFunctions } from "../../../../../algorithm/FPlusFunctions";
@@ -14,6 +14,7 @@ import { ShowFunctions } from "../../../../../algorithm/ShowFunctions";
 import { HelperSetFunctions } from "../../../../../algorithm/HelperSetFunctions";
 import { AttributeFunctions } from "../../../../../algorithm/AttributeFunctions";
 
+const helperColorFunctionsInstance = new HelperColorFunctions();
 const fPlusFunctionsInstance = new FPlusFunctions();
 const functionalDependencyFunctionsInstance =
   new FunctionalDependencyFunctions();
@@ -253,22 +254,6 @@ function MergeTablesAfterDecompose({ tables, originKeys, lostFDs }) {
     setLostFDsInfo(newLostFDs);
   };
 
-  const tableBackgroundColor = (type, practiceMode) => {
-    if (practiceMode) {
-      return normalFormColor.practice; // White color when in practice mode
-    }
-
-    if (type === "BCNF") {
-      return normalFormColor.BCNF;
-    } else if (type === "3") {
-      return normalFormColor["3NF"];
-    } else if (type === "2") {
-      return normalFormColor["2NF"];
-    } else {
-      return normalFormColor["1NF"];
-    }
-  };
-
   // Přidání logiky pro označení nadbytečných tabulek
   const markRedundantTables = () => {
     return tablesInfo.map((table, index) => {
@@ -343,7 +328,7 @@ function MergeTablesAfterDecompose({ tables, originKeys, lostFDs }) {
                             index === draggingOverIndex &&
                             index !== draggingItemIndex
                               ? "#ccc"
-                              : tableBackgroundColor(
+                              : helperColorFunctionsInstance.nodeBackgroundColor(
                                   table.data.type,
                                   false /*practiceMode*/
                                 ),
@@ -408,7 +393,7 @@ function MergeTablesAfterDecompose({ tables, originKeys, lostFDs }) {
                     <button
                       className="addButton"
                       style={{
-                        backgroundColor: tableBackgroundColor(
+                        backgroundColor: helperColorFunctionsInstance.nodeBackgroundColor(
                           typeNF,
                           false /*practiceMode*/
                         ),

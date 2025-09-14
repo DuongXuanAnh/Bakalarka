@@ -5,7 +5,7 @@ import { useDependencyContext } from "../../../../contexts/DependencyContext";
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
 import Swal from "sweetalert2";
 import ReactModal from "react-modal";
-import { normalFormColor } from "../../../../constantValues/constantValues";
+import { HelperColorFunctions } from "../../../../algorithm/HelperColorFunctions";
 import { useTranslation } from "react-i18next";
 import "./synthesis.scss";
 import { FunctionalDependencyFunctions } from "../../../../algorithm/FunctionalDependencyFunctions";
@@ -15,6 +15,7 @@ import { FPlusFunctions } from "../../../../algorithm/FPlusFunctions";
 import { ShowFunctions } from "../../../../algorithm/ShowFunctions";
 import { FindingKeysFunctions } from "../../../../algorithm/FindingKeysFunctions";
 
+const helperColorFunctionsInstance = new HelperColorFunctions();
 const functionalDependencyFunctionsInstance =
   new FunctionalDependencyFunctions();
 const attributeFunctionsInstance = new AttributeFunctions();
@@ -263,18 +264,6 @@ function Synthesis() {
 
   const enrichedTablesInfo = markRedundantTables();
 
-  const tableBackgroundColor = (type) => {
-    if (type === "BCNF") {
-      return normalFormColor.BCNF;
-    } else if (type === "3") {
-      return normalFormColor["3NF"];
-    } else if (type === "2") {
-      return normalFormColor["2NF"];
-    } else {
-      return normalFormColor["1NF"];
-    }
-  };
-
   const showInformationModal = (table) => {
     setIsModalOpen(true);
     setModalContent(table);
@@ -492,7 +481,7 @@ function Synthesis() {
                               index === draggingOverIndex &&
                               index !== draggingItemIndex
                                 ? "#ccc"
-                                : tableBackgroundColor(table.normalForm.type),
+                                : helperColorFunctionsInstance.nodeBackgroundColor(table.normalForm.type, false),
                             border: "1px solid #ddd",
                             ...provided.draggableProps.style,
                             transform: snapshot.isDragging
@@ -544,7 +533,7 @@ function Synthesis() {
                         userSelect: "none",
                         padding: 16,
                         margin: "0 0 8px 0",
-                        backgroundColor: tableBackgroundColor("BCNF"),
+                        backgroundColor: helperColorFunctionsInstance.nodeBackgroundColor("BCNF", false),
                         border: "1px solid #ddd",
                         transform: "none",
                       }}
