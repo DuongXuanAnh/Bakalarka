@@ -291,10 +291,6 @@ const Decomposition = () => {
   }, [currLeafNodesList]);
 
   const highlightSubsetNodes = () => {
-    // Helper function to check if set1 and set2 are identical
-    function areSetsEqual(set1, set2) {
-      return JSON.stringify(set1) === JSON.stringify(set2);
-    }
 
     currLeafNodesList.forEach((node, i) => {
       node.data.subsetOf = [];
@@ -315,16 +311,14 @@ const Decomposition = () => {
           const attr2 = node2.data.originalAttr;
 
           if (
-            helperSetFunctionsInstance.subset(attr1, attr2) &&
-            helperSetFunctionsInstance.subset(attr2, attr1)
+            helperSetFunctionsInstance.isEqual(attr1, attr2)
           ) {
             sameNodesNotSubSetOther.push(node1);
           }
 
           // Check if node1 is a strict subset of node2
           if (
-            helperSetFunctionsInstance.subset(attr1, attr2) &&
-            !areSetsEqual(attr1, attr2)
+            helperSetFunctionsInstance.subsetNEQ(attr1, attr2)
           ) {
             node1.data.subsetOf.push(attr2);
             sameNodesNotSubSetOther = [];

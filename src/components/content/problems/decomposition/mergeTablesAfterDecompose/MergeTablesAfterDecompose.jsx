@@ -262,17 +262,10 @@ function MergeTablesAfterDecompose({ tables, originKeys, lostFDs }) {
       let maxLength = 0;
 
       tablesInfo.forEach((otherTable, otherIndex) => {
-        if (
-          index !== otherIndex &&
-          helperSetFunctionsInstance.subset(
-            table.data.originalAttr,
-            otherTable.data.originalAttr
-          ) &&
-          (!helperSetFunctionsInstance.subset(
-            otherTable.data.originalAttr,
-            table.data.originalAttr
-          ) ||
-            index > otherIndex)
+        if ( helperSetFunctionsInstance.isRedundant(
+               table.data.originalAttr, index,
+               otherTable.data.originalAttr, otherIndex
+               )   
         ) {
           isSubset = true;
           const length = otherTable.data.originalAttr.length;
