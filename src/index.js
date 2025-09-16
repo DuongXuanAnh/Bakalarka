@@ -6,11 +6,16 @@ import App from './App';
 import Modal from 'react-modal';
 import './i18n';
 
+import { HelperColorFunctions } from "./algorithm/HelperColorFunctions";
+
+const helperColorFunctionsInstance = new HelperColorFunctions();
+
 Modal.setAppElement('#root');
 
 
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
+document.body.style.backgroundColor = helperColorFunctionsInstance.uiSkinProperty('Background');
 root.render(
       <React.Suspense fallback="loading">
             <App />

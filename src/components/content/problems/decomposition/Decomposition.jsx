@@ -845,7 +845,11 @@ const Decomposition = () => {
       {/* <Background color="#ffffff" variant="lines" gap={0} /> */}
       {/* MKOP 2025/09/10 pokusné jednolité světle šedé pozadí grafu */}
       {/* <Background color="#ffffff" variant="dots"  gap={1} /> */}
-          <Background color="#ffffff" variant="dots" gap={14} />
+      {/* <Background color="#ffffff" variant="dots" gap={14} /> */}
+          <Background
+            color={helperColorFunctionsInstance.uiSkinProperty("ReactFlowColor")} 
+            variant={helperColorFunctionsInstance.uiSkinProperty("ReactFlowVariant")}
+            gap={helperColorFunctionsInstance.uiSkinProperty("ReactFlowGap")} />
         </ReactFlow>
 
         <ReactModal

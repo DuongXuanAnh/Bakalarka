@@ -1,12 +1,13 @@
 // MKOP Coloring the application
 // 2025/09/14 function nodeBackgroundColor
 
-import { normalFormColor } from "../constantValues/constantValues";
+import { normalFormColor, applicationSkins } from "../constantValues/constantValues";
 
 export class HelperColorFunctions {
   constructor() {
     // Helper color functions
     this.nodeBackgroundColor = this.nodeBackgroundColor.bind(this);
+    this.uiSkinProperty = this.uiSkinProperty.bind(this);
   }
 
   // Assign background color according to NF of the relation 
@@ -24,6 +25,15 @@ export class HelperColorFunctions {
     } else if (type === "1") {
       return normalFormColor["1NF"];   // Red for 1NF
     }
+  }
+  
+  // Assign color from given palette
+  uiSkinProperty(featureName, skinName = applicationSkins["CurrentSkin"]) {
+    let property = applicationSkins[skinName][featureName];
+    while (property.toString() && property.toString().substring(0,2) == "=>") {
+      property = applicationSkins[skinName][property.toString().substring(2)]
+    }
+    return property
   }
   
 }

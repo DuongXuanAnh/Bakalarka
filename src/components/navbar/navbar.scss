@@ -5,25 +5,25 @@ body {
   
   .topnav {
     overflow: hidden;
-    background-color: #575757;
+  //background-color: #575757; // MKOP 2025/09/16 controlled by palette settings
   
     a {
       float: left;
       display: block;
-      color: #f2f2f2;
+    //color: #f2f2f2; // MKOP 2025/09/16 controlled by palette settings
       text-align: center;
       padding: 14px 16px;
       text-decoration: none;
       font-size: 17px;
   
       &:hover {
-        background-color: #ddd;
-        color: black;
+      //background-color: #ddd; // MKOP 2025/09/16 controlled by palette settings
+      //color: black; // MKOP 2025/09/16 controlled by palette settings
       }
   
       &.active {
-        background-color: #3F3B6A;
-        color: white;
+      //background-color: #3F3B6A; // MKOP 2025/09/16 controlled by palette settings
+      //color: white; // MKOP 2025/09/16 controlled by palette settings
       }
   
       &.icon {
