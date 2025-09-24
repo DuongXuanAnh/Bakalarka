@@ -264,15 +264,16 @@ const Decomposition = () => {
         leafNodesFDs.push(...leafNode.data.FDs);
       });
 
-      const newFplus = fPlusFunctionsInstance.FPlus(leafNodesFDs, attributes);
-      const newFplusSingleRHS =
-        functionalDependencyFunctionsInstance.rewriteFDSingleRHS(newFplus);
+//    const newFplus = fPlusFunctionsInstance.FPlus(leafNodesFDs, attributes);
+//    const newFplusSingleRHS =
+//      functionalDependencyFunctionsInstance.rewriteFDSingleRHS(newFplus);
 
       const lostFDsList = [];
       // fPlusOriginSingleRHS pokud chci i ztraccene odvozené závislosti
       minimalCover.map((fd, index) => {
         const attrClosure = attributeFunctionsInstance.attributeClosure(
-          newFplusSingleRHS,
+//        newFplusSingleRHS,
+          leafNodesFDs, // MKOP 2025/09/23 canonical Fplus is not needed, attributeClosure will be the same 
           fd.left
         );
         if (!attrClosure.includes(fd.right[0])) {
@@ -481,20 +482,17 @@ const Decomposition = () => {
       let newLowerFDs = [];
       newLowerFDs.push(...newNode1.data.FDs);
       newLowerFDs.push(...newNode2.data.FDs);
-      const newLowerFplus = fPlusFunctionsInstance.FPlus(newLowerFDs, attributes);
-      const newLowerFplusSingleRHS =
-        functionalDependencyFunctionsInstance.rewriteFDSingleRHS(newLowerFplus);
+    //const newLowerFplus = fPlusFunctionsInstance.FPlus(newLowerFDs, attributes);
+    //const newLowerFplusSingleRHS =
+    //  functionalDependencyFunctionsInstance.rewriteFDSingleRHS(newLowerFplus);
       let lostFlag = '';
-      minimalCover.map((fd, index) => {
-        const attrUpperClosure = attributeFunctionsInstance.attributeClosure(
-          newUpperFplusSingleRHS,
-          fd.left
-        );
+      newUpperFplusSingleRHS.map((fd, index) => {
         const attrLowerClosure = attributeFunctionsInstance.attributeClosure(
-          newLowerFplusSingleRHS,
+        //newLowerFplusSingleRHS,
+          newLowerFDs,
           fd.left
         );
-        if (lostFlag=='' && !helperSetFunctionsInstance.subset(attrUpperClosure, attrLowerClosure)) {
+        if (!attrLowerClosure.includes(fd.right[0])) {
           lostFlag = String.fromCharCode(0x26A0)+' '; // MKOP 2025/09/14 Warning Sign U+26A0 (&#x26A0;)
         }
       });
