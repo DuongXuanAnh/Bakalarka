@@ -264,32 +264,13 @@ const Decomposition = () => {
         leafNodesFDs.push(...leafNode.data.FDs);
       });
 
-  //  const newFplus = fPlusFunctionsInstance.FPlus(leafNodesFDs, attributes);
-  //  const newFplusSingleRHS =
-  //    functionalDependencyFunctionsInstance.rewriteFDSingleRHS(newFplus);
-
-      const lostFDsList = [];
-      // fPlusOriginSingleRHS pokud chci i ztraccene odvozené závislosti
-      minimalCover.map((fd, index) => {
-//      const attrClosure = attributeFunctionsInstance.attributeClosure(
-////      newFplusSingleRHS,
-//        leafNodesFDs, // MKOP 2025/09/23 canonical Fplus is not needed, attributeClosure will be the same 
-//        fd.left
-//      );
-//      if (!attrClosure.includes(fd.right[0])) {
-//        lostFDsList.push(fd);
-//      }
-        // MKOP 2025/09/24 would work even for non-canonical FDs fd.left->fd.right
-        if (!functionalDependencyFunctionsInstance.isDependencyInClosure(
-               leafNodesFDs,
-               fd.left,
-               fd.right
-               ) {
-          lostFDsList.push(fd);
-        }
-      });
-
-      setLostFDs(lostFDsList);
+      setLostFDs(
+        functionalDependencyFunctionsInstance.lostFDs(
+          minimalCover, // original FDs // MKOP 2025/09/24 would work even for non-canonical set of FDs
+          leafNodesFDs  // new FDs - some original FDs may be not derivable from them any more
+          // MKOP 2025/09/23 canonical Fplus is not needed, attributeClosure will be the same
+          )
+        );
     }
 
     currLeafNodesList.forEach((node, i) => {
@@ -484,35 +465,18 @@ const Decomposition = () => {
 
       // MKOP 2025/09/09
       // Neztratila se tímto krokem dekompozice žádná FD?
-//    const newUpperFplus = fPlusFunctionsInstance.FPlus(node.data.FDs, attributes);
-//    const newUpperFplusSingleRHS =
-//      functionalDependencyFunctionsInstance.rewriteFDSingleRHS(newUpperFplus);
       let newLowerFDs = [];
       newLowerFDs.push(...newNode1.data.FDs);
       newLowerFDs.push(...newNode2.data.FDs);
-    //const newLowerFplus = fPlusFunctionsInstance.FPlus(newLowerFDs, attributes);
-    //const newLowerFplusSingleRHS =
-    //  functionalDependencyFunctionsInstance.rewriteFDSingleRHS(newLowerFplus);
+      
       let lostFlag = '';
-//    newUpperFplusSingleRHS.map((fd, index) => {
-      node.data.FDs.map((fd, index) => {
-//      const attrLowerClosure = attributeFunctionsInstance.attributeClosure(
-//      //newLowerFplusSingleRHS,
-//        newLowerFDs,
-//        fd.left
-//      );
-//      if (!attrLowerClosure.includes(fd.right[0])) {
-//        lostFlag = String.fromCharCode(0x26A0)+' '; // MKOP 2025/09/14 Warning Sign U+26A0 (&#x26A0;)
-//      }
-        // MKOP 2025/09/24 works even for non-canonical FDs fd.left->fd.right
-        if (!functionalDependencyFunctionsInstance.isDependencyInClosure(
-               newLowerFDs,
-               fd.left,
-               fd.right
-               ) {
-          lostFlag = String.fromCharCode(0x26A0)+' '; // MKOP 2025/09/14 Warning Sign U+26A0 (&#x26A0;)
-        }
-      });
+      if (functionalDependencyFunctionsInstance.lostFDs(
+            node.data.FDs, // original FDs from parent node // MKOP 2025/09/24 works even for non-canonical set of FDs
+            newLowerFDs // new FDs from its children
+            ).length > 0
+        ) {
+        lostFlag = String.fromCharCode(0x26A0)+' '; // MKOP 2025/09/14 Warning Sign U+26A0 (&#x26A0;)
+      }
 
       const newEdge1 = {
         id: newNode1.id,

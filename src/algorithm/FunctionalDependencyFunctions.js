@@ -8,6 +8,7 @@ export class FunctionalDependencyFunctions {
   constructor() {
     // FD algorithm
     this.isDependencyInClosure = this.isDependencyInClosure.bind(this);
+    this.lostDependencies = this.lostDependencies.bind(this);
     this.getReducedAttributes = this.getReducedAttributes.bind(this);
     this.rewriteFDSingleRHS = this.rewriteFDSingleRHS.bind(this);
     this.removeTrivialFDs = this.removeTrivialFDs.bind(this);
@@ -34,6 +35,27 @@ export class FunctionalDependencyFunctions {
     );
   }
 
+  // Find and return dependencies from originalFDs
+  // that cannot be derived from newFDs   
+  lostDependencies(
+    originalFDs, // set of original FDs
+    newFDs // some dependencies in originalFDs can be underivable from these FDs
+    ) {
+    let lostFDs = [];
+    
+      originalFDs.map((fd, index) => {
+        // MKOP 2025/09/24 works even for non-canonical FDs fd.left->fd.right
+        if (!this.isDependencyInClosure(
+               newFDs,
+               fd.left,
+               fd.right
+               )) {
+          lostFDs.push(fd);
+        }
+      });
+    return lostFDs; 
+  }
+  
   getReducedAttributes(FDs, X, Y) {
     let XPrime = [...X]; // X’ := X;
     for (let a of X) {
