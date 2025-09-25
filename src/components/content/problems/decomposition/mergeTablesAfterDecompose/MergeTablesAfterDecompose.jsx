@@ -145,20 +145,28 @@ function MergeTablesAfterDecompose({ tables, originKeys, lostFDs }) {
           newTablesInfo.forEach((table) => {
             tablesFDs.push(...table.data.FDs);
           });
-          const newFplus = fPlusFunctionsInstance.FPlus(tablesFDs, attributes);
-          const newFplusSingleRHS =
-            functionalDependencyFunctionsInstance.rewriteFDSingleRHS(newFplus);
-          let newLostFDs = [...lostFDsInfo];
-          newLostFDs.forEach((fd) => {
-            const attrClosure = attributeFunctionsInstance.attributeClosure(
-              newFplusSingleRHS,
-              fd.left
+//        const newFplus = fPlusFunctionsInstance.FPlus(tablesFDs, attributes);
+//        const newFplusSingleRHS =
+//          functionalDependencyFunctionsInstance.rewriteFDSingleRHS(newFplus);
+//        let newLostFDs = [...lostFDsInfo];
+//        newLostFDs.forEach((fd) => {
+//          const attrClosure = attributeFunctionsInstance.attributeClosure(
+//            newFplusSingleRHS,
+//            fd.left
+//          );
+//          if (attrClosure.includes(fd.right[0])) {
+//            newLostFDs = newLostFDs.filter((item) => item !== fd);
+//          }
+//        });
+//        setLostFDsInfo(newLostFDs);
+          
+          setLostFDs(
+            functionalDependencyFunctionsInstance.lostFDs(
+              lostFDsInfo, // previously lost FDs // MKOP 2025/10/02 would work even for non-canonical set of FDs
+              tablesFDs  // new FDs - some originaly FDs may be derivable now and some are still lost
+              // MKOP 2025/09/23 canonical Fplus is not needed, attributeClosure will be the same
+              )
             );
-            if (attrClosure.includes(fd.right[0])) {
-              newLostFDs = newLostFDs.filter((item) => item !== fd);
-            }
-          });
-          setLostFDsInfo(newLostFDs);
 
           Swal.fire({
             icon: "success",
@@ -238,20 +246,28 @@ function MergeTablesAfterDecompose({ tables, originKeys, lostFDs }) {
     newTablesInfo.forEach((table) => {
       tablesFDs.push(...table.data.FDs);
     });
-    const newFplus = fPlusFunctionsInstance.FPlus(tablesFDs, attributes);
-    const newFplusSingleRHS =
-      functionalDependencyFunctionsInstance.rewriteFDSingleRHS(newFplus);
-    let newLostFDs = [...lostFDsInfo];
-    newLostFDs.forEach((fd) => {
-      const attrClosure = attributeFunctionsInstance.attributeClosure(
-        newFplusSingleRHS,
-        fd.left
+//  const newFplus = fPlusFunctionsInstance.FPlus(tablesFDs, attributes);
+//  const newFplusSingleRHS =
+//    functionalDependencyFunctionsInstance.rewriteFDSingleRHS(newFplus);
+//  let newLostFDs = [...lostFDsInfo];
+//  newLostFDs.forEach((fd) => {
+//    const attrClosure = attributeFunctionsInstance.attributeClosure(
+//      newFplusSingleRHS,
+//      fd.left
+//    );
+//    if (attrClosure.includes(fd.right[0])) {
+//      newLostFDs = newLostFDs.filter((item) => item !== fd);
+//    }
+//  });
+//  setLostFDsInfo(newLostFDs);
+
+    setLostFDs(
+      functionalDependencyFunctionsInstance.lostFDs(
+        lostFDsInfo, // previously lost FDs // MKOP 2025/10/02 would work even for non-canonical set of FDs
+        tablesFDs  // new FDs - some originaly FDs may be derivable now and some are still lost
+        // MKOP 2025/09/23 canonical Fplus is not needed, attributeClosure will be the same
+        )
       );
-      if (attrClosure.includes(fd.right[0])) {
-        newLostFDs = newLostFDs.filter((item) => item !== fd);
-      }
-    });
-    setLostFDsInfo(newLostFDs);
   };
 
   // Přidání logiky pro označení nadbytečných tabulek
