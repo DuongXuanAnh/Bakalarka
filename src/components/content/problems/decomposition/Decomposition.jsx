@@ -265,7 +265,7 @@ const Decomposition = () => {
       });
 
       setLostFDs(
-        functionalDependencyFunctionsInstance.lostFDs(
+        functionalDependencyFunctionsInstance.lostDependencies(
           minimalCover, // original FDs // MKOP 2025/09/24 would work even for non-canonical set of FDs
           leafNodesFDs  // new FDs - some original FDs may be not derivable from them any more
           // MKOP 2025/09/23 canonical Fplus is not needed, attributeClosure will be the same
@@ -470,7 +470,7 @@ const Decomposition = () => {
       newLowerFDs.push(...newNode2.data.FDs);
       
       let lostFlag = '';
-      if (functionalDependencyFunctionsInstance.lostFDs(
+      if (functionalDependencyFunctionsInstance.lostDependencies(
             node.data.FDs, // original FDs from parent node // MKOP 2025/09/24 works even for non-canonical set of FDs
             newLowerFDs // new FDs from its children
             ).length > 0

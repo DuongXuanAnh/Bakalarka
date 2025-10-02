@@ -160,8 +160,8 @@ function MergeTablesAfterDecompose({ tables, originKeys, lostFDs }) {
 //        });
 //        setLostFDsInfo(newLostFDs);
           
-          setLostFDs(
-            functionalDependencyFunctionsInstance.lostFDs(
+          setLostFDsInfo(
+            functionalDependencyFunctionsInstance.lostDependencies(
               lostFDsInfo, // previously lost FDs // MKOP 2025/10/02 would work even for non-canonical set of FDs
               tablesFDs  // new FDs - some originaly FDs may be derivable now and some are still lost
               // MKOP 2025/09/23 canonical Fplus is not needed, attributeClosure will be the same
@@ -261,8 +261,8 @@ function MergeTablesAfterDecompose({ tables, originKeys, lostFDs }) {
 //  });
 //  setLostFDsInfo(newLostFDs);
 
-    setLostFDs(
-      functionalDependencyFunctionsInstance.lostFDs(
+    setLostFDsInfo(
+      functionalDependencyFunctionsInstance.lostDependencies(
         lostFDsInfo, // previously lost FDs // MKOP 2025/10/02 would work even for non-canonical set of FDs
         tablesFDs  // new FDs - some originaly FDs may be derivable now and some are still lost
         // MKOP 2025/09/23 canonical Fplus is not needed, attributeClosure will be the same
