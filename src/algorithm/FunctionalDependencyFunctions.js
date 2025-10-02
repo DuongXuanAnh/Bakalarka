@@ -38,7 +38,7 @@ export class FunctionalDependencyFunctions {
   // Find and return dependencies from originalFDs
   // that cannot be derived from newFDs   
   lostDependencies(
-    originalFDs, // set of original FDs
+    originalFDs, // set of original FDs, supposedly in canonical form
     newFDs // some dependencies in originalFDs can be underivable from these FDs
     ) {
     let lostFDs = [];

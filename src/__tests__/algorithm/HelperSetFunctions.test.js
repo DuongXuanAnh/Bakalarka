@@ -39,17 +39,17 @@ describe("HelperSetFunctions", () => {
     });
   });
 
-  describe('subset (["C", "B", "A"], ["A", "B", "C"])', () => {
+  describe('subsetNEQ (["C", "B", "A"], ["A", "B", "C"])', () => {
     test("should return false when setA is equal to setB", () => {
-      expect(helperSetFunctions.subset(["C", "B", "A"], ["A", "B", "C"])).toBe(
+      expect(helperSetFunctions.subsetNEQ(["C", "B", "A"], ["A", "B", "C"])).toBe(
         false
       );
     });
   });
 
-  describe('subset ["A", "E"], ["A", "B", "C"]', () => {
+  describe('subsetNEQ ["A", "E"], ["A", "B", "C"]', () => {
     test("should return false when setA is not a subset of setB", () => {
-      expect(helperSetFunctions.subset(["A", "E"], ["A", "B", "C"])).toBe(
+      expect(helperSetFunctions.subsetNEQ(["A", "E"], ["A", "B", "C"])).toBe(
         false
       );
     });
@@ -108,7 +108,7 @@ describe("HelperSetFunctions", () => {
     test("should return false, as the other is equal and follows current", () => {
       expect(
         helperSetFunctions.isRedundant(["A", "B"], 1, ["A", "B"], 2)
-      ).toBe(true);
+      ).toBe(false);
     });
   });
 

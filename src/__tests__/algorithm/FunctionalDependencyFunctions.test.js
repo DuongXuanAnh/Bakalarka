@@ -67,6 +67,54 @@ describe("FunctionalDependencyFunctions", () => {
     });
   });
 
+
+  describe("lostDependencies", () => {
+    test("should return empty set for the same sets of FDs", () => {
+      const FDs1 = [
+        { left: ["A", "B"], right: ["C"] },
+        { left: ["B", "C"], right: ["D"] },
+        { left: ["C"], right: ["A"] },
+      ];
+      const X = ["A"];
+      const Y = ["C"];
+
+      const result = fdFunctions.lostDependencies(FDs1, FDs1);
+      expect(result).toEqual([]);
+    });
+
+    test("should return empty set for removed redundant FD", () => {
+      const FDs1 = [
+        { left: ["A"], right: ["B"] },
+        { left: ["B"], right: ["C"] },
+        { left: ["A"], right: ["C"] },
+      ];
+      const FDs2 = [
+        { left: ["A"], right: ["B"] },
+        { left: ["B"], right: ["C"] },
+      ];
+
+      const result = fdFunctions.lostDependencies(FDs1, FDs2);
+      expect(result).toEqual([]);
+    });
+
+    test('should return ["B"->"C"]', () => {
+      const FDs1 = [
+        { left: ["A"], right: ["B"] },
+        { left: ["B"], right: ["C"] },
+        { left: ["C"], right: ["D"] },
+      ];
+      const FDs2 = [
+        { left: ["A"], right: ["B"] },
+        { left: ["A"], right: ["C"] },
+        { left: ["C"], right: ["D"] },
+      ];
+
+      const result = fdFunctions.lostDependencies(FDs1, FDs2);
+      expect(result).toEqual([{ left: ["B"], right: ["C"] }]);
+    });
+  });
+
+
   describe("getReducedAttributes", () => {
     test("should remove redundant attributes from left side", () => {
       const FDs = [

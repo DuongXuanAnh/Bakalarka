@@ -259,15 +259,15 @@ const Decomposition = () => {
   useEffect(() => {
     if (currLeafNodesList.length > 0) {
       setLostFDs([]);
-      let leafNodesFDs = [];
-      currLeafNodesList.forEach((leafNode) => {
-        leafNodesFDs.push(...leafNode.data.FDs);
-      });
-
+//    let leafNodesFDs = [];
+//    currLeafNodesList.forEach((leafNode) => {
+//      leafNodesFDs.push(...leafNode.data.FDs);
+//    });
+      
       setLostFDs(
         functionalDependencyFunctionsInstance.lostDependencies(
           minimalCover, // original FDs // MKOP 2025/09/24 would work even for non-canonical set of FDs
-          leafNodesFDs  // new FDs - some original FDs may be not derivable from them any more
+          currLeafNodesList.map((leafNode) => leafNode.data.FDs).flat() // leafNodesFDs  // new FDs - some original FDs may be not derivable from them any more
           // MKOP 2025/09/23 canonical Fplus is not needed, attributeClosure will be the same
           )
         );

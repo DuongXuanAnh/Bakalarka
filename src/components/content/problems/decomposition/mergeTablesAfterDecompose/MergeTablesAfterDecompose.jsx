@@ -141,10 +141,11 @@ function MergeTablesAfterDecompose({ tables, originKeys, lostFDs }) {
           newTablesInfo.splice(source.index, 1);
           setTablesInfo(newTablesInfo);
 
-          let tablesFDs = [];
-          newTablesInfo.forEach((table) => {
-            tablesFDs.push(...table.data.FDs);
-          });
+//        let tablesFDs = [];
+//        newTablesInfo.forEach((table) => {
+//          tablesFDs.push(...table.data.FDs);
+//        });
+          
 //        const newFplus = fPlusFunctionsInstance.FPlus(tablesFDs, attributes);
 //        const newFplusSingleRHS =
 //          functionalDependencyFunctionsInstance.rewriteFDSingleRHS(newFplus);
@@ -163,7 +164,7 @@ function MergeTablesAfterDecompose({ tables, originKeys, lostFDs }) {
           setLostFDsInfo(
             functionalDependencyFunctionsInstance.lostDependencies(
               lostFDsInfo, // previously lost FDs // MKOP 2025/10/02 would work even for non-canonical set of FDs
-              tablesFDs  // new FDs - some originaly FDs may be derivable now and some are still lost
+              newTablesInfo.map((table) => table.data.FDs).flat() // tablesFDs  // new FDs - some originaly FDs may be derivable now and some are still lost
               // MKOP 2025/09/23 canonical Fplus is not needed, attributeClosure will be the same
               )
             );
@@ -242,10 +243,11 @@ function MergeTablesAfterDecompose({ tables, originKeys, lostFDs }) {
     newTablesInfo.push(newNode);
     setTablesInfo(newTablesInfo);
 
-    let tablesFDs = [];
-    newTablesInfo.forEach((table) => {
-      tablesFDs.push(...table.data.FDs);
-    });
+//  let tablesFDs = [];
+//  newTablesInfo.forEach((table) => {
+//    tablesFDs.push(...table.data.FDs);
+//  });
+    
 //  const newFplus = fPlusFunctionsInstance.FPlus(tablesFDs, attributes);
 //  const newFplusSingleRHS =
 //    functionalDependencyFunctionsInstance.rewriteFDSingleRHS(newFplus);
@@ -264,7 +266,7 @@ function MergeTablesAfterDecompose({ tables, originKeys, lostFDs }) {
     setLostFDsInfo(
       functionalDependencyFunctionsInstance.lostDependencies(
         lostFDsInfo, // previously lost FDs // MKOP 2025/10/02 would work even for non-canonical set of FDs
-        tablesFDs  // new FDs - some originaly FDs may be derivable now and some are still lost
+        newTablesInfo.map((table) => table.data.FDs).flat() // tablesFDs  // new FDs - some originaly FDs may be derivable now and some are still lost
         // MKOP 2025/09/23 canonical Fplus is not needed, attributeClosure will be the same
         )
       );
