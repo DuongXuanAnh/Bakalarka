@@ -227,26 +227,43 @@ function Synthesis() {
   }, [rewrittenFDs]);
 
   // Přidání logiky pro označení nadbytečných tabulek
+  // MKOP 2025/10/03 united with the code in MergeTablesAfterDecomose.jsx
   const markRedundantTables = () => {
     return tablesInfo.map((table, index) => {
       let isSubset = false;
       let subsetOfTableIndex = null;
+      let longestSubsets = [];
+      let maxLength = 0;
 
       tablesInfo.forEach((otherTable, otherIndex) => {
+        const tableAttributes = (table.hasOwnProperty("data") ? table.data.originalAttr : table.attributes);
+        const otherAttributes = (otherTable.hasOwnProperty("data") ? otherTable.data.originalAttr : otherTable.attributes);
         if ( helperSetFunctionsInstance.isRedundant(
-               table.attributes, index,
-               otherTable.attributes, otherIndex
+               tableAttributes, index,
+               otherAttributes, otherIndex
                )
         ) {
           isSubset = true;
+          // MKOP 2025/10/03 Synthesis uses index
           subsetOfTableIndex = otherIndex + 1; // Uložení indexu nadřazené tabulky
+          // MKOP 2025/10/03 Decomposition uses longestSubsets array
+          const length = otherAttributes.length;
+          if (length > maxLength) {
+            maxLength = length;
+            longestSubsets = [otherAttributes];
+          } else if (length === maxLength) {
+            longestSubsets.push(otherAttributes);
+          }
         }
       });
 
       return {
         ...table,
         isSubset,
+        // MKOP 2025/10/03 Synthesis uses index
         subsetOfTableIndex,
+        // MKOP 2025/10/03 Decomposition uses longestSubsets array
+        subsetOf: longestSubsets,
       };
     });
   };
