@@ -282,48 +282,90 @@ const Decomposition = () => {
 
   const highlightSubsetNodes = () => {
 
-    currLeafNodesList.forEach((node, i) => {
-      node.data.subsetOf = [];
+//  currLeafNodesList.forEach((node, i) => {
+//    node.data.subsetOf = [];
+//  });
+//
+//  let sameNodesNotSubSetOther = [];
+//
+//  currLeafNodesList.forEach((node1, i) => {
+//    currLeafNodesList.forEach((node2, j) => {
+//      // Skip same node or identical attributes
+//      if (
+//        i !== j &&
+//        node1.id !== node2.id &&
+//        node1.data.type == "BCNF" &&
+//        node2.data.type == "BCNF"
+//      ) {
+//        const attr1 = node1.data.originalAttr;
+//        const attr2 = node2.data.originalAttr;
+//
+//        if (
+//          helperSetFunctionsInstance.isEqual(attr1, attr2)
+//        ) {
+//          sameNodesNotSubSetOther.push(node1);
+//        }
+//
+//        // Check if node1 is a strict subset of node2
+//        if (
+//          helperSetFunctionsInstance.subsetNEQ(attr1, attr2)
+//        ) {
+//          node1.data.subsetOf.push(attr2);
+//          sameNodesNotSubSetOther = [];
+//        }
+//      }
+//    });
+//
+//  if (sameNodesNotSubSetOther.length > 0) {
+//    for (let i = 0; i < sameNodesNotSubSetOther.length - 1; i++) {
+//      sameNodesNotSubSetOther[i].data.subsetOf.push(
+//        sameNodesNotSubSetOther[i].data.originalAttr
+//      );
+//    }
+//  }
+
+    // MKOP 2025/10/04 Rewritten to match to Synthesis code as much as possible
+    // MKOP Assignment to unify name of table collection
+    const tablesInfo = currLeafNodesList;
+
+    tablesInfo.forEach((table, index) => {
+      table.data.subsetOf = [];
     });
 
-    let sameNodesNotSubSetOther = [];
+    tablesInfo.forEach((table, index) => {
+      let isSubset = false;
+      let subsetOfTableIndex = null;
+      let longestSubsets = [];
+      let maxLength = 0;
 
-    currLeafNodesList.forEach((node1, i) => {
-      currLeafNodesList.forEach((node2, j) => {
-        // Skip same node or identical attributes
-        if (
-          i !== j &&
-          node1.id !== node2.id &&
-          node1.data.type == "BCNF" &&
-          node2.data.type == "BCNF"
+      tablesInfo.forEach((otherTable, otherIndex) => {
+        // Skip non-BCNF tables
+      //if (table.data.type != "BCNF" || otherTable.data.type != "BCNF") return;
+        
+        const tableAttributes = (table.hasOwnProperty("data") ? table.data.originalAttr : table.attributes);
+        const otherAttributes = (otherTable.hasOwnProperty("data") ? otherTable.data.originalAttr : otherTable.attributes);
+        if ( helperSetFunctionsInstance.isRedundant(
+               tableAttributes, index,
+               otherAttributes, otherIndex
+               )
         ) {
-          const attr1 = node1.data.originalAttr;
-          const attr2 = node2.data.originalAttr;
-
-          if (
-            helperSetFunctionsInstance.isEqual(attr1, attr2)
-          ) {
-            sameNodesNotSubSetOther.push(node1);
-          }
-
-          // Check if node1 is a strict subset of node2
-          if (
-            helperSetFunctionsInstance.subsetNEQ(attr1, attr2)
-          ) {
-            node1.data.subsetOf.push(attr2);
-            sameNodesNotSubSetOther = [];
+          isSubset = true;
+          // MKOP 2025/10/03 Synthesis uses index
+          subsetOfTableIndex = otherIndex + 1; // Uložení indexu nadřazené tabulky
+          // MKOP 2025/10/03 Decomposition uses longestSubsets array
+          const length = otherAttributes.length;
+          if (length > maxLength) {
+            maxLength = length;
+            longestSubsets = [otherAttributes];
+          } else if (length === maxLength) {
+            longestSubsets.push(otherAttributes);
           }
         }
       });
-    });
+      
+      table.data.subsetOf = longestSubsets; 
 
-    if (sameNodesNotSubSetOther.length > 0) {
-      for (let i = 0; i < sameNodesNotSubSetOther.length - 1; i++) {
-        sameNodesNotSubSetOther[i].data.subsetOf.push(
-          sameNodesNotSubSetOther[i].data.originalAttr
-        );
-      }
-    }
+    });
   };
 
   useEffect(() => {
