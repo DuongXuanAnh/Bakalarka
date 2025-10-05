@@ -340,7 +340,7 @@ const Decomposition = () => {
 
       tablesInfo.forEach((otherTable, otherIndex) => {
         // Skip non-BCNF tables
-      //if (table.data.type != "BCNF" || otherTable.data.type != "BCNF") return;
+        if (table.data.type != "BCNF" || otherTable.data.type != "BCNF") return;
         
         const tableAttributes = (table.hasOwnProperty("data") ? table.data.originalAttr : table.attributes);
         const otherAttributes = (otherTable.hasOwnProperty("data") ? otherTable.data.originalAttr : otherTable.attributes);

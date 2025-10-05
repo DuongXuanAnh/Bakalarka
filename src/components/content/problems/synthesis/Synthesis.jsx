@@ -40,12 +40,14 @@ function Synthesis() {
   const [tablesInfo, setTablesInfo] = useState([
     {
       id: "",
-      attributes: [],
-      keys: [],
-      FDs: [],
-      normalForm: {
-        type: "",
-        faultyDependencies: [],
+      isSubset: false,       // MKOP newly initialized
+      subsetOf: [],          // MKOP new
+      data: {
+        attributes: [],      // MKOP moved to data
+        FDs: [],             // MKOP moved to data
+        keys: [],            // MKOP moved to data
+        normalForm: "",      // MKOP moved to data from normalForm.type        
+        faultyFDs: [],       // MKOP moved to data from normalForm.faultyDependencies
       },
     },
   ]);
@@ -63,11 +65,15 @@ function Synthesis() {
   };
 
   const [modalContent, setModalContent] = useState({
-    keys: [],
-    FDs: [],
-    normalForm: {
-      type: "",
-      faultyDependencies: [],
+  //id: "",
+  //isSubset: false,       // MKOP newly initialized
+  //subsetOf: [],          // MKOP new
+    data: {
+  //  attributes: [],      // MKOP moved to data
+      FDs: [],             // MKOP moved to data
+      keys: [],            // MKOP moved to data
+      normalForm: "",      // MKOP moved to data from normalForm.type
+      faultyFDs: [],       // MKOP moved to data from normalForm.faultyDependencies
     },
   });
 
@@ -141,7 +147,7 @@ function Synthesis() {
     // Prochází všechny tabulky
     for (const table of tablesInfo) {
       // Prochází všechny klíče v dané tabulce
-      for (const keys of table.keys) {
+      for (const keys of table.data.keys) {
         // Normalizace aktuálního klíče tabulky tím, že jej seřadíme
         const normalizedKeys = [...keys].sort();
 
@@ -212,12 +218,12 @@ function Synthesis() {
 
       return {
         id: index.toString(),
-        attributes: attrs,
-        keys: keys,
-        FDs: FDs,
-        normalForm: {
-          type: normalForm.type,
-          faultyDependencies: normalForm.faultyDependencies,
+        data: {
+          attributes: attrs,
+          FDs: FDs,
+          keys: keys,
+          normalForm: normalForm.type,
+          faultyFDs: normalForm.faultyDependencies,
         },
       };
     });
@@ -231,13 +237,13 @@ function Synthesis() {
   const markRedundantTables = () => {
     return tablesInfo.map((table, index) => {
       let isSubset = false;
-      let subsetOfTableIndex = null;
+      let subsetOfIndex = null;
       let longestSubsets = [];
       let maxLength = 0;
 
       tablesInfo.forEach((otherTable, otherIndex) => {
-        const tableAttributes = (table.hasOwnProperty("data") ? table.data.originalAttr : table.attributes);
-        const otherAttributes = (otherTable.hasOwnProperty("data") ? otherTable.data.originalAttr : otherTable.attributes);
+        const tableAttributes = table.data.attributes;
+        const otherAttributes = otherTable.data.attributes;
         if ( helperSetFunctionsInstance.isRedundant(
                tableAttributes, index,
                otherAttributes, otherIndex
@@ -245,7 +251,7 @@ function Synthesis() {
         ) {
           isSubset = true;
           // MKOP 2025/10/03 Synthesis uses index
-          subsetOfTableIndex = otherIndex + 1; // Uložení indexu nadřazené tabulky
+          subsetOfIndex = otherIndex; // Uložení indexu nadřazené tabulky
           // MKOP 2025/10/03 Decomposition uses longestSubsets array
           const length = otherAttributes.length;
           if (length > maxLength) {
@@ -260,10 +266,8 @@ function Synthesis() {
       return {
         ...table,
         isSubset,
-        // MKOP 2025/10/03 Synthesis uses index
-        subsetOfTableIndex,
-        // MKOP 2025/10/03 Decomposition uses longestSubsets array
-        subsetOf: longestSubsets,
+        subsetOfIndex, // MKOP 2025/10/03 Synthesis uses index
+        subsetOf: longestSubsets, // MKOP 2025/10/03 Decomposition uses longestSubsets array
       };
     });
   };
@@ -278,7 +282,7 @@ function Synthesis() {
   function mergeTables(table1, table2) {
     // Sloučení atributů s odstraněním duplikátů
     const mergedAttributes = Array.from(
-      new Set([...table1.attributes, ...table2.attributes])
+      new Set([...table1.data.attributes, ...table2.data.attributes])
     );
 
     const FDs = getValidDependenciesFromFplus(mergedAttributes);
@@ -288,12 +292,12 @@ function Synthesis() {
     // Vytvoření nové tabulky s informacemi
     const mergedTable = {
       id: table1.id,
-      attributes: mergedAttributes,
-      keys: keys,
-      FDs: FDs,
-      normalForm: {
-        type: normalForm.type,
-        faultyDependencies: normalForm.faultyDependencies,
+      data: {
+        attributes: mergedAttributes,
+        FDs: FDs,
+        keys: keys,
+        normalForm: normalForm.type,
+        faultyFDs: normalForm.faultyDependencies,
       },
     };
 
@@ -318,15 +322,15 @@ function Synthesis() {
 
       if (
         helperSetFunctionsInstance.subset(
-          sourceItem.attributes,
-          destinationItem.attributes
+          sourceItem.data.attributes,
+          destinationItem.data.attributes
         ) ||
         helperSetFunctionsInstance.subset(
-          destinationItem.attributes,
-          sourceItem.attributes
+          destinationItem.data.attributes,
+          sourceItem.data.attributes
         ) ||
-        sourceItem.keys.some((K1) =>
-          destinationItem.keys.some(
+        sourceItem.data.keys.some((K1) =>
+          destinationItem.data.keys.some(
             (K2) =>
               functionalDependencyFunctionsInstance.isDependencyInClosure(
                 singleRHS_fPlus,
@@ -344,8 +348,8 @@ function Synthesis() {
         const mergedValue = mergeTables(sourceItem, destinationItem);
 
         if (
-          mergedValue.normalForm.type === "BCNF" ||
-          mergedValue.normalForm.type === "3"
+          mergedValue.data.normalForm === "BCNF" ||
+          mergedValue.data.normalForm === "3"
         ) {
           const newTablesInfo = [...tablesInfo];
           newTablesInfo[destination.index] = mergedValue;
@@ -362,7 +366,7 @@ function Synthesis() {
             icon: "error",
             title: t("problem-synthesis.CanNotMerge"),
             text: t("problem-synthesis.CanNotMerge-reason1", {
-              normalForm: mergedValue.normalForm.type,
+              normalForm: mergedValue.data.normalForm,
             }),
           });
         }
@@ -487,7 +491,7 @@ function Synthesis() {
                               index === draggingOverIndex &&
                               index !== draggingItemIndex
                                 ? "#ccc"
-                                : helperColorFunctionsInstance.nodeBackgroundColor(table.normalForm.type, false),
+                                : helperColorFunctionsInstance.nodeBackgroundColor(table.data.normalForm, false),
                             border: "1px solid #ddd",
                             ...provided.draggableProps.style,
                             transform: snapshot.isDragging
@@ -500,11 +504,11 @@ function Synthesis() {
                               {t("problem-synthesis.table")} {index + 1}:
                             </p>
                             <p>
-                              R{index + 1}({table.attributes.join(",")})
+                              R{index + 1}({table.data.attributes.join(",")})
                             </p>
                             <p className="tableKeys">
                               {t("problem-synthesis.keys")}: [{" "}
-                              {showFunctionsInstance.showKeysAsText(table.keys)}{" "}
+                              {showFunctionsInstance.showKeysAsText(table.data.keys)}{" "}
                               ]
                             </p>
                             {table.isSubset && (
@@ -518,7 +522,7 @@ function Synthesis() {
                                       "problem-synthesis.unnecessaryTableSubet",
                                       {
                                         index1: index + 1,
-                                        index2: table.subsetOfTableIndex,
+                                        index2: table.subsetOfIndex + 1,
                                       }
                                     )}
                                     .
@@ -587,12 +591,12 @@ function Synthesis() {
         <div className="modal-content">
           <div>
             {t("problem-synthesis.key")}:{" "}
-            {showFunctionsInstance.showKeysAsText(modalContent.keys)}
+            {showFunctionsInstance.showKeysAsText(modalContent.data.keys)}
           </div>
           <div>
             {t("problem-synthesis.dependencies")}:
-            {modalContent.FDs &&
-              modalContent.FDs.map((fd, index) => (
+            {modalContent.data.FDs &&
+              modalContent.data.FDs.map((fd, index) => (
                 <p key={index}>
                   {showFunctionsInstance.showTextDependencyWithArrow(fd)}
                 </p>
@@ -601,14 +605,14 @@ function Synthesis() {
 
           <div>
             {t("problem-synthesis.normalForm")}:{" "}
-            {modalContent.normalForm.type === "BCNF"
+            {modalContent.data.normalForm === "BCNF"
               ? "BCNF"
-              : modalContent.normalForm.type + " NF"}
+              : modalContent.data.normalForm + " NF"}
           </div>
-          {modalContent.normalForm.faultyDependencies.length > 0 && (
+          {modalContent.data.faultyFDs.length > 0 && (
             <>
               <ul>
-                {modalContent.normalForm.faultyDependencies.map((fd, index) => (
+                {modalContent.data.faultyFDs.map((fd, index) => (
                   <li key={index}>
                     {showFunctionsInstance.showTextDependencyWithArrow(
                       fd.dependency
