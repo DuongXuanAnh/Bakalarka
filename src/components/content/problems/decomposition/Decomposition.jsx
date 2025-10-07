@@ -25,10 +25,11 @@ import { Trans, useTranslation } from "react-i18next";
 import { HelperColorFunctions } from "../../../../algorithm/HelperColorFunctions";
 import "reactflow/dist/style.css";
 import "./decomposition.scss";
-import CustomNode from "./CustomNode";
 import OwnDecomposition from "./ownDecomposition/OwnDecomposition";
 import OwnDecompositionPractice from "./ownDecomposition/OwnDecompositionPractice";
 import MergeTablesAfterDecompose from "./mergeTablesAfterDecompose/MergeTablesAfterDecompose";
+import CustomNode from "../../../../algorithm/CustomNodeFunctions";
+import { CustomNodeFunctions } from "../../../../algorithm/CustomNodeFunctions";
 import { FPlusFunctions } from "../../../../algorithm/FPlusFunctions";
 import { AttributeFunctions } from "../../../../algorithm/AttributeFunctions";
 import { HelperSetFunctions } from "../../../../algorithm/HelperSetFunctions";
@@ -37,6 +38,7 @@ import { FunctionalDependencyFunctions } from "../../../../algorithm/FunctionalD
 import { FindingKeysFunctions } from "../../../../algorithm/FindingKeysFunctions";
 import { ShowFunctions } from "../../../../algorithm/ShowFunctions";
 
+const CustomNodeFunctionsInstance = new CustomNodeFunctions();
 const fPlusFunctionsInstance = new FPlusFunctions();
 const attributeFunctionsInstance = new AttributeFunctions();
 const helperSetFunctionsInstance = new HelperSetFunctions();
@@ -180,13 +182,13 @@ const Decomposition = () => {
     const normalFormType = normalFormInstance.normalFormType(fPlus, attr);
     const candidateKeys = findingKeysFunctionsInstance.getAllKeys(fPlus, attr);
     let data = {
-      originalAttr: attr,
+      attributes: attr,
       label: attr.join(", "),
-      keys: showFunctionsInstance.showKeysAsText(candidateKeys),
       FDs: fPlus,
-      type: normalFormType.type,
-      faultyDependencies: normalFormType.faultyDependencies,
       candidateKeys: candidateKeys,
+      keys: showFunctionsInstance.showKeysAsText(candidateKeys),
+      normalForm: normalFormType.type,
+      faultyFDs: normalFormType.faultyDependencies,
       subsetOf: [],
     };
 
@@ -258,11 +260,7 @@ const Decomposition = () => {
 
   useEffect(() => {
     if (currLeafNodesList.length > 0) {
-      setLostFDs([]);
-//    let leafNodesFDs = [];
-//    currLeafNodesList.forEach((leafNode) => {
-//      leafNodesFDs.push(...leafNode.data.FDs);
-//    });
+//    setLostFDs([]);
       
       setLostFDs(
         functionalDependencyFunctionsInstance.lostDependencies(
@@ -273,111 +271,19 @@ const Decomposition = () => {
         );
     }
 
-    currLeafNodesList.forEach((node, i) => {
-      node.data.subsetOf = [];
-    });
-
-    highlightSubsetNodes();
+    CustomNodeFunctionsInstance.highlightSubsetNodes(currLeafNodesList, true);
   }, [currLeafNodesList]);
-
-  const highlightSubsetNodes = () => {
-
-//  currLeafNodesList.forEach((node, i) => {
-//    node.data.subsetOf = [];
-//  });
-//
-//  let sameNodesNotSubSetOther = [];
-//
-//  currLeafNodesList.forEach((node1, i) => {
-//    currLeafNodesList.forEach((node2, j) => {
-//      // Skip same node or identical attributes
-//      if (
-//        i !== j &&
-//        node1.id !== node2.id &&
-//        node1.data.type == "BCNF" &&
-//        node2.data.type == "BCNF"
-//      ) {
-//        const attr1 = node1.data.originalAttr;
-//        const attr2 = node2.data.originalAttr;
-//
-//        if (
-//          helperSetFunctionsInstance.isEqual(attr1, attr2)
-//        ) {
-//          sameNodesNotSubSetOther.push(node1);
-//        }
-//
-//        // Check if node1 is a strict subset of node2
-//        if (
-//          helperSetFunctionsInstance.subsetNEQ(attr1, attr2)
-//        ) {
-//          node1.data.subsetOf.push(attr2);
-//          sameNodesNotSubSetOther = [];
-//        }
-//      }
-//    });
-//
-//  if (sameNodesNotSubSetOther.length > 0) {
-//    for (let i = 0; i < sameNodesNotSubSetOther.length - 1; i++) {
-//      sameNodesNotSubSetOther[i].data.subsetOf.push(
-//        sameNodesNotSubSetOther[i].data.originalAttr
-//      );
-//    }
-//  }
-
-    // MKOP 2025/10/04 Rewritten to match to Synthesis code as much as possible
-    // MKOP Assignment to unify name of table collection
-    const tablesInfo = currLeafNodesList;
-
-    tablesInfo.forEach((table, index) => {
-      table.data.subsetOf = [];
-    });
-
-    tablesInfo.forEach((table, index) => {
-      let isSubset = false;
-      let subsetOfTableIndex = null;
-      let longestSubsets = [];
-      let maxLength = 0;
-
-      tablesInfo.forEach((otherTable, otherIndex) => {
-        // Skip non-BCNF tables
-        if (table.data.type != "BCNF" || otherTable.data.type != "BCNF") return;
-        
-        const tableAttributes = (table.hasOwnProperty("data") ? table.data.originalAttr : table.attributes);
-        const otherAttributes = (otherTable.hasOwnProperty("data") ? otherTable.data.originalAttr : otherTable.attributes);
-        if ( helperSetFunctionsInstance.isRedundant(
-               tableAttributes, index,
-               otherAttributes, otherIndex
-               )
-        ) {
-          isSubset = true;
-          // MKOP 2025/10/03 Synthesis uses index
-          subsetOfTableIndex = otherIndex + 1; // Uložení indexu nadřazené tabulky
-          // MKOP 2025/10/03 Decomposition uses longestSubsets array
-          const length = otherAttributes.length;
-          if (length > maxLength) {
-            maxLength = length;
-            longestSubsets = [otherAttributes];
-          } else if (length === maxLength) {
-            longestSubsets.push(otherAttributes);
-          }
-        }
-      });
-      
-      table.data.subsetOf = longestSubsets; 
-
-    });
-  };
 
   useEffect(() => {
     if (selectedNode) {
       setFaultlyDependenciesFooter([]);
       let faultyDependenciesTmp = [];
 
-      selectedNode.data.faultyDependencies.forEach((faultyDependency) => {
+      selectedNode.data.faultyFDs.forEach((faultyDependency) => {
         faultyDependenciesTmp.push(faultyDependency.dependency);
       });
 
-      selectedNode.data.faultyDependencies.forEach((faultyDependency) => {
+      selectedNode.data.faultyFDs.forEach((faultyDependency) => {
         const closure = attributeFunctionsInstance.nonTrivialClosure(
           faultyDependenciesTmp,
           faultyDependency.dependency.left
@@ -484,7 +390,7 @@ const Decomposition = () => {
     if (dependency) {
       const dataNode1 = nodeData([...dependency.left, ...dependency.right]);
       const dataNode2 = nodeData(
-        node.data.originalAttr.filter(
+        node.data.attributes.filter(
           (item) => !dependency.right.includes(item)
         )
       );
@@ -556,8 +462,8 @@ const Decomposition = () => {
       let leafNodesWithFaultyDeps = [];
       for (let node of leafNodes) {
         if (
-          node.data.faultyDependencies &&
-          node.data.faultyDependencies.length > 0
+          node.data.faultyFDs &&
+          node.data.faultyFDs.length > 0
         ) {
           leafNodesWithFaultyDeps.push(node);
         }
@@ -573,9 +479,9 @@ const Decomposition = () => {
         );
         let faultyDependencies = [];
 
-        for (let i = 0; i < leafNode.data.faultyDependencies.length; i++) {
+        for (let i = 0; i < leafNode.data.faultyFDs.length; i++) {
           faultyDependencies.push(
-            leafNode.data.faultyDependencies[i].dependency
+            leafNode.data.faultyFDs[i].dependency
           );
         }
 
@@ -661,7 +567,7 @@ const Decomposition = () => {
         icon: "warning",
         confirmButtonText: "Ok",
       });
-    } else if (selectedValue.toString() === selectedNode.data.type.toString()) {
+    } else if (selectedValue.toString() === selectedNode.data.normalForm.toString()) {
       Swal.fire({
         title: t("problem-decomposition.correct"),
         icon: "success",
@@ -694,14 +600,14 @@ const Decomposition = () => {
   };
 
   const checkDependenciesViolateAnswer = (selectedNode) => {
-    const totalCorrectAnswers = selectedNode.data.faultyDependencies.length;
+    const totalCorrectAnswers = selectedNode.data.faultyFDs.length;
     let correctAnswercounter = 0;
 
     const violateCheckboxes =
       document.getElementsByClassName("violateCheckbox");
 
     const checkChosenDependencyAnswer = (dependency, violateAnswer) => {
-      for (let df of selectedNode.data.faultyDependencies) {
+      for (let df of selectedNode.data.faultyFDs) {
         if (
           showFunctionsInstance.showTextDependencyWithArrow(df.dependency) ===
           dependency
@@ -904,9 +810,9 @@ const Decomposition = () => {
                 </p>
                 <p>
                   <b>{t("problem-decomposition.normalForm")}</b>{" "}
-                  {selectedNode.data.type === "BCNF"
+                  {selectedNode.data.normalForm === "BCNF"
                     ? "BCNF"
-                    : selectedNode.data.type + " NF"}
+                    : selectedNode.data.normalForm + " NF"}
                 </p>
                 <ul>
                   {currLeafNodesList.length > 0 &&
@@ -923,7 +829,7 @@ const Decomposition = () => {
                         </button>
                       </li>
                     )}
-                  {selectedNode.data.type !== "BCNF" && (
+                  {selectedNode.data.normalForm !== "BCNF" && (
                     <li key="dm">
                       <button
                         onClick={() => setIsModalDecompositeOwnWayOpen(true)}
@@ -964,7 +870,7 @@ const Decomposition = () => {
                 <div>
                   <b>{t("problem-decomposition.unwantedDependencies")}</b>
                   <ul>
-                    {selectedNode.data.faultyDependencies.map(
+                    {selectedNode.data.faultyFDs.map(
                       (faultyDependency, index) => (
                         <li key={index}>
                           <button
@@ -1069,7 +975,7 @@ const Decomposition = () => {
                           </button>
                         </li>
                       )}
-                    {/*selectedNode.data.type !== "BCNF" &&*/ ( // MKOP 2025/09/10 v practice módu zobraz tlačítko i pro BCNF relaci
+                    {/*selectedNode.data.normalForm !== "BCNF" &&*/ ( // MKOP 2025/09/10 v practice módu zobraz tlačítko i pro BCNF relaci
                       <li id="dm">
                         <button
                           onClick={() => setIsModalDecompositeOwnWayOpen(true)}
@@ -1129,7 +1035,7 @@ const Decomposition = () => {
                         className="howButton"
                         onClick={() =>
                           handleNavigateFromPracticeModal(
-                            selectedNode.data.originalAttr,
+                            selectedNode.data.attributes,
                             "normalForm"
                           )
                         }
@@ -1148,7 +1054,7 @@ const Decomposition = () => {
                 className="howButton"
                 onClick={() =>
                   handleNavigateFromPracticeModal(
-                    selectedNode.data.originalAttr,
+                    selectedNode.data.attributes,
                     "derivablity"
                   )
                 }
@@ -1309,5 +1215,9 @@ const Decomposition = () => {
     </div>
   );
 };
+
+//<div className="lostDependencies" hidden="hidden">
+//{JSON.stringify(currLeafNodesList)}
+//</div>
 
 export default Decomposition;

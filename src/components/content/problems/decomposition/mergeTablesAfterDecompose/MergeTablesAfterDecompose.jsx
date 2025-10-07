@@ -7,6 +7,7 @@ import Swal from "sweetalert2";
 import { HelperColorFunctions } from "../../../../../algorithm/HelperColorFunctions";
 import { useTranslation } from "react-i18next";
 import "./mergeTablesAfterDecompose.scss";
+import { CustomNodeFunctions } from "../../../../../algorithm/CustomNodeFunctions";
 import { FPlusFunctions } from "../../../../../algorithm/FPlusFunctions";
 import { FunctionalDependencyFunctions } from "../../../../../algorithm/FunctionalDependencyFunctions";
 import { FindingKeysFunctions } from "../../../../../algorithm/FindingKeysFunctions";
@@ -14,6 +15,7 @@ import { ShowFunctions } from "../../../../../algorithm/ShowFunctions";
 import { HelperSetFunctions } from "../../../../../algorithm/HelperSetFunctions";
 import { AttributeFunctions } from "../../../../../algorithm/AttributeFunctions";
 
+const CustomNodeFunctionsInstance = new CustomNodeFunctions();
 const helperColorFunctionsInstance = new HelperColorFunctions();
 const fPlusFunctionsInstance = new FPlusFunctions();
 const functionalDependencyFunctionsInstance =
@@ -63,7 +65,7 @@ function MergeTablesAfterDecompose({ tables, originKeys, lostFDs }) {
 
   function mergeTables(table1, table2) {
     const mergedAttributes = Array.from(
-      new Set([...table1.data.originalAttr, ...table2.data.originalAttr])
+      new Set([...table1.data.attributes, ...table2.data.attributes])
     );
     const FDs = getValidDependenciesFromFplus(mergedAttributes);
     const keys = findingKeysFunctionsInstance.getAllKeys(FDs, mergedAttributes);
@@ -72,11 +74,11 @@ function MergeTablesAfterDecompose({ tables, originKeys, lostFDs }) {
     const mergedTable = {
       id: table1.id,
       data: {
-        originalAttr: mergedAttributes,
+        attributes: mergedAttributes,
         candidateKeys: keys,
         FDs: FDs,
-        type: normalForm.type,
-        faultyDependencies: normalForm.faultyDependencies,
+        normalForm: normalForm.type,
+        faultyFDs: normalForm.faultyDependencies,
       },
     };
 
@@ -110,12 +112,12 @@ function MergeTablesAfterDecompose({ tables, originKeys, lostFDs }) {
 
       if (
         helperSetFunctionsInstance.subset(
-          sourceItem.data.originalAttr,
-          destinationItem.data.originalAttr
+          sourceItem.data.attributes,
+          destinationItem.data.attributes
         ) ||
         helperSetFunctionsInstance.subset(
-          destinationItem.data.originalAttr,
-          sourceItem.data.originalAttr
+          destinationItem.data.attributes,
+          sourceItem.data.attributes
         ) ||
         sourceItem.data.candidateKeys.some((K1) =>
           destinationItem.data.candidateKeys.some(
@@ -135,7 +137,7 @@ function MergeTablesAfterDecompose({ tables, originKeys, lostFDs }) {
       ) {
         const mergedValue = mergeTables(sourceItem, destinationItem);
 
-        if (mergedValue.data.type === "BCNF" || mergedValue.data.type === "3") {
+        if (mergedValue.data.normalForm === "BCNF" || mergedValue.data.normalForm === "3") {
           const newTablesInfo = [...tablesInfo];
           newTablesInfo[destination.index] = mergedValue;
           newTablesInfo.splice(source.index, 1);
@@ -179,7 +181,7 @@ function MergeTablesAfterDecompose({ tables, originKeys, lostFDs }) {
             icon: "error",
             title: t("problem-synthesis.CanNotMerge"),
             text: t("problem-synthesis.CanNotMerge-reason1", {
-              normalForm: mergedValue.data.type,
+              normalForm: mergedValue.data.normalForm,
             }),
           });
         }
@@ -217,12 +219,12 @@ function MergeTablesAfterDecompose({ tables, originKeys, lostFDs }) {
     const normalFormType = normalFormInstance.normalFormType(fPlus, attr);
     const candidateKeys = findingKeysFunctionsInstance.getAllKeys(fPlus, attr);
     let data = {
-      originalAttr: attr,
+      attributes: attr,
       label: attr.join(", "),
       keys: showFunctionsInstance.showKeysAsText(candidateKeys),
       FDs: fPlus,
       type: normalFormType.type,
-      faultyDependencies: normalFormType.faultyDependencies,
+      faultyFDs: normalFormType.faultyDependencies,
       candidateKeys: candidateKeys,
       subsetOf: [],
     };
@@ -272,49 +274,7 @@ function MergeTablesAfterDecompose({ tables, originKeys, lostFDs }) {
       );
   };
 
-  // Přidání logiky pro označení nadbytečných tabulek
-  // MKOP 2025/10/03 united with the code in Synthesis.jsx
-  const markRedundantTables = () => {
-    return tablesInfo.map((table, index) => {
-      let isSubset = false;
-      let subsetOfTableIndex = null;
-      let longestSubsets = [];
-      let maxLength = 0;
-
-      tablesInfo.forEach((otherTable, otherIndex) => {
-        const tableAttributes = (table.hasOwnProperty("data") ? table.data.originalAttr : table.attributes);
-        const otherAttributes = (otherTable.hasOwnProperty("data") ? otherTable.data.originalAttr : otherTable.attributes);
-        if ( helperSetFunctionsInstance.isRedundant(
-               tableAttributes, index,
-               otherAttributes, otherIndex
-               )
-        ) {
-          isSubset = true;
-          // MKOP 2025/10/03 Synthesis uses index
-          subsetOfTableIndex = otherIndex + 1; // Uložení indexu nadřazené tabulky
-          // MKOP 2025/10/03 Decomposition uses longestSubsets array
-          const length = otherAttributes.length;
-          if (length > maxLength) {
-            maxLength = length;
-            longestSubsets = [otherAttributes];
-          } else if (length === maxLength) {
-            longestSubsets.push(otherAttributes);
-          }
-        }
-      });
-
-      return {
-        ...table,
-        isSubset,
-        // MKOP 2025/10/03 Synthesis uses index
-        subsetOfTableIndex,
-        // MKOP 2025/10/03 Decomposition uses longestSubsets array
-        subsetOf: longestSubsets,
-      };
-    });
-  };
-
-  const enrichedTablesInfo = markRedundantTables();
+  CustomNodeFunctionsInstance.highlightSubsetNodes(tablesInfo, false);
 
   return (
     <div className="mergeTablesAfterDecompose-container">
@@ -327,7 +287,7 @@ function MergeTablesAfterDecompose({ tables, originKeys, lostFDs }) {
           <Droppable droppableId="droppableTables">
             {(provided) => (
               <div {...provided.droppableProps} ref={provided.innerRef}>
-                {enrichedTablesInfo.map((table, index) => (
+                {tablesInfo.map((table, index) => (
                   <Draggable
                     key={table.id}
                     draggableId={`table${table.id}`}
@@ -350,7 +310,7 @@ function MergeTablesAfterDecompose({ tables, originKeys, lostFDs }) {
                             index !== draggingItemIndex
                               ? "#ccc"
                               : helperColorFunctionsInstance.nodeBackgroundColor(
-                                  table.data.type,
+                                  table.data.normalForm,
                                   false /*practiceMode*/
                                 ),
                           border: "1px solid #ddd",
@@ -361,7 +321,7 @@ function MergeTablesAfterDecompose({ tables, originKeys, lostFDs }) {
                       >
                         <div>
                           <p className="tableAttrs">
-                            ({table.data.originalAttr.join(",")})
+                            ({table.data.attributes.join(",")})
                           </p>
                           <p className="tableKeys">
                             {t("problem-synthesis.keys")}: [{" "}
@@ -436,5 +396,10 @@ function MergeTablesAfterDecompose({ tables, originKeys, lostFDs }) {
     </div>
   );
 }
+
+//<div>
+//<p hidden="hidden">a) {JSON.stringify(tablesInfo)}</p>
+//</div>
+
 
 export default MergeTablesAfterDecompose;

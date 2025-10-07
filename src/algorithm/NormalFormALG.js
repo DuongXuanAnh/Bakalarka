@@ -252,8 +252,8 @@ export class NormalFormALG {
 
       if (
         rightLength > 1 &&
-        rightLength < nodeInfo.originalAttr.length - 1 &&
-        leffLength + rightLength < nodeInfo.originalAttr.length
+        rightLength < nodeInfo.attributes.length - 1 &&
+        leffLength + rightLength < nodeInfo.attributes.length
       ) {
         result.push(fd);
       }

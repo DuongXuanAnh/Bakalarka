@@ -5,6 +5,7 @@ import { useDependencyContext } from "../../../../contexts/DependencyContext";
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
 import Swal from "sweetalert2";
 import ReactModal from "react-modal";
+import { CustomNodeFunctions } from "../../../../algorithm/CustomNodeFunctions";
 import { HelperColorFunctions } from "../../../../algorithm/HelperColorFunctions";
 import { useTranslation } from "react-i18next";
 import "./synthesis.scss";
@@ -15,6 +16,7 @@ import { FPlusFunctions } from "../../../../algorithm/FPlusFunctions";
 import { ShowFunctions } from "../../../../algorithm/ShowFunctions";
 import { FindingKeysFunctions } from "../../../../algorithm/FindingKeysFunctions";
 
+const CustomNodeFunctionsInstance = new CustomNodeFunctions();
 const helperColorFunctionsInstance = new HelperColorFunctions();
 const functionalDependencyFunctionsInstance =
   new FunctionalDependencyFunctions();
@@ -232,47 +234,7 @@ function Synthesis() {
     setTablesInfo((prevTablesInfo) => [...prevTablesInfo, ...newTablesInfo]);
   }, [rewrittenFDs]);
 
-  // Přidání logiky pro označení nadbytečných tabulek
-  // MKOP 2025/10/03 united with the code in MergeTablesAfterDecomose.jsx
-  const markRedundantTables = () => {
-    return tablesInfo.map((table, index) => {
-      let isSubset = false;
-      let subsetOfIndex = null;
-      let longestSubsets = [];
-      let maxLength = 0;
-
-      tablesInfo.forEach((otherTable, otherIndex) => {
-        const tableAttributes = table.data.attributes;
-        const otherAttributes = otherTable.data.attributes;
-        if ( helperSetFunctionsInstance.isRedundant(
-               tableAttributes, index,
-               otherAttributes, otherIndex
-               )
-        ) {
-          isSubset = true;
-          // MKOP 2025/10/03 Synthesis uses index
-          subsetOfIndex = otherIndex; // Uložení indexu nadřazené tabulky
-          // MKOP 2025/10/03 Decomposition uses longestSubsets array
-          const length = otherAttributes.length;
-          if (length > maxLength) {
-            maxLength = length;
-            longestSubsets = [otherAttributes];
-          } else if (length === maxLength) {
-            longestSubsets.push(otherAttributes);
-          }
-        }
-      });
-
-      return {
-        ...table,
-        isSubset,
-        subsetOfIndex, // MKOP 2025/10/03 Synthesis uses index
-        subsetOf: longestSubsets, // MKOP 2025/10/03 Decomposition uses longestSubsets array
-      };
-    });
-  };
-
-  const enrichedTablesInfo = markRedundantTables();
+  CustomNodeFunctionsInstance.highlightSubsetNodes(tablesInfo, false);
 
   const showInformationModal = (table) => {
     setIsModalOpen(true);
@@ -465,7 +427,7 @@ function Synthesis() {
             <Droppable droppableId="droppableTables">
               {(provided) => (
                 <div {...provided.droppableProps} ref={provided.innerRef}>
-                  {enrichedTablesInfo.map((table, index) => (
+                  {tablesInfo.map((table, index) => (
                     <Draggable
                       key={tablesInfo[index].id}
                       draggableId={`table${tablesInfo[index].id}`}
