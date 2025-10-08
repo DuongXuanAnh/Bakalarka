@@ -224,4 +224,27 @@ export class FunctionalDependencyFunctions {
       right: Array.from(rightSet), // Převod Setu zpět na pole
     }));
   }
+  
+  // MKOP 2025/10/08 moved from Decomposition.jsx
+  // fPlus is a set of (canonical, but works universally) FDs
+  // function returns a subset that can be applied on given set of attributes
+  getAllDependenciesDependsOnAttr = (attr, fPlus) => {
+    let dependenciesDependsOnAttr = [];
+    for (let i = 0; i < fPlus.length; i++) {
+      // Zkontrolujeme, že všechny prvky na levé i pravé straně jsou obsaženy v `attr`
+      let leftSideValid = fPlus[i].left.every((element) =>
+        attr.includes(element)
+      );
+      let rightSideValid = fPlus[i].right.every((element) =>
+        attr.includes(element)
+      );
+
+      if (leftSideValid && rightSideValid) {
+        dependenciesDependsOnAttr.push(fPlus[i]);
+      }
+    }
+
+    return dependenciesDependsOnAttr;
+  };
+  
 }

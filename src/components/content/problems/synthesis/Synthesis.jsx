@@ -125,24 +125,24 @@ function Synthesis() {
 
   const condensedFDs = transformFDsToCondensedForm(removeRedundant_FDs);
 
-  const getValidDependenciesFromFplus = (attr) => {
-    let dependenciesDependsOnAttr = [];
-    for (let i = 0; i < singleRHS_fPlus.length; i++) {
-      // Zkontrolujeme, že všechny prvky na levé i pravé straně jsou obsaženy v `attr`
-      let leftSideValid = singleRHS_fPlus[i].left.every((element) =>
-        attr.includes(element)
-      );
-      let rightSideValid = singleRHS_fPlus[i].right.every((element) =>
-        attr.includes(element)
-      );
-
-      if (leftSideValid && rightSideValid) {
-        dependenciesDependsOnAttr.push(singleRHS_fPlus[i]);
-      }
-    }
-
-    return dependenciesDependsOnAttr;
-  };
+//const getValidDependenciesFromFplus = (attr) => {
+//  let dependenciesDependsOnAttr = [];
+//  for (let i = 0; i < singleRHS_fPlus.length; i++) {
+//    // Zkontrolujeme, že všechny prvky na levé i pravé straně jsou obsaženy v `attr`
+//    let leftSideValid = singleRHS_fPlus[i].left.every((element) =>
+//      attr.includes(element)
+//    );
+//    let rightSideValid = singleRHS_fPlus[i].right.every((element) =>
+//      attr.includes(element)
+//    );
+//
+//    if (leftSideValid && rightSideValid) {
+//      dependenciesDependsOnAttr.push(singleRHS_fPlus[i]);
+//    }
+//  }
+//
+//  return dependenciesDependsOnAttr;
+//};
 
   const checkIfTablesContainOriginKey = () => {
     const normalizedOriginKeys = originKeys.map((key) => key.sort());
@@ -214,7 +214,7 @@ function Synthesis() {
     const newTablesInfo = condensedFDs.map((fd, index) => {
       let attrs = [...fd.left, ...fd.right];
 
-      const FDs = getValidDependenciesFromFplus(attrs);
+      const FDs = functionalDependencyFunctionsInstance.getAllDependenciesDependsOnAttr(attrs, singleRHS_fPlus);
       const keys = findingKeysFunctionsInstance.getAllKeys(FDs, attrs);
       const normalForm = normalFormInstance.normalFormType(FDs, attrs);
 
@@ -247,7 +247,7 @@ function Synthesis() {
       new Set([...table1.data.attributes, ...table2.data.attributes])
     );
 
-    const FDs = getValidDependenciesFromFplus(mergedAttributes);
+    const FDs = functionalDependencyFunctionsInstance.getAllDependenciesDependsOnAttr(mergedAttributes, singleRHS_fPlus);
     const keys = findingKeysFunctionsInstance.getAllKeys(FDs, mergedAttributes);
     const normalForm = normalFormInstance.normalFormType(FDs, mergedAttributes);
 

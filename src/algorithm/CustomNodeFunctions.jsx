@@ -1,12 +1,21 @@
 import React, { memo } from "react";
 import { Handle, Position } from "reactflow";
+import { NormalFormALG } from "./NormalFormALG";
 import { HelperColorFunctions } from "./HelperColorFunctions";
 import { HelperSetFunctions } from "./HelperSetFunctions";
 import { useTranslation } from "react-i18next";
 import { ShowFunctions } from "./ShowFunctions";
+import { FunctionalDependencyFunctions } from "./FunctionalDependencyFunctions";
+import { FindingKeysFunctions } from "./FindingKeysFunctions";
 
+const normalFormInstance = new NormalFormALG();
 const helperColorFunctionsInstance = new HelperColorFunctions();
 const helperSetFunctionsInstance = new HelperSetFunctions();
+const showFunctionsInstance = new ShowFunctions();
+const functionalDependencyFunctionsInstance =
+  new FunctionalDependencyFunctions();
+const findingKeysFunctionsInstance = new FindingKeysFunctions();
+
 
 // MKOP 2025/10/06
 // Note: object.hasOwnProperty("propName")
@@ -31,8 +40,41 @@ const helperSetFunctionsInstance = new HelperSetFunctions();
 export class CustomNodeFunctions {
   constructor() {
     // CustomNode functions
+    this.initNodeData = this.initNodeData.bind(this);
+    this.initNode = this.initNode.bind(this);
     this.highlightSubsetNodes = this.highlightSubsetNodes.bind(this);
   }
+
+  initNodeData = (attr, fPlusOrig) => {
+    const fPlus = functionalDependencyFunctionsInstance.getAllDependenciesDependsOnAttr(attr, fPlusOrig);
+    const normalFormType = normalFormInstance.normalFormType(fPlus, attr);
+    const candidateKeys = findingKeysFunctionsInstance.getAllKeys(fPlus, attr);
+    let data = {
+      attributes: attr,
+      label: attr.join(", "),
+      FDs: fPlus,
+      candidateKeys: candidateKeys,
+      keys: showFunctionsInstance.showKeysAsText(candidateKeys),
+      normalForm: normalFormType.type,
+      faultyFDs: normalFormType.faultyDependencies,
+      subsetOf: [],
+    };
+
+    return data;
+  };
+
+  initNode = (attr, fPlusOrig, id) => {
+    const nodeData = this.initNodeData(attr, fPlusOrig);
+    const position = { x: 0, y: 0 };
+
+    const node = {
+      id: id, // MKOP 2025/10/08 was "1"
+      type: "customNode",
+      data: nodeData,
+      position,
+    };
+    return node;
+  };
 
   // MKOP 2025/10/04 Rewritten to match to Synthesis code as much as possible
   // MKOP 2025/10/06 Rewritten to unify code in Synthesis, Decomposition and MergeTablesAfterDecompose

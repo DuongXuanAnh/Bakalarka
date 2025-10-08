@@ -158,56 +158,56 @@ const Decomposition = () => {
     [practiceMode]
   );
 
-  const getAllDependenciesDependsOnAttr = (attr) => {
-    let dependenciesDependsOnAttr = [];
-    for (let i = 0; i < fPlusOriginSingleRHS.length; i++) {
-      // Zkontrolujeme, že všechny prvky na levé i pravé straně jsou obsaženy v `attr`
-      let leftSideValid = fPlusOriginSingleRHS[i].left.every((element) =>
-        attr.includes(element)
-      );
-      let rightSideValid = fPlusOriginSingleRHS[i].right.every((element) =>
-        attr.includes(element)
-      );
+//const getAllDependenciesDependsOnAttr = (attr) => {
+//  let dependenciesDependsOnAttr = [];
+//  for (let i = 0; i < fPlusOriginSingleRHS.length; i++) {
+//    // Zkontrolujeme, že všechny prvky na levé i pravé straně jsou obsaženy v `attr`
+//    let leftSideValid = fPlusOriginSingleRHS[i].left.every((element) =>
+//      attr.includes(element)
+//    );
+//    let rightSideValid = fPlusOriginSingleRHS[i].right.every((element) =>
+//      attr.includes(element)
+//    );
+//
+//    if (leftSideValid && rightSideValid) {
+//      dependenciesDependsOnAttr.push(fPlusOriginSingleRHS[i]);
+//    }
+//  }
+//
+//  return dependenciesDependsOnAttr;
+//};
 
-      if (leftSideValid && rightSideValid) {
-        dependenciesDependsOnAttr.push(fPlusOriginSingleRHS[i]);
-      }
-    }
+//const nodeData = (attr) => {
+//  const fPlus = getAllDependenciesDependsOnAttr(attr);
+//  const normalFormType = normalFormInstance.normalFormType(fPlus, attr);
+//  const candidateKeys = findingKeysFunctionsInstance.getAllKeys(fPlus, attr);
+//  let data = {
+//    attributes: attr,
+//    label: attr.join(", "),
+//    FDs: fPlus,
+//    candidateKeys: candidateKeys,
+//    keys: showFunctionsInstance.showKeysAsText(candidateKeys),
+//    normalForm: normalFormType.type,
+//    faultyFDs: normalFormType.faultyDependencies,
+//    subsetOf: [],
+//  };
+//
+//  return data;
+//};
 
-    return dependenciesDependsOnAttr;
-  };
+//const initialNode = (attr) => {
+//  const initialNodeData = nodeData(attr);
+//
+//  const node = {
+//    id: "1",
+//    type: "customNode",
+//    data: initialNodeData,
+//    position,
+//  };
+//  return node;
+//};
 
-  const nodeData = (attr) => {
-    const fPlus = getAllDependenciesDependsOnAttr(attr);
-    const normalFormType = normalFormInstance.normalFormType(fPlus, attr);
-    const candidateKeys = findingKeysFunctionsInstance.getAllKeys(fPlus, attr);
-    let data = {
-      attributes: attr,
-      label: attr.join(", "),
-      FDs: fPlus,
-      candidateKeys: candidateKeys,
-      keys: showFunctionsInstance.showKeysAsText(candidateKeys),
-      normalForm: normalFormType.type,
-      faultyFDs: normalFormType.faultyDependencies,
-      subsetOf: [],
-    };
-
-    return data;
-  };
-
-  const initialNode = (attr) => {
-    const initialNodeData = nodeData(attr);
-
-    const node = {
-      id: "1",
-      type: "customNode",
-      data: initialNodeData,
-      position,
-    };
-    return node;
-  };
-
-  const [nodesArray, setNodesArray] = useState([initialNode(attributes)]);
+  const [nodesArray, setNodesArray] = useState([CustomNodeFunctionsInstance.initNode(attributes, fPlusOriginSingleRHS, "1")]); // Node id
 
   const [edgesArray, setEdgesArray] = useState([]);
 
@@ -388,26 +388,44 @@ const Decomposition = () => {
     );
 
     if (dependency) {
-      const dataNode1 = nodeData([...dependency.left, ...dependency.right]);
-      const dataNode2 = nodeData(
+//    const dataNode1 = CustomNodeFunctionsInstance.initNodeData(
+//      [...dependency.left, ...dependency.right], 
+//      fPlusOriginSingleRHS
+//      );
+//    const dataNode2 = CustomNodeFunctionsInstance.initNodeData(
+//      node.data.attributes.filter(
+//        (item) => !dependency.right.includes(item)
+//        ),
+//      fPlusOriginSingleRHS
+//      );
+
+//    const newNode1 = {
+//      id: node.id + 1,
+//      type: "customNode",
+//      data: dataNode1,
+//      position,
+//    };
+
+//    const newNode2 = {
+//      id: node.id + 2,
+//      type: "customNode",
+//      data: dataNode2,
+//      position,
+//    };
+      
+      const newNode1 = CustomNodeFunctionsInstance.initNode(
+        [...dependency.left, ...dependency.right], 
+        fPlusOriginSingleRHS,
+        node.id + 1 // Concatenation of strings
+        );
+      const newNode2 = CustomNodeFunctionsInstance.initNode(
         node.data.attributes.filter(
           (item) => !dependency.right.includes(item)
-        )
-      );
-
-      const newNode1 = {
-        id: node.id + 1,
-        type: "customNode",
-        data: dataNode1,
-        position,
-      };
-
-      const newNode2 = {
-        id: node.id + 2,
-        type: "customNode",
-        data: dataNode2,
-        position,
-      };
+          ),
+        fPlusOriginSingleRHS,
+        node.id + 2 // Concatenation of strings
+        );
+      
 
       setNodesArray((prevNodes) => [...prevNodes, newNode1, newNode2]);
 
@@ -503,7 +521,7 @@ const Decomposition = () => {
       setNodesArray([]);
       setEdgesArray([]);
       setLostFDs([]);
-      const initialNodes = [initialNode(attributes)];
+      const initialNodes = [CustomNodeFunctionsInstance.initNode(attributes, fPlusOriginSingleRHS, "1")]; // Node id
       setNodesArray(initialNodes);
       currLeafNodesList = initialNodes;
     };
