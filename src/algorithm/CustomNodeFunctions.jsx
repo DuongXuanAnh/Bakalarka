@@ -25,14 +25,17 @@ const findingKeysFunctionsInstance = new FindingKeysFunctions();
 //   isSubset: Boolean, ... Is this node a subset of another node T/F?
 //   subsetOfIndex: Integer, ... Zero-based index of the node this one is subset of
 //   subsetOf: Array of Array of String, ... Set of longest nodes this one is a subset of ... TODO: Used by MergeTablesAfterDecompose.jsx, not by Decomposition.jsx. 
-//   data { // Node data
+//   data { // calss node.data
 //     attributes: Array of String, ... Set of attributes
 //     label: String, ... Text representation of attributes
 //     FDs: Array of object {left: Array of String, right: Array of String}, ... functional dependencies (??? in canonical form ???)
-//     candidateKeys: Array of Array of String, ... Set of all keys of the node
-//     keys: String, ... Text representation of candidateKeys
+//     keys: Array of Array of String, ... Set of all keys of the node, originally candidateKeys in Decomposition.jsx, keys in Synthesis.jsx
+//     keysLabel: String, ... Text representation of keys, originally keys in Decomposition.jsx
 //     normalForm: String, ... "1", "2", "3", "BCNF" ... (originally type)
-//     faultyFDs: Array of object {left: Array of String, right: Array of String}, ... faulty functional dependencies (??? in canonical form ???) ... (originally faultyDependencies)
+//     faultyFDs: Array of object {
+//       dependency: {left: Array of String, right: Array of String}, // TODO: check if it is correct
+//       violates: String, ... "2NF", "3NF", "BCNF"
+//       }, ... faulty functional dependencies (??? in canonical form ???) ... (originally faultyDependencies)
 //     subsetOf: Array of Array of String, ... Set of longest nodes this one is a subset of ... TODO: Used by Decomposition.jsx. Move to node, not keep in data 
 //     }
 //   }
@@ -42,21 +45,22 @@ export class CustomNodeFunctions {
     // CustomNode functions
     this.initNodeData = this.initNodeData.bind(this);
     this.initNode = this.initNode.bind(this);
+//  this.mergeTables = this.mergeTables(this);
     this.highlightSubsetNodes = this.highlightSubsetNodes.bind(this);
   }
 
   initNodeData = (attr, fPlusOrig) => {
     const fPlus = functionalDependencyFunctionsInstance.getAllDependenciesDependsOnAttr(attr, fPlusOrig);
-    const normalFormType = normalFormInstance.normalFormType(fPlus, attr);
-    const candidateKeys = findingKeysFunctionsInstance.getAllKeys(fPlus, attr);
+    const normalForm = normalFormInstance.normalFormType(fPlus, attr);
+    const keys = findingKeysFunctionsInstance.getAllKeys(fPlus, attr);
     let data = {
       attributes: attr,
       label: attr.join(", "),
       FDs: fPlus,
-      candidateKeys: candidateKeys,
-      keys: showFunctionsInstance.showKeysAsText(candidateKeys),
-      normalForm: normalFormType.type,
-      faultyFDs: normalFormType.faultyDependencies,
+      keys: keys,
+      keysLabel: showFunctionsInstance.showKeysAsText(keys),
+      normalForm: normalForm.type,
+      faultyFDs: normalForm.faultyDependencies,
       subsetOf: [],
     };
 
@@ -74,6 +78,15 @@ export class CustomNodeFunctions {
       position,
     };
     return node;
+  };
+
+  // MKOP 2025/10/09 mpved from MergeTablesAfterDecompose and simplified
+  mergeTables(table1, table2, fPlusOrig) {
+    const attr = Array.from(
+      new Set([...table1.data.attributes, ...table2.data.attributes])
+    );
+    
+    return this.initNode(attr, fPlusOrig, table1.id);
   };
 
   // MKOP 2025/10/04 Rewritten to match to Synthesis code as much as possible
@@ -170,7 +183,7 @@ export default memo(({ node, practiceMode }) => {
             textOverflow: "ellipsis",
           }}
         >
-          {t("problem-decomposition.customeNode.keys")} [ {node.data.keys} ]
+          {t("problem-decomposition.customeNode.keys")} [ {node.data.keysLabel} ]
         </div>
 
         {node.data.subsetOf.length > 0 && (

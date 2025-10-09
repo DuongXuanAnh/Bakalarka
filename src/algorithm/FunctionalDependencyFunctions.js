@@ -19,6 +19,7 @@ export class FunctionalDependencyFunctions {
     this.mergeDependenciesWithTheSameLHS =
       this.mergeDependenciesWithTheSameLHS.bind(this);
     this.isAttributeRedundant = this.isAttributeRedundant.bind(this);
+    this.getAllDependenciesDependsOnAttr = this.getAllDependenciesDependsOnAttr.bind(this);
   }
 
   // Algorithm to determine if an attribute is redundant or not.
@@ -228,6 +229,8 @@ export class FunctionalDependencyFunctions {
   // MKOP 2025/10/08 moved from Decomposition.jsx
   // fPlus is a set of (canonical, but works universally) FDs
   // function returns a subset that can be applied on given set of attributes
+  // replaces Decomposition.jsx::getAllDependenciesDependsOnAttr(attr) function
+  // replaces Synthesis.jsx::getValidDependenciesFromFplus(attr) function
   getAllDependenciesDependsOnAttr = (attr, fPlus) => {
     let dependenciesDependsOnAttr = [];
     for (let i = 0; i < fPlus.length; i++) {

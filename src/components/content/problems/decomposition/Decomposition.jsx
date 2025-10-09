@@ -49,7 +49,7 @@ const functionalDependencyFunctionsInstance =
 const findingKeysFunctionsInstance = new FindingKeysFunctions();
 const showFunctionsInstance = new ShowFunctions();
 
-const position = { x: 0, y: 0 };
+//const position = { x: 0, y: 0 };
 const edgeType = "smoothstep";
 const minimapStyle = {
   height: 120,
@@ -823,7 +823,7 @@ const Decomposition = () => {
                 <p>
                   <b>{t("problem-decomposition.keys")}</b>{" "}
                   {showFunctionsInstance.showKeysAsText(
-                    selectedNode.data.candidateKeys
+                    selectedNode.data.keys
                   )}{" "}
                 </p>
                 <p>
@@ -975,7 +975,7 @@ const Decomposition = () => {
                   <p>
                     <b>{t("problem-decomposition.keys")}</b>{" "}
                     {showFunctionsInstance.showKeysAsText(
-                      selectedNode.data.candidateKeys
+                      selectedNode.data.keys
                     )}
                   </p>
                   <ul>
@@ -1224,7 +1224,7 @@ const Decomposition = () => {
               tables={
                 currLeafNodesList.length === 0 ? [nodes[0]] : currLeafNodesList
               }
-              originKeys={nodes[0].data.candidateKeys}
+              originKeys={nodes[0].data.keys}
               lostFDs={lostFDs}
             />
           </div>
