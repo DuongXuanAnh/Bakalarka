@@ -43,12 +43,29 @@ const findingKeysFunctionsInstance = new FindingKeysFunctions();
 export class CustomNodeFunctions {
   constructor() {
     // CustomNode functions
+    this.emptyNodeData = this.emptyNodeData.bind(this);
     this.initNodeData = this.initNodeData.bind(this);
+    this.emptyNode = this.emptyNode.bind(this);
     this.initNode = this.initNode.bind(this);
-//  this.mergeTables = this.mergeTables(this);
+    this.mergeTables = this.mergeTables.bind(this);
     this.highlightSubsetNodes = this.highlightSubsetNodes.bind(this);
   }
 
+  emptyNodeData = () => {
+    let data = {
+      attributes: [],
+      label: [].join(", "),
+      FDs: [],
+      keys: [],
+      keysLabel: showFunctionsInstance.showKeysAsText([]),
+      normalForm: "",
+      faultyFDs: [],
+      subsetOf: [],
+    };
+
+    return data;
+  };
+  
   initNodeData = (attr, fPlusOrig) => {
     const fPlus = functionalDependencyFunctionsInstance.getAllDependenciesDependsOnAttr(attr, fPlusOrig);
     const normalForm = normalFormInstance.normalFormType(fPlus, attr);
@@ -67,6 +84,21 @@ export class CustomNodeFunctions {
     return data;
   };
 
+  emptyNode = () => {
+    const nodeData = this.emptyNodeData();
+    const position = { x: 0, y: 0 };
+
+    const node = {
+      id: "",
+      type: "customNode",
+      isSubset: false,
+      subsetOf: [],
+      data: nodeData,
+      position,
+    };
+    return node;
+  };
+
   initNode = (attr, fPlusOrig, id) => {
     const nodeData = this.initNodeData(attr, fPlusOrig);
     const position = { x: 0, y: 0 };
@@ -74,6 +106,8 @@ export class CustomNodeFunctions {
     const node = {
       id: id, // MKOP 2025/10/08 was "1"
       type: "customNode",
+      isSubset: false,       // MKOP newly initialized
+      subsetOf: [],          // MKOP new
       data: nodeData,
       position,
     };

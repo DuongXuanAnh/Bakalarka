@@ -137,7 +137,7 @@ const Decomposition = () => {
     setIsModalMergeTablesAfterDecomposeOpen,
   ] = useState(false);
 
-  const [amnoutProblemSolvedInNode, setAmountProblemSolvedInNode] = useState(0); // Počet problémů vyřešených v daném vrcholu (sprvne odpovědi na NF a fautly dependencies)
+  const [amnoutProblemSolvedInNode, setAmountProblemSolvedInNode] = useState(0); // Počet problémů vyřešených v daném vrcholu (správné odpovědi na NF a fautly dependencies)
 
   const firstRender = useRef(true); // To track the first render
 
@@ -157,55 +157,6 @@ const Decomposition = () => {
     }),
     [practiceMode]
   );
-
-//const getAllDependenciesDependsOnAttr = (attr) => {
-//  let dependenciesDependsOnAttr = [];
-//  for (let i = 0; i < fPlusOriginSingleRHS.length; i++) {
-//    // Zkontrolujeme, že všechny prvky na levé i pravé straně jsou obsaženy v `attr`
-//    let leftSideValid = fPlusOriginSingleRHS[i].left.every((element) =>
-//      attr.includes(element)
-//    );
-//    let rightSideValid = fPlusOriginSingleRHS[i].right.every((element) =>
-//      attr.includes(element)
-//    );
-//
-//    if (leftSideValid && rightSideValid) {
-//      dependenciesDependsOnAttr.push(fPlusOriginSingleRHS[i]);
-//    }
-//  }
-//
-//  return dependenciesDependsOnAttr;
-//};
-
-//const nodeData = (attr) => {
-//  const fPlus = getAllDependenciesDependsOnAttr(attr);
-//  const normalFormType = normalFormInstance.normalFormType(fPlus, attr);
-//  const candidateKeys = findingKeysFunctionsInstance.getAllKeys(fPlus, attr);
-//  let data = {
-//    attributes: attr,
-//    label: attr.join(", "),
-//    FDs: fPlus,
-//    candidateKeys: candidateKeys,
-//    keys: showFunctionsInstance.showKeysAsText(candidateKeys),
-//    normalForm: normalFormType.type,
-//    faultyFDs: normalFormType.faultyDependencies,
-//    subsetOf: [],
-//  };
-//
-//  return data;
-//};
-
-//const initialNode = (attr) => {
-//  const initialNodeData = nodeData(attr);
-//
-//  const node = {
-//    id: "1",
-//    type: "customNode",
-//    data: initialNodeData,
-//    position,
-//  };
-//  return node;
-//};
 
   const [nodesArray, setNodesArray] = useState([CustomNodeFunctionsInstance.initNode(attributes, fPlusOriginSingleRHS, "1")]); // Node id
 
@@ -334,7 +285,7 @@ const Decomposition = () => {
     }
   };
 
-  const removeNodeAndDescendants = (nodeId) => {
+  const removeNodeDescendants = (nodeId) => {
     dagreGraph = new dagre.graphlib.Graph();
     dagreGraph.setDefaultEdgeLabel(() => ({}));
 
@@ -380,7 +331,7 @@ const Decomposition = () => {
   }, []);
 
   const handleDependencyClick = (dependency, node) => {
-    removeNodeAndDescendants(node.id);
+    removeNodeDescendants(node.id);
 
     // delete node from currLeafNodesList if it is there
     let updatedLeafNodes = currLeafNodesList.filter(
@@ -388,30 +339,6 @@ const Decomposition = () => {
     );
 
     if (dependency) {
-//    const dataNode1 = CustomNodeFunctionsInstance.initNodeData(
-//      [...dependency.left, ...dependency.right], 
-//      fPlusOriginSingleRHS
-//      );
-//    const dataNode2 = CustomNodeFunctionsInstance.initNodeData(
-//      node.data.attributes.filter(
-//        (item) => !dependency.right.includes(item)
-//        ),
-//      fPlusOriginSingleRHS
-//      );
-
-//    const newNode1 = {
-//      id: node.id + 1,
-//      type: "customNode",
-//      data: dataNode1,
-//      position,
-//    };
-
-//    const newNode2 = {
-//      id: node.id + 2,
-//      type: "customNode",
-//      data: dataNode2,
-//      position,
-//    };
       
       const newNode1 = CustomNodeFunctionsInstance.initNode(
         [...dependency.left, ...dependency.right], 
@@ -425,7 +352,6 @@ const Decomposition = () => {
         fPlusOriginSingleRHS,
         node.id + 2 // Concatenation of strings
         );
-      
 
       setNodesArray((prevNodes) => [...prevNodes, newNode1, newNode2]);
 
@@ -474,21 +400,25 @@ const Decomposition = () => {
     currLeafNodesList = updatedLeafNodes;
   };
 
-  const randomDecomposition = () => {
+  const randomDecomposition = (nodeIdPrefix, depth) => {
+  // MKOP 2025/10/10 new parameter, expand only nodes with this prefix
+  // MKOP 2025/10/11 new parameter, expand only limited number of levels, null means unlimited
     while (true) {
       let leafNodes = currLeafNodesList;
       let leafNodesWithFaultyDeps = [];
       for (let node of leafNodes) {
         if (
           node.data.faultyFDs &&
-          node.data.faultyFDs.length > 0
+          node.data.faultyFDs.length > 0 &&
+          node.id.startsWith(nodeIdPrefix) && // MKOP 2025/10/10
+          (depth == null || node.id.length < (nodeIdPrefix.length + depth)) // MKOP 2025/10/11
         ) {
           leafNodesWithFaultyDeps.push(node);
         }
       }
 
       if (leafNodesWithFaultyDeps.length === 0) {
-        break; // Ukonečení, pokud již neexistují listy s chybnými závislostmi
+        break; // Ukončení, pokud již neexistují listy s chybnými závislostmi
       }
 
       for (let leafNode of leafNodesWithFaultyDeps) {
@@ -516,6 +446,7 @@ const Decomposition = () => {
     }
   };
 
+  // MKOP original version, making complete random tree
   const showRandomDecomposition = useCallback(() => {
     const restoreGraph = async () => {
       setNodesArray([]);
@@ -528,8 +459,17 @@ const Decomposition = () => {
 
     restoreGraph();
 
-    randomDecomposition();
+    randomDecomposition("1", null); // MKOP 2025/10/10 expand only leaf nodes with ID starting by "1", ie. all of them
   }, [setNodesArray, setEdgesArray]);
+
+  // MKOP 2025/10/10 new version, creating random tree under given node
+  const handleRandomDecompositionClick = (selectedNode, depth) => { 
+//const showRandomNodeDecomposition = useCallback((selectedNode) => () => { // showRandomNodeDecomposition
+    handleDependencyClick(null, selectedNode);  
+    // MKOP 2025/10/10 expand only leaf nodes with ID starting by node.id, ie. its subtree
+    // MKOP 2025/10/10 limit expansion to given number of levels, null means unlimited
+    randomDecomposition(selectedNode.id, depth); // node.id 
+  };
 
   const handleNavigate = (fd) => {
     // Save current state
@@ -848,6 +788,28 @@ const Decomposition = () => {
                       </li>
                     )}
                   {selectedNode.data.normalForm !== "BCNF" && (
+                    <li key="drndn">
+                      <button
+                        onClick={() => 
+                          handleRandomDecompositionClick(selectedNode, 1)
+                        }
+                      >
+                        {t("ownDecomposition.decomposeRandomlyNode")}
+                      </button>
+                    </li>
+                  )}
+                  {selectedNode.data.normalForm !== "BCNF" && (
+                    <li key="drndt">
+                      <button
+                        onClick={() => 
+                          handleRandomDecompositionClick(selectedNode, null)
+                        }
+                      >
+                        {t("ownDecomposition.decomposeRandomlySubtree")}
+                      </button>
+                    </li>
+                  )}
+                  {selectedNode.data.normalForm !== "BCNF" && (
                     <li key="dm">
                       <button
                         onClick={() => setIsModalDecompositeOwnWayOpen(true)}
@@ -993,6 +955,28 @@ const Decomposition = () => {
                           </button>
                         </li>
                       )}
+                    {/*selectedNode.data.normalForm !== "BCNF" &&*/ (
+                      <li key="drndn">
+                        <button
+                          onClick={() => 
+                            handleRandomDecompositionClick(selectedNode, 1)
+                          }
+                        >
+                          {t("ownDecomposition.decomposeRandomlyNode")}
+                        </button>
+                      </li>
+                    )}
+                    {/*selectedNode.data.normalForm !== "BCNF" &&*/ (
+                      <li key="drndt">
+                        <button
+                          onClick={() => 
+                            handleRandomDecompositionClick(selectedNode, null)
+                          }
+                        >
+                          {t("ownDecomposition.decomposeRandomlySubtree")}
+                        </button>
+                      </li>
+                    )}
                     {/*selectedNode.data.normalForm !== "BCNF" &&*/ ( // MKOP 2025/09/10 v practice módu zobraz tlačítko i pro BCNF relaci
                       <li id="dm">
                         <button

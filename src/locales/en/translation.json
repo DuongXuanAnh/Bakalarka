@@ -387,7 +387,9 @@
     "leftSideCanNotBeSuperKey": "The left side of FD is a (super)key, the dependency does not violate any normal form.",
     "close": "Close",
     "stillDecompose": "Decompose anyway",
-    "doNotDecompose": "Revoke relation's decomposition"
+    "doNotDecompose": "Revoke relation's decomposition",
+    "decomposeRandomlyNode": "Decompose node randomly",
+    "decomposeRandomlySubtree": "Decompose subtree randomly"
   },
 
   "mergeTablesAfterDecompose": {

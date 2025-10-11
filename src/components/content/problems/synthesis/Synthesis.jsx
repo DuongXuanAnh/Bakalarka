@@ -39,19 +39,19 @@ function Synthesis() {
   const [rewrittenFDs, setRewrittenFDs] = useState(initialRewrittenFDs);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  const [tablesInfo, setTablesInfo] = useState([
-    {
-      id: "",
-      isSubset: false,       // MKOP newly initialized
-      subsetOf: [],          // MKOP new
-      data: {
-        attributes: [],      // MKOP moved to data
-        FDs: [],             // MKOP moved to data
-        keys: [],            // MKOP moved to data
-        normalForm: "",      // MKOP moved to data from normalForm.type        
-        faultyFDs: [],       // MKOP moved to data from normalForm.faultyDependencies
-      },
-    },
+  const [tablesInfo, setTablesInfo] = useState([ // MKOP it seems that an empty array works as well
+  //{
+  //  id: "",
+  //  isSubset: false,       // MKOP newly initialized
+  //  subsetOf: [],          // MKOP new
+  //  data: {
+  //    attributes: [],      // MKOP moved to data
+  //    FDs: [],             // MKOP moved to data
+  //    keys: [],            // MKOP moved to data
+  //    normalForm: "",      // MKOP moved to data from normalForm.type        
+  //    faultyFDs: [],       // MKOP moved to data from normalForm.faultyDependencies
+  //  },
+  //},
   ]);
 
   const [draggingOverIndex, setDraggingOverIndex] = useState(null);
@@ -66,18 +66,9 @@ function Synthesis() {
     setDraggingOverIndex(update.destination ? update.destination.index : null);
   };
 
-  const [modalContent, setModalContent] = useState({
-  //id: "",
-  //isSubset: false,       // MKOP newly initialized
-  //subsetOf: [],          // MKOP new
-    data: {
-  //  attributes: [],      // MKOP moved to data
-      FDs: [],             // MKOP moved to data
-      keys: [],            // MKOP moved to data
-      normalForm: "",      // MKOP moved to data from normalForm.type
-      faultyFDs: [],       // MKOP moved to data from normalForm.faultyDependencies
-    },
-  });
+  const [modalContent, setModalContent] = useState(() => 
+    CustomNodeFunctionsInstance.emptyNode()
+    );
 
   const fPlus = fPlusFunctionsInstance.FPlus(dependencies, attributes);
 
@@ -124,25 +115,6 @@ function Synthesis() {
   };
 
   const condensedFDs = transformFDsToCondensedForm(removeRedundant_FDs);
-
-//const getValidDependenciesFromFplus = (attr) => {
-//  let dependenciesDependsOnAttr = [];
-//  for (let i = 0; i < singleRHS_fPlus.length; i++) {
-//    // Zkontrolujeme, že všechny prvky na levé i pravé straně jsou obsaženy v `attr`
-//    let leftSideValid = singleRHS_fPlus[i].left.every((element) =>
-//      attr.includes(element)
-//    );
-//    let rightSideValid = singleRHS_fPlus[i].right.every((element) =>
-//      attr.includes(element)
-//    );
-//
-//    if (leftSideValid && rightSideValid) {
-//      dependenciesDependsOnAttr.push(singleRHS_fPlus[i]);
-//    }
-//  }
-//
-//  return dependenciesDependsOnAttr;
-//};
 
   const checkIfTablesContainOriginKey = () => {
     const normalizedOriginKeys = originKeys.map((key) => key.sort());
@@ -212,22 +184,32 @@ function Synthesis() {
   useEffect(() => {
     setTablesInfo([]);
     const newTablesInfo = condensedFDs.map((fd, index) => {
-      let attrs = [...fd.left, ...fd.right];
+//    let attrs = [...fd.left, ...fd.right];
+//
+//    const FDs = functionalDependencyFunctionsInstance.getAllDependenciesDependsOnAttr(attrs, singleRHS_fPlus);
+//    const keys = findingKeysFunctionsInstance.getAllKeys(FDs, attrs);
+//    const normalForm = normalFormInstance.normalFormType(FDs, attrs);
+//
+//    return  {
+//      id: index.toString(),
+//      data: {
+//        attributes: attrs,
+//        FDs: FDs,
+//        keys: keys,
+//        normalForm: normalForm.type,
+//        faultyFDs: normalForm.faultyDependencies,
+//      },
+//    };
 
-      const FDs = functionalDependencyFunctionsInstance.getAllDependenciesDependsOnAttr(attrs, singleRHS_fPlus);
-      const keys = findingKeysFunctionsInstance.getAllKeys(FDs, attrs);
-      const normalForm = normalFormInstance.normalFormType(FDs, attrs);
-
-      return {
-        id: index.toString(),
-        data: {
-          attributes: attrs,
-          FDs: FDs,
-          keys: keys,
-          normalForm: normalForm.type,
-          faultyFDs: normalForm.faultyDependencies,
-        },
-      };
+      const newAttr = [...fd.left, ...fd.right];
+  
+      const retVal =  
+        CustomNodeFunctionsInstance.initNode(
+          newAttr,
+          singleRHS_fPlus,
+          index.toString()
+          );
+      return retVal;
     });
 
     // Přidání nově vypočítaných informací do stávajícího stavu tablesInfo
@@ -241,30 +223,30 @@ function Synthesis() {
     setModalContent(table);
   };
 
-  function mergeTables(table1, table2) {
-    // Sloučení atributů s odstraněním duplikátů
-    const mergedAttributes = Array.from(
-      new Set([...table1.data.attributes, ...table2.data.attributes])
-    );
-
-    const FDs = functionalDependencyFunctionsInstance.getAllDependenciesDependsOnAttr(mergedAttributes, singleRHS_fPlus);
-    const keys = findingKeysFunctionsInstance.getAllKeys(FDs, mergedAttributes);
-    const normalForm = normalFormInstance.normalFormType(FDs, mergedAttributes);
-
-    // Vytvoření nové tabulky s informacemi
-    const mergedTable = {
-      id: table1.id,
-      data: {
-        attributes: mergedAttributes,
-        FDs: FDs,
-        keys: keys,
-        normalForm: normalForm.type,
-        faultyFDs: normalForm.faultyDependencies,
-      },
-    };
-
-    return mergedTable;
-  }
+//function mergeTables(table1, table2) {
+//  // Sloučení atributů s odstraněním duplikátů
+//  const mergedAttributes = Array.from(
+//    new Set([...table1.data.attributes, ...table2.data.attributes])
+//  );
+//
+//  const FDs = functionalDependencyFunctionsInstance.getAllDependenciesDependsOnAttr(mergedAttributes, singleRHS_fPlus);
+//  const keys = findingKeysFunctionsInstance.getAllKeys(FDs, mergedAttributes);
+//  const normalForm = normalFormInstance.normalFormType(FDs, mergedAttributes);
+//
+//  // Vytvoření nové tabulky s informacemi
+//  const mergedTable = {
+//    id: table1.id,
+//    data: {
+//      attributes: mergedAttributes,
+//      FDs: FDs,
+//      keys: keys,
+//      normalForm: normalForm.type,
+//      faultyFDs: normalForm.faultyDependencies,
+//    },
+//  };
+//
+//  return mergedTable;
+//}
 
   const onDragEndTables = (result) => {
     const { source, destination } = result;
@@ -307,7 +289,8 @@ function Synthesis() {
           )
         )
       ) {
-        const mergedValue = mergeTables(sourceItem, destinationItem);
+      //const mergedValue = mergeTables(sourceItem, destinationItem);
+        const mergedValue = CustomNodeFunctionsInstance.mergeTables(sourceItem, destinationItem, singleRHS_fPlus);
 
         if (
           mergedValue.data.normalForm === "BCNF" ||

@@ -387,7 +387,9 @@
     "leftSideCanNotBeSuperKey": "Levá strana FZ je (nad)klíčem, závislost neporušuje žádnou normální formu.",
     "close": "Zavřít",
     "stillDecompose": "Přesto dekomponovat",
-    "doNotDecompose": "Zrušit dekompozici relace"
+    "doNotDecompose": "Zrušit dekompozici relace",
+    "decomposeRandomlyNode": "Dekomponovat uzel náhodně",
+    "decomposeRandomlySubtree": "Dekomponovat podstrom náhodně"
   },
 
   "mergeTablesAfterDecompose": {

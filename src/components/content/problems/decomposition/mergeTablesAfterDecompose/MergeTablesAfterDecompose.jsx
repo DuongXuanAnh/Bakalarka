@@ -46,46 +46,6 @@ function MergeTablesAfterDecompose({ tables, originKeys, lostFDs }) {
     setLostFDsInfo(lostFDs);
   }, [tables, lostFDs]);
 
-//const getValidDependenciesFromFplus = (attr) => {
-//  let dependenciesDependsOnAttr = [];
-//  for (let i = 0; i < singleRHS_fPlus.length; i++) {
-//    let leftSideValid = singleRHS_fPlus[i].left.every((element) =>
-//      attr.includes(element)
-//    );
-//    let rightSideValid = singleRHS_fPlus[i].right.every((element) =>
-//      attr.includes(element)
-//    );
-//
-//    if (leftSideValid && rightSideValid) {
-//      dependenciesDependsOnAttr.push(singleRHS_fPlus[i]);
-//    }
-//  }
-//  return dependenciesDependsOnAttr;
-//};
-
-//function mergeTables(table1, table2) {
-//  const mergedAttributes = Array.from(
-//    new Set([...table1.data.attributes, ...table2.data.attributes])
-//  );
-////const FDs = getValidDependenciesFromFplus(mergedAttributes);
-//  const FDs = functionalDependencyFunctionsInstance.getAllDependenciesDependsOnAttr(mergedAttributes, singleRHS_fPlus);
-//  const keys = findingKeysFunctionsInstance.getAllKeys(FDs, mergedAttributes);
-//  const normalForm = normalFormInstance.normalFormType(FDs, mergedAttributes);
-//
-//  const mergedTable = {
-//    id: table1.id,
-//    data: {
-//      attributes: mergedAttributes,
-//      keys: keys,
-//      FDs: FDs,
-//      normalForm: normalForm.type,
-//      faultyFDs: normalForm.faultyDependencies,
-//    },
-//  };
-//
-//  return mergedTable;
-//}
-
   const onDragTableStart = (start) => {
     setDraggingItemIndex(start.source.index);
     setDraggingOverIndex(null);
@@ -145,26 +105,6 @@ function MergeTablesAfterDecompose({ tables, originKeys, lostFDs }) {
           newTablesInfo.splice(source.index, 1);
           setTablesInfo(newTablesInfo);
 
-//        let tablesFDs = [];
-//        newTablesInfo.forEach((table) => {
-//          tablesFDs.push(...table.data.FDs);
-//        });
-          
-//        const newFplus = fPlusFunctionsInstance.FPlus(tablesFDs, attributes);
-//        const newFplusSingleRHS =
-//          functionalDependencyFunctionsInstance.rewriteFDSingleRHS(newFplus);
-//        let newLostFDs = [...lostFDsInfo];
-//        newLostFDs.forEach((fd) => {
-//          const attrClosure = attributeFunctionsInstance.attributeClosure(
-//            newFplusSingleRHS,
-//            fd.left
-//          );
-//          if (attrClosure.includes(fd.right[0])) {
-//            newLostFDs = newLostFDs.filter((item) => item !== fd);
-//          }
-//        });
-//        setLostFDsInfo(newLostFDs);
-          
           setLostFDsInfo(
             functionalDependencyFunctionsInstance.lostDependencies(
               lostFDsInfo, // previously lost FDs // MKOP 2025/10/02 would work even for non-canonical set of FDs
@@ -197,54 +137,7 @@ function MergeTablesAfterDecompose({ tables, originKeys, lostFDs }) {
     }
   };
 
-//const getAllDependenciesDependsOnAttr = (attr) => {
-//  let dependenciesDependsOnAttr = [];
-//  for (let i = 0; i < singleRHS_fPlus.length; i++) {
-//    // Zkontrolujeme, že všechny prvky na levé i pravé straně jsou obsaženy v `attr`
-//    let leftSideValid = singleRHS_fPlus[i].left.every((element) =>
-//      attr.includes(element)
-//    );
-//    let rightSideValid = singleRHS_fPlus[i].right.every((element) =>
-//      attr.includes(element)
-//    );
-//
-//    if (leftSideValid && rightSideValid) {
-//      dependenciesDependsOnAttr.push(singleRHS_fPlus[i]);
-//    }
-//  }
-//
-//  return dependenciesDependsOnAttr;
-//};
-
-//const nodeData = (attr) => {
-////const fPlus = getAllDependenciesDependsOnAttr(attr);
-//  const fPlus = functionalDependencyFunctionsInstance.getAllDependenciesDependsOnAttr(attr, singleRHS_fPlus);
-//  const normalFormType = normalFormInstance.normalFormType(fPlus, attr);
-//  const keys = findingKeysFunctionsInstance.getAllKeys(fPlus, attr);
-//  let data = {
-//    attributes: attr,
-//    label: attr.join(", "),
-//    keysLabel: showFunctionsInstance.showKeysAsText(keys),
-//    FDs: fPlus,
-//  //type: normalFormType.type,
-//    normalForm: normalFormType.type,
-//    faultyFDs: normalFormType.faultyDependencies,
-//    keys: keys,
-//    subsetOf: [],
-//  };
-//
-//  return data;
-//};
-
   const addLostDependency = (fd) => {
-//  const dataNode = nodeData([...fd.left, ...fd.right]);
-//  const position = { x: 0, y: 0 };
-//  const newNode = {
-//    id: dataNode.label,
-//    type: "customNode",
-//    data: dataNode,
-//    position,
-//  };
 
     const newAttr = [...fd.left, ...fd.right]; 
     const newNode = CustomNodeFunctionsInstance.initNode(
@@ -255,26 +148,6 @@ function MergeTablesAfterDecompose({ tables, originKeys, lostFDs }) {
     const newTablesInfo = [...tablesInfo];
     newTablesInfo.push(newNode);
     setTablesInfo(newTablesInfo);
-
-//  let tablesFDs = [];
-//  newTablesInfo.forEach((table) => {
-//    tablesFDs.push(...table.data.FDs);
-//  });
-    
-//  const newFplus = fPlusFunctionsInstance.FPlus(tablesFDs, attributes);
-//  const newFplusSingleRHS =
-//    functionalDependencyFunctionsInstance.rewriteFDSingleRHS(newFplus);
-//  let newLostFDs = [...lostFDsInfo];
-//  newLostFDs.forEach((fd) => {
-//    const attrClosure = attributeFunctionsInstance.attributeClosure(
-//      newFplusSingleRHS,
-//      fd.left
-//    );
-//    if (attrClosure.includes(fd.right[0])) {
-//      newLostFDs = newLostFDs.filter((item) => item !== fd);
-//    }
-//  });
-//  setLostFDsInfo(newLostFDs);
 
     setLostFDsInfo(
       functionalDependencyFunctionsInstance.lostDependencies(

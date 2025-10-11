@@ -4,11 +4,11 @@ import Swal from "sweetalert2";
 import { useTranslation } from "react-i18next";
 import "./ownDecomposition.scss";
 
-import { HelperSetFunctions } from "../../../../../algorithm/HelperSetFunctions";
 import { AttributeFunctions } from "../../../../../algorithm/AttributeFunctions";
+import { HelperSetFunctions } from "../../../../../algorithm/HelperSetFunctions";
 
-const helperSetFunctionsInstance = new HelperSetFunctions();
 const attributeFunctionsInstance = new AttributeFunctions();
+const helperSetFunctionsInstance = new HelperSetFunctions();
 
 // Define the usePrevious hook right in your component file
 function usePrevious(value) {
@@ -29,7 +29,7 @@ function OwnDecomposition({
   const normalFormInstance = new NormalFormALG();
   const [leftSideAttributes, setLeftSideAttributes] = useState([]);
   const [rightSideAttributes, setRightSideAttributes] = useState([]);
-  const [attributes, setAttributes] = useState(selectedNode.data.originalAttr);
+  const [attributes, setAttributes] = useState(selectedNode.data.attributes);
   const [dependencies, setDependencies] = useState(selectedNode.data.FDs);
 
   const prevLeftSideAttributes = usePrevious(leftSideAttributes);
@@ -108,7 +108,7 @@ function OwnDecomposition({
       });
     } else if (
       normalFormInstance.isSuperKey(
-        selectedNode.data.candidateKeys,
+        selectedNode.data.keys,
         leftSideAttributes
       )
     ) {

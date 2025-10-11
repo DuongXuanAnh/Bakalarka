@@ -3,8 +3,12 @@ import { NormalFormALG } from "../../../../../algorithm/NormalFormALG";
 import Swal from "sweetalert2";
 import { useTranslation } from "react-i18next";
 import "./ownDecomposition.scss";
+
 import { AttributeFunctions } from "../../../../../algorithm/AttributeFunctions";
 import { HelperSetFunctions } from "../../../../../algorithm/HelperSetFunctions";
+
+const attributeFunctionsInstance = new AttributeFunctions();
+const helperSetFunctionsInstance = new HelperSetFunctions();
 
 function OwnDecompositionPractice({
   selectedNode,
@@ -13,12 +17,10 @@ function OwnDecompositionPractice({
   setIsPracticeModalOpen,
 }) {
   const { t } = useTranslation();
-  const attributeFunctionsInstance = new AttributeFunctions();
-  const helperSetFunctionsInstance = new HelperSetFunctions();
   const normalFormInstance = new NormalFormALG();
   const [leftSideAttributes, setLeftSideAttributes] = useState([]);
   const [rightSideAttributes, setRightSideAttributes] = useState([]);
-  const [attributes, setAttributes] = useState(selectedNode.data.originalAttr);
+  const [attributes, setAttributes] = useState(selectedNode.data.attributes);
   const [dependencies, setDependencies] = useState(selectedNode.data.FDs);
   const [leftSubRelationAttributes, setLeftSubRelationAttributes] = useState(
     []
@@ -181,7 +183,7 @@ function OwnDecompositionPractice({
       });
     } else if (
       normalFormInstance.isSuperKey(
-        selectedNode.data.candidateKeys,
+        selectedNode.data.keys,
         leftSideAttributes
       )
     ) {
