@@ -7,9 +7,12 @@ import { useTranslation } from "react-i18next";
 import Swal from "sweetalert2";
 import { FindingKeysFunctions } from "../../../../algorithm/FindingKeysFunctions";
 import { AttributeFunctions } from "../../../../algorithm/AttributeFunctions";
+import { ShowFunctions } from "../../../../algorithm/ShowFunctions";
 
 const findingKeysFunctionsInstance = new FindingKeysFunctions();
 const attributeFunctionsInstance = new AttributeFunctions();
+const showFunctionsInstance = new ShowFunctions();
+
 function FirstKey() {
   const { t, i18n } = useTranslation();
 
@@ -227,7 +230,7 @@ function FirstKey() {
 
       <h3 className="allKeysDisplay">
         {t("problem-firstKey.firstKeyTitle")}
-        {`{ ${candidateKey.join(",")} }`}
+        {`{ ${showFunctionsInstance.attributesArrayToText(candidateKey)} }`}
       </h3>
       {showSteps && (
         <div ref={stepsContainerRef} className="steps-container">

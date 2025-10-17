@@ -179,7 +179,7 @@ function AttributeClosure() {
         <div className="problemContainer">
           <h2>{t("problem-attributeClosure.schema")}</h2>
           {attributes.length > 0 ? (
-            <p className="IS">IS ( {attributes.join(", ")} )</p>
+            <p className="IS">IS ( {showFunctionsInstance.attributesArrayToText(attributes)} )</p>
           ) : (
             <p>{t("problem-attributeClosure.youWillSeeTheSchemaHere")}</p>
           )}
@@ -251,10 +251,10 @@ function AttributeClosure() {
             <div className="attributeClosure">
               <h2>{t("problem-attributeClosure.attributeClosure")}</h2>
               <div className="attributeClosureResult">
-                {attributesArea.join(",")}
+                {showFunctionsInstance.attributesArrayToText(attributesArea)}
                 <sup>+</sup>
                 <span className="arrow"> = </span>
-                {attributeClosure.join(",")}
+                {showFunctionsInstance.attributesArrayToText(attributeClosure)}
               </div>
               <div className="StepsContainer">
                 {steps.slice(0, currentStepIndex + 1).map((step, index) => (

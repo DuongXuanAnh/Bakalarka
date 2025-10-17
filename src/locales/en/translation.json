@@ -341,7 +341,7 @@
     "lookAtAttributeClosure": "Let's look at the attribute closure#^_^#",
     "attributeClosureResult": "({{potentialKey}})+ = {{closure}}",
     "attributeRedundant": "⇒ 'Atribute {{attr}}' is redundant, we can remove it, so we have",
-    "attributeNotRedundant": "⇒ 'Atribute {{attr}}' is not redundant, so we have to keep it, so we still have",
+    "attributeNotRedundant": "⇒ 'Atribute {{attr}}' is not redundant, so we have to keep it. So we still have",
     "finalFirstKey": "⇒ We obtain the first key: {{candidateKey}}"
   },
 

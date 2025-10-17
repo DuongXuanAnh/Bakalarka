@@ -534,7 +534,7 @@ function MinimalCover() {
               ))}
               <span className="dependency-right">
                 {" "}
-                → {dependency.right.join(", ")}
+                → {showFunctionsInstance.dependencySideArrayToText(dependency.right)}
               </span>
             </div>
           ))}

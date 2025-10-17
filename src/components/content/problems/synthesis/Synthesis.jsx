@@ -449,7 +449,7 @@ function Synthesis() {
                               {t("problem-synthesis.table")} {index + 1}:
                             </p>
                             <p>
-                              R{index + 1}({table.data.attributes.join(",")})
+                              R{index + 1}({showFunctionsInstance.attributesArrayToText(table.data.attributes)})
                             </p>
                             <p className="tableKeys">
                               {t("problem-synthesis.keys")}: [{" "}
@@ -496,10 +496,10 @@ function Synthesis() {
                       <p>
                         {t("problem-synthesis.table")} {tablesInfo.length + 1}:
                       </p>
-                      R{tablesInfo.length + 1} ({originKeys[0].join(",")})
+                      R{tablesInfo.length + 1} ({showFunctionsInstance.attributesArrayToText(originKeys[0])})
                       <p className="tableKeys">
                         {t("problem-synthesis.keys")}: [{" "}
-                        {"{" + originKeys[0].join(",") + "}"} ]
+                        {"{" + showFunctionsInstance.attributesArrayToText(originKeys[0]) + "}"} ]
                       </p>
                       <p>
                         {

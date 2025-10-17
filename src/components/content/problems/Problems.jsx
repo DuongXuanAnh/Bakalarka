@@ -59,7 +59,7 @@ export default function Problems() {
 
   const saveProblem = () => {
     // Vytvoříme textový obsah s atributy a závislostmi
-    const attributesText = attributes.join(", ");
+    const attributesText = showFunctionsInstance.attributesArrayToText(attributes);
     const dependenciesText = JSON.stringify(dependencies, null, 2);
     const content = `Attributes: [${attributesText}]\nDependencies: ${dependenciesText}`;
 
@@ -165,7 +165,7 @@ export default function Problems() {
       <h1>{t("content-problems.title_problem")}</h1>
       <h2>{t("content-problems.title_schema")}</h2>
       {attributes.length > 0 ? (
-        <p className="IS">IS ( {attributes.join(", ")} )</p>
+        <p className="IS">IS ( {showFunctionsInstance.attributesArrayToText(attributes)} )</p>
       ) : (
         <p>{t("content-problems.schema_placeholder")}</p>
       )}

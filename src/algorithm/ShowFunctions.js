@@ -2,21 +2,31 @@ export class ShowFunctions {
   constructor() {
     this.showKeysAsText = this.showKeysAsText.bind(this);
     this.showArrayWithBrackets = this.showArrayWithBrackets.bind(this);
+    this.attributesArrayToText = this.attributesArrayToText.bind(this);
+    this.dependencySideArrayToText = this.dependencySideArrayToText.bind(this);
     this.showTextDependencyWithArrow =
       this.showTextDependencyWithArrow.bind(this);
     this.dependenciesArrayToText = this.dependenciesArrayToText.bind(this);
   }
 
   showKeysAsText(keys) {
-    return keys.map((key) => `{ ${key} }`).join(", ");
+    return keys.map((key) => `{ ${key.join(", ")} }`).join(", ");
   }
 
   showArrayWithBrackets(array) {
-    return `{ ${array.join(",")} }`;
+    return `{ ${array.join(", ")} }`;
+  }
+
+  attributesArrayToText(attr) {
+    return attr.join(", ");
+  }
+
+  dependencySideArrayToText(attr) {
+    return attr.join(",");
   }
 
   showTextDependencyWithArrow(fd) {
-    return fd.left.join(",") + " → " + fd.right.join(",");
+    return this.dependencySideArrayToText(fd.left) + " → " + this.dependencySideArrayToText(fd.right);
   }
 
   dependenciesArrayToText(fds) {
@@ -31,7 +41,7 @@ export class ShowFunctions {
         const rhs = isObjectFormat ? dep.right : dep[1];
 
         // Format the dependency as text
-        const depText = `${lhs.join(",")} → ${rhs.join(",")}`;
+        const depText = `${this.dependencySideArrayToText(lhs)} → ${this.dependencySideArrayToText(rhs)}`;
 
         // Append a semicolon if this isn't the last element, else nothing
         const separator = index < fds.length - 1 ? " ; " : "";

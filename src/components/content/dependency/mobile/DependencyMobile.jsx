@@ -4,6 +4,9 @@ import { useNavigate } from "react-router-dom";
 import { useDependencyContext } from "../../../../contexts/DependencyContext";
 import { useTranslation } from "react-i18next";
 import "./dependencyMobile.scss";
+import { ShowFunctions } from "../../../../algorithm/ShowFunctions";
+
+const showFunctionsInstance = new ShowFunctions();
 
 const getItems = (count) =>
   Array.from({ length: count }, (v, k) => k).map((k) => ({
@@ -43,10 +46,10 @@ function DependencyMobile() {
   useEffect(() => {
     const formattedItems = Object.keys(dependencies).map((key) => {
       const leftSide = dependencies[key].left
-        ? dependencies[key].left.join(", ")
+        ? showFunctionsInstance.dependencySideArrayToText(dependencies[key].left)
         : t("content-dependencies.undefined");
       const rightSide = dependencies[key].right
-        ? dependencies[key].right.join(", ")
+        ? showFunctionsInstance.dependencySideArrayToText(dependencies[key].right)
         : t("content-dependencies.undefined");
       return {
         id: key,

@@ -207,8 +207,8 @@ function Derivability() {
       return (
         <div key={index} className="powerSetSubset">
           <div className="subset">
-            {subset.join(",")}
-            {" → " + relevantClosure.join(",")}
+            {showFunctionsInstance.dependencySideArrayToText(subset)}
+            {" → " + showFunctionsInstance.dependencySideArrayToText(relevantClosure)}
           </div>
         </div>
       );
@@ -233,7 +233,7 @@ function Derivability() {
       <div className="problemContainer">
         <h2>{t("problem-derivability.schema")}</h2>
         {attributes.length > 0 ? (
-          <p className="IS">IS ( {attributes.join(", ")} )</p>
+          <p className="IS">IS ( {showFunctionsInstance.attributesArrayToText(attributes)} )</p>
         ) : (
           <p>{t("problem-derivability.youWillSeeTheSchemaHere")}</p>
         )}
@@ -428,20 +428,20 @@ function Derivability() {
                   <>
                     {powerSet.slice(0, 15).map((subset, index) => (
                       <div key={index} className="powerSetSubset">
-                        {subset.join(",")}
+                        {showFunctionsInstance.attributesArrayToText(subset)}
                       </div>
                     ))}
                     <div className="dots">...</div>
                     {powerSet.slice(-5).map((subset, index) => (
                       <div key={`last-${index}`} className="powerSetSubset">
-                        {subset.join(",")}
+                        {showFunctionsInstance.attributesArrayToText(subset)}
                       </div>
                     ))}
                   </>
                 ) : (
                   powerSet.map((subset, index) => (
                     <div key={index} className="powerSetSubset">
-                      {subset.join(",")}
+                      {showFunctionsInstance.attributesArrayToText(subset)}
                     </div>
                   ))
                 )
@@ -459,11 +459,12 @@ function Derivability() {
                   {powerSet.slice(0, 15).map((subset, index) => (
                     <div key={index} className="powerSetSubset">
                       <div className="subset">
-                        ({subset.join(",")})<sup>+</sup>
+                        ({showFunctionsInstance.dependencySideArrayToText(subset)})<sup>+</sup>
                         {" → " +
-                          attributeFunctionsInstance
-                            .attributeClosure(dependencies, subset)
-                            .join(",")}
+                          showFunctionsInstance.dependencySideArrayToText(
+                            attributeFunctionsInstance
+                              .attributeClosure(dependencies, subset)
+                            )}
                       </div>
                     </div>
                   ))}
@@ -473,11 +474,12 @@ function Derivability() {
                   {powerSet.slice(-5).map((subset, index) => (
                     <div key={`last-${index}`} className="powerSetSubset">
                       <div className="subset">
-                        ({subset.join(",")})<sup>+</sup>
+                        ({showFunctionsInstance.dependencySideArrayToText(subset)})<sup>+</sup>
                         {" → " +
-                          attributeFunctionsInstance
-                            .attributeClosure(dependencies, subset)
-                            .join(",")}
+                          showFunctionsInstance.dependencySideArrayToText(
+                            attributeFunctionsInstance
+                              .attributeClosure(dependencies, subset)
+                            )}
                       </div>
                     </div>
                   ))}
@@ -486,11 +488,12 @@ function Derivability() {
                 powerSet.map((subset, index) => (
                   <div key={index} className="powerSetSubset">
                     <div className="subset">
-                      ({subset.join(",")})<sup>+</sup>
+                      ({showFunctionsInstance.dependencySideArrayToText(subset)})<sup>+</sup>
                       {" → " +
-                        attributeFunctionsInstance
-                          .attributeClosure(dependencies, subset)
-                          .join(",")}
+                        showFunctionsInstance.dependencySideArrayToText(
+                          attributeFunctionsInstance
+                            .attributeClosure(dependencies, subset)
+                          )}
                     </div>
                   </div>
                 ))

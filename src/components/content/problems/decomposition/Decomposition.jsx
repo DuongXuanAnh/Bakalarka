@@ -351,12 +351,14 @@ const Decomposition = () => {
       const newNode1 = CustomNodeFunctionsInstance.initNode(
         [...dependency.left, ...dependency.right],
         fPlusOriginSingleRHS,
-        node.id + 1 // Concatenation of strings
+        node.id + "1" // Concatenation of strings
       );
       const newNode2 = CustomNodeFunctionsInstance.initNode(
-        node.data.attributes.filter((item) => !dependency.right.includes(item)),
+        node.data.attributes.filter(
+          (item) => !dependency.right.includes(item)
+          ),
         fPlusOriginSingleRHS,
-        node.id + 2 // Concatenation of strings
+        node.id + "2" // Concatenation of strings
       );
 
       setNodesArray((prevNodes) => [...prevNodes, newNode1, newNode2]);
@@ -781,7 +783,9 @@ const Decomposition = () => {
                 </p>
                 <p>
                   <b>{t("problem-decomposition.keys")}</b>{" "}
-                  {showFunctionsInstance.showKeysAsText(selectedNode.data.keys)}{" "}
+                  {showFunctionsInstance.showKeysAsText(
+                    selectedNode.data.keys
+                  )}{" "}
                 </p>
                 <p>
                   <b>{t("problem-decomposition.normalForm")}</b>{" "}

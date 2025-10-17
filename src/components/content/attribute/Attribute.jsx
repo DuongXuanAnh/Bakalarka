@@ -19,6 +19,9 @@ import {
   password,
   colectionName,
 } from "../../../constantValues/constantValues";
+import { ShowFunctions } from "../../../algorithm/ShowFunctions";
+
+const showFunctionsInstance = new ShowFunctions();
 
 export default function Attribute() {
   const { t } = useTranslation();
@@ -447,7 +450,7 @@ export default function Attribute() {
         <div className="schema">
           <h2>{t("content-attribute.schema_title")}</h2>
           {attributes.length > 0 ? (
-            <p className="IS">IS ( {attributes.join(", ")} )</p>
+            <p className="IS">IS ( {showFunctionsInstance.attributesArrayToText(attributes)} )</p>
           ) : (
             <p>{t("content-attribute.schema_placeholder")}</p>
           )}

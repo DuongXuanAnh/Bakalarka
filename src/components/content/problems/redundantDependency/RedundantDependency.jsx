@@ -6,7 +6,10 @@ import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { MinimalCoverFunction } from "../../../../algorithm/MinimalCoverFunction";
 import { FunctionalDependencyFunctions } from "../../../../algorithm/FunctionalDependencyFunctions";
+import { ShowFunctions } from "../../../../algorithm/ShowFunctions";
 import "./redundantDependency.scss";
+
+const showFunctionsInstance = new ShowFunctions();
 
 function RedundantDependency() {
   const { t } = useTranslation();
@@ -201,7 +204,7 @@ function RedundantDependency() {
                         onChange={() => handleSelectFD(index)}
                       />
                       <label htmlFor={`fd-${index}`}>
-                        {fd.left.join(",")} → {fd.right.join(",")}
+                        {showFunctionsInstance.showTextDependencyWithArrow(fd)}
                       </label>
                     </div>
                   )}

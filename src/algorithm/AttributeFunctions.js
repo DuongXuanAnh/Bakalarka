@@ -28,19 +28,20 @@ export class AttributeFunctions {
   }
 
   attributeClosure(FDs, attributesPlus) {
-    const leftAttributes = FDs.map((dep) => dep.left);
-    const rightAttributes = FDs.map((dep) => dep.right);
+  //const leftAttributes = FDs.map((dep) => dep.left);
+  //const rightAttributes = FDs.map((dep) => dep.right);
 
+    let dependencies = [...FDs]; // Using spread to ensure we're working with a copy
     let closureX = [...attributesPlus]; // Using spread to ensure we're working with a copy
     let previousClosure;
     do {
       previousClosure = [...closureX];
-      for (let i = 0; i < leftAttributes.length; i++) {
+      for (let i = 0; i < dependencies.length; i++) {
         if (
-          helperSetFunctionsInstance.subset(leftAttributes[i], closureX) &&
-          !helperSetFunctionsInstance.subset(rightAttributes[i], closureX)
+          helperSetFunctionsInstance.subset(dependencies[i].left, closureX) &&
+          !helperSetFunctionsInstance.subset(dependencies[i].right, closureX)
         ) {
-          closureX = [...new Set(closureX.concat(rightAttributes[i]))]; // Ensuring uniqueness using Set
+          closureX = [...new Set(closureX.concat(dependencies[i].right))]; // Ensuring uniqueness using Set
         }
       }
     } while (previousClosure.length !== closureX.length); // keep looping until no new attributes are added
@@ -49,16 +50,17 @@ export class AttributeFunctions {
   }
 
   attributeClosureWithExplain(FDs, A, attributesPlus) {
-    const leftAttributes = FDs.map((dep) => dep.left);
-    const rightAttributes = FDs.map((dep) => dep.right);
+  //const leftAttributes = FDs.map((dep) => dep.left);
+  //const rightAttributes = FDs.map((dep) => dep.right);
 
+    let dependencies = [...FDs]; // Using spread to ensure we're working with a copy
     let closureX = [...attributesPlus]; // Using spread to ensure we're working with a copy
     let previousClosure;
     let explainMessages = []; // Pole pro uchování vysvětlujících zpráv
 
     explainMessages.push(
       i18n.t("attributeClosure.startWithAttributes", {
-        attributes: attributesPlus.join(","),
+        attributes: showFunctionsInstance.attributesArrayToText(attributesPlus),
       })
     );
 
@@ -69,31 +71,31 @@ export class AttributeFunctions {
 
       explainMessages.push(
         i18n.t("attributeClosure.currentClosure", {
-          closure: closureX.join(","),
+          closure: showFunctionsInstance.attributesArrayToText(closureX),
         })
       );
 
-      for (let i = 0; i < FDs.length; i++) {
+      for (let i = 0; i < dependencies.length; i++) {
         explainMessages.push(
           i18n.t("attributeClosure.examiningDependency", {
             dependency: showFunctionsInstance.showTextDependencyWithArrow(
-              FDs[i]
+              dependencies[i]
             ),
           })
         );
 
         if (
-          helperSetFunctionsInstance.subset(leftAttributes[i], closureX) &&
-          !helperSetFunctionsInstance.subset(rightAttributes[i], closureX)
+          helperSetFunctionsInstance.subset(dependencies[i].left, closureX) &&
+          !helperSetFunctionsInstance.subset(dependencies[i].right, closureX)
         ) {
           explainMessages.push(i18n.t("attributeClosure.addingToClosure"));
-          closureX = [...new Set(closureX.concat(rightAttributes[i]))]; // Ensuring uniqueness using Set
+          closureX = [...new Set(closureX.concat(dependencies[i].right))]; // Ensuring uniqueness using Set
 
           if (closureX.length === A.length) {
             explainMessages.push(i18n.t("attributeClosure.allAttrInClosure"));
             explainMessages.push(
               i18n.t("attributeClosure.finalClosure", {
-                closure: closureX.join(","),
+                closure: showFunctionsInstance.attributesArrayToText(closureX),
               })
             );
 
@@ -106,7 +108,7 @@ export class AttributeFunctions {
 
           explainMessages.push(
             i18n.t("attributeClosure.newClosure", {
-              closure: closureX.join(","),
+              closure: showFunctionsInstance.attributesArrayToText(closureX),
             })
           );
         } else {
@@ -116,7 +118,7 @@ export class AttributeFunctions {
     } while (previousClosure.length !== closureX.length); // keep looping until no new attributes are added
 
     explainMessages.push(
-      i18n.t("attributeClosure.finalClosure", { closure: closureX.join(",") })
+      i18n.t("attributeClosure.finalClosure", { closure: showFunctionsInstance.attributesArrayToText(closureX) })
     );
 
     // Nakonec uložíme pole zpráv do localStorage

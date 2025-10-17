@@ -1,6 +1,8 @@
+import { ShowFunctions } from "./ShowFunctions";
 import { HelperSetFunctions } from "./HelperSetFunctions";
 import { AttributeFunctions } from "./AttributeFunctions";
 
+const showFunctionsInstance = new ShowFunctions();
 const helperSetFunctionsInstance = new HelperSetFunctions();
 const attributeFunctionsInstance = new AttributeFunctions();
 
@@ -204,7 +206,7 @@ export class FunctionalDependencyFunctions {
 
     // Iterace přes všechny funkční závislosti
     FDs.forEach((fd) => {
-      const leftKey = fd.left.join(","); // Převod levé strany na string pro použití jako klíč
+      const leftKey = showFunctionsInstance.attributesArrayToText(fd.left); // Převod levé strany na string pro použití jako klíč
       const rightSet = new Set(fd.right); // Převod pravé strany na Set pro unikátnost
 
       if (merged[leftKey]) {

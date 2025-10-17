@@ -106,7 +106,7 @@ function NormalForm() {
       <div className="problemContainer">
         <h2>{t("problem-normalForm.schema")}</h2>
         {attributes.length > 0 ? (
-          <p className="IS">IS ( {attributes.join(", ")} )</p>
+          <p className="IS">IS ( {showFunctionsInstance.attributesArrayToText(attributes)} )</p>
         ) : (
           <p>{t("problem-normalForm.youWillSeeTheSchemaHere")}</p>
         )}

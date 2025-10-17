@@ -143,7 +143,7 @@ function MergeTablesAfterDecompose({ tables, originKeys, lostFDs }) {
     const newNode = CustomNodeFunctionsInstance.initNode(
       newAttr,
       singleRHS_fPlus,
-      newAttr.join(", ")
+      showFunctionsInstance.attributesArrayToText(newAttr)
       );
     const newTablesInfo = [...tablesInfo];
     newTablesInfo.push(newNode);
@@ -205,7 +205,7 @@ function MergeTablesAfterDecompose({ tables, originKeys, lostFDs }) {
                       >
                         <div>
                           <p className="tableAttrs">
-                            ({table.data.attributes.join(",")})
+                            ({showFunctionsInstance.attributesArrayToText(table.data.attributes)})
                           </p>
                           <p className="tableKeys">
                             {t("problem-synthesis.keys")}: [{" "}

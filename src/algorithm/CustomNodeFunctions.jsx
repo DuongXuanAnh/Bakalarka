@@ -53,7 +53,7 @@ export class CustomNodeFunctions {
   emptyNodeData = () => {
     let data = {
       attributes: [],
-      label: [].join(", "),
+      label: showFunctionsInstance.attributesArrayToText([]),
       FDs: [],
       keys: [],
       keysLabel: showFunctionsInstance.showKeysAsText([]),
@@ -75,7 +75,7 @@ export class CustomNodeFunctions {
     const keys = findingKeysFunctionsInstance.getAllKeys(fPlus, attr);
     let data = {
       attributes: attr,
-      label: attr.join(", "),
+      label: showFunctionsInstance.attributesArrayToText(attr),
       FDs: fPlus,
       keys: keys,
       keysLabel: showFunctionsInstance.showKeysAsText(keys),

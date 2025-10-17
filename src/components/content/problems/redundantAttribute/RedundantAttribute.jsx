@@ -227,7 +227,7 @@ function RedundantAttribute() {
         <div className="problemContainer">
           <h2>{t("problem-redundantAttribute.schema")}</h2>
           {attributes.length > 0 ? (
-            <p className="IS">IS ( {attributes.join(", ")} )</p>
+            <p className="IS">IS ( {showFunctionsInstance.attributesArrayToText(attributes)} )</p>
           ) : (
             <p>{t("problem-redundantAttribute.youWillSeeTheSchemaHere")}</p>
           )}
@@ -407,7 +407,7 @@ function RedundantAttribute() {
             <h2>{t("problem-redundantAttribute.redundantAttributes")}</h2>
             <div className="area">
               {redundantAttributes.length > 0 ? (
-                <p>{redundantAttributes.join(", ")}</p>
+                <p>{showFunctionsInstance.attributesArrayToText(redundantAttributes)}</p>
               ) : (
                 <p>{t("problem-redundantAttribute.noRedundantAttributes")}</p>
               )}

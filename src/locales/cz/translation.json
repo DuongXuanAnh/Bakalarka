@@ -340,8 +340,8 @@
     "tryToRemoveAttribute": "Zkusíme odstranit '{{attr}}'",
     "lookAtAttributeClosure": "Podíváme se na atributový uzávěr#^_^#",
     "attributeClosureResult": "({{potentialKey}})+ = {{closure}}",
-    "attributeRedundant": "⇒ Atribut '{{attr}}' je redundantní, můžeme ho odstranit, takže máme",
-    "attributeNotRedundant": "⇒ Atribut '{{attr}}' není redundantní, tedy ho tam musíme vrátit, takže stále máme",
+    "attributeRedundant": "⇒ Atribut '{{attr}}' je redundantní, můžeme ho tedy odstranit. Takže máme",
+    "attributeNotRedundant": "⇒ Atribut '{{attr}}' není redundantní, tedy ho musíme vrátit zpět. Stále tedy máme",
     "finalFirstKey": "⇒ Dostaneme první klíč: {{candidateKey}}"
   },
 

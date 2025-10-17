@@ -50,8 +50,8 @@ export class FindingKeysFunctions {
     for (let attr of schema) {
       explainMessages.push(
         i18n.t("firstKey.initialKeyToSchema", {
-          candidateKey: candidateKey.join(", "),
-          schema: schema.join(", "),
+          candidateKey: showFunctionsInstance.dependencySideArrayToText(candidateKey),
+          schema: showFunctionsInstance.dependencySideArrayToText(schema),
         })
       );
       if (candidateKey.length === 1) {
@@ -73,8 +73,8 @@ export class FindingKeysFunctions {
       explainMessages.push(i18n.t("firstKey.lookAtAttributeClosure"));
       explainMessages.push(
         i18n.t("firstKey.attributeClosureResult", {
-          potentialKey: potentialKey.join(","),
-          closure: closure.join(","),
+          potentialKey: showFunctionsInstance.attributesArrayToText(potentialKey),
+          closure: showFunctionsInstance.attributesArrayToText(closure),
         })
       );
 
@@ -91,7 +91,7 @@ export class FindingKeysFunctions {
     }
 
     explainMessages.push(
-      i18n.t("firstKey.finalFirstKey", { candidateKey: candidateKey.join(",") })
+      i18n.t("firstKey.finalFirstKey", { candidateKey: showFunctionsInstance.attributesArrayToText(candidateKey) })
     );
 
     // Uložíme pole zpráv do localStorage
@@ -283,8 +283,8 @@ export class FindingKeysFunctions {
             i18n.t("allKeys.potentialNewKeyWhenDependency", {
               newPossibleKey:
                 showFunctionsInstance.showArrayWithBrackets(newPossibleKey),
-              newPossibleKey2: newPossibleKey.join(","),
-              A: A.join(","),
+              newPossibleKey2: showFunctionsInstance.attributesArrayToText(newPossibleKey),
+              A: showFunctionsInstance.attributesArrayToText(A),
             })
           );
 
