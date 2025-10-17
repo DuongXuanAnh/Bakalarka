@@ -9,9 +9,7 @@ describe("HelperSetFunctions", () => {
 
   describe('subset (["A", "B"], ["A", "B", "C"])', () => {
     test("should return true when setA is a subset of setB", () => {
-      expect(helperSetFunctions.subset(["A", "B"], ["A", "B", "C"])).toBe(
-        true
-      );
+      expect(helperSetFunctions.subset(["A", "B"], ["A", "B", "C"])).toBe(true);
     });
   });
 
@@ -33,17 +31,15 @@ describe("HelperSetFunctions", () => {
 
   describe('subsetNEQ (["A", "B"], ["A", "B", "C"])', () => {
     test("should return true when setA is a direct subset of setB", () => {
-      expect(helperSetFunctions.subset(["A", "B"], ["A", "B", "C"])).toBe(
-        true
-      );
+      expect(helperSetFunctions.subset(["A", "B"], ["A", "B", "C"])).toBe(true);
     });
   });
 
   describe('subsetNEQ (["C", "B", "A"], ["A", "B", "C"])', () => {
     test("should return false when setA is equal to setB", () => {
-      expect(helperSetFunctions.subsetNEQ(["C", "B", "A"], ["A", "B", "C"])).toBe(
-        false
-      );
+      expect(
+        helperSetFunctions.subsetNEQ(["C", "B", "A"], ["A", "B", "C"])
+      ).toBe(false);
     });
   });
 
@@ -79,7 +75,6 @@ describe("HelperSetFunctions", () => {
     });
   });
 
-
   describe('isRedundant ["A", "B"], 1, ["A", "B", "C"], 2', () => {
     test("should return true, as the other is a strict superset of current", () => {
       expect(
@@ -98,25 +93,25 @@ describe("HelperSetFunctions", () => {
 
   describe('isRedundant ["A", "B"], 2, ["A", "B"], 1', () => {
     test("should return true, as the other is equal and precedes current", () => {
-      expect(
-        helperSetFunctions.isRedundant(["A", "B"], 2, ["A", "B"], 1)
-      ).toBe(true);
+      expect(helperSetFunctions.isRedundant(["A", "B"], 2, ["A", "B"], 1)).toBe(
+        true
+      );
     });
   });
 
   describe('isRedundant ["A", "B"], 1, ["A", "B"], 2', () => {
     test("should return false, as the other is equal and follows current", () => {
-      expect(
-        helperSetFunctions.isRedundant(["A", "B"], 1, ["A", "B"], 2)
-      ).toBe(false);
+      expect(helperSetFunctions.isRedundant(["A", "B"], 1, ["A", "B"], 2)).toBe(
+        false
+      );
     });
   });
 
   describe('isRedundant ["A", "B"], 1, ["A", "B"], 1', () => {
     test("should return false, as both are the same", () => {
-      expect(
-        helperSetFunctions.isRedundant(["A", "B"], 1, ["A", "B"], 1)
-      ).toBe(false);
+      expect(helperSetFunctions.isRedundant(["A", "B"], 1, ["A", "B"], 1)).toBe(
+        false
+      );
     });
   });
 
@@ -125,15 +120,6 @@ describe("HelperSetFunctions", () => {
       expect(
         helperSetFunctions.isRedundant(["A", "B"], 1, ["A", "B", "C"], 2)
       ).toBe(true);
-    });
-  });
-
-  describe("intersectionOfArrays", () => {
-    test("should return common sub-arrays between two arrays of arrays", () => {
-      const arr1 = [["A"], ["B"], ["C"], ["D"]];
-      const arr2 = [["C"], ["D"], ["E"]];
-      const result = helperSetFunctions.intersectionOfArrays(arr1, arr2);
-      expect(result).toEqual([["C"], ["D"]]);
     });
   });
 

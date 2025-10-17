@@ -21,8 +21,7 @@ function AllKeys() {
   const [currentLanguage, setCurrentLanguage] = useState(i18n.language);
 
   const { attributes: contextAttributes } = useAttributeContext();
-  const { dependencies: contextDependencies, setDependencies } =
-    useDependencyContext();
+  const { dependencies: contextDependencies } = useDependencyContext();
 
   const storedState = JSON.parse(sessionStorage.getItem("normalFormState"));
 
@@ -31,9 +30,9 @@ function AllKeys() {
       ? storedState.attributesArea
       : contextAttributes;
 
-  const [attributes, setAttributes] = useState(initialAttributes);
+  const [attributes] = useState(initialAttributes);
 
-  const [simplifyFplus, setSimplifyFplus] = useState(
+  const [simplifyFplus] = useState(
     fPlusFunctionsInstance.FPlus(contextDependencies, attributes)
   );
 

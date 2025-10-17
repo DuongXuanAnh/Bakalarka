@@ -32,21 +32,17 @@ import CustomNode from "../../../../algorithm/CustomNodeFunctions";
 import { CustomNodeFunctions } from "../../../../algorithm/CustomNodeFunctions";
 import { FPlusFunctions } from "../../../../algorithm/FPlusFunctions";
 import { AttributeFunctions } from "../../../../algorithm/AttributeFunctions";
-import { HelperSetFunctions } from "../../../../algorithm/HelperSetFunctions";
 import { MinimalCoverFunction } from "../../../../algorithm/MinimalCoverFunction";
 import { FunctionalDependencyFunctions } from "../../../../algorithm/FunctionalDependencyFunctions";
-import { FindingKeysFunctions } from "../../../../algorithm/FindingKeysFunctions";
 import { ShowFunctions } from "../../../../algorithm/ShowFunctions";
 
 const CustomNodeFunctionsInstance = new CustomNodeFunctions();
 const fPlusFunctionsInstance = new FPlusFunctions();
 const attributeFunctionsInstance = new AttributeFunctions();
-const helperSetFunctionsInstance = new HelperSetFunctions();
 const helperColorFunctionsInstance = new HelperColorFunctions();
 const minimalCoverFunctionInstance = new MinimalCoverFunction();
 const functionalDependencyFunctionsInstance =
   new FunctionalDependencyFunctions();
-const findingKeysFunctionsInstance = new FindingKeysFunctions();
 const showFunctionsInstance = new ShowFunctions();
 
 //const position = { x: 0, y: 0 };
@@ -158,18 +154,31 @@ const Decomposition = () => {
     [practiceMode]
   );
 
-  const [nodesArray, setNodesArray] = useState([CustomNodeFunctionsInstance.initNode(attributes, fPlusOriginSingleRHS, "1")]); // Node id
+  const [nodesArray, setNodesArray] = useState([
+    CustomNodeFunctionsInstance.initNode(attributes, fPlusOriginSingleRHS, "1"),
+  ]); // Node id
 
   const [edgesArray, setEdgesArray] = useState([]);
 
   // MKOP 2025/09/09 pokud se změnil practiceMode, přidej/odeber výstrahu z labelů hran
   edgesArray.forEach((edge) => {
-    if (edge.label && practiceMode && edge.label[0]==String.fromCharCode(0x26A0)) { // MKOP 2025/09/14 Warning Sign U+26A0 (&#x26A0;)
+    if (
+      edge.label &&
+      practiceMode &&
+      edge.label[0] === String.fromCharCode(0x26a0)
+    ) {
+      // MKOP 2025/09/14 Warning Sign U+26A0 (&#x26A0;)
       edge.label = edge.label.substring(2);
-    };
-    if (edge.label && edge.lost && !practiceMode && edge.label[0]!=String.fromCharCode(0x26A0)) { // MKOP 2025/09/14 Warning Sign U+26A0 (&#x26A0;)
-      edge.label = edge.lost+edge.label;
-    };
+    }
+    if (
+      edge.label &&
+      edge.lost &&
+      !practiceMode &&
+      edge.label[0] !== String.fromCharCode(0x26a0)
+    ) {
+      // MKOP 2025/09/14 Warning Sign U+26A0 (&#x26A0;)
+      edge.label = edge.lost + edge.label;
+    }
   });
 
   let { nodes: layoutedNodes, edges: layoutedEdges } = getLayoutedElements(
@@ -211,15 +220,15 @@ const Decomposition = () => {
 
   useEffect(() => {
     if (currLeafNodesList.length > 0) {
-//    setLostFDs([]);
-      
+      //    setLostFDs([]);
+
       setLostFDs(
         functionalDependencyFunctionsInstance.lostDependencies(
           minimalCover, // original FDs // MKOP 2025/09/24 would work even for non-canonical set of FDs
           currLeafNodesList.map((leafNode) => leafNode.data.FDs).flat() // leafNodesFDs  // new FDs - some original FDs may be not derivable from them any more
           // MKOP 2025/09/23 canonical Fplus is not needed, attributeClosure will be the same
-          )
-        );
+        )
+      );
     }
 
     CustomNodeFunctionsInstance.highlightSubsetNodes(currLeafNodesList, true);
@@ -339,19 +348,16 @@ const Decomposition = () => {
     );
 
     if (dependency) {
-      
       const newNode1 = CustomNodeFunctionsInstance.initNode(
-        [...dependency.left, ...dependency.right], 
+        [...dependency.left, ...dependency.right],
         fPlusOriginSingleRHS,
         node.id + 1 // Concatenation of strings
-        );
+      );
       const newNode2 = CustomNodeFunctionsInstance.initNode(
-        node.data.attributes.filter(
-          (item) => !dependency.right.includes(item)
-          ),
+        node.data.attributes.filter((item) => !dependency.right.includes(item)),
         fPlusOriginSingleRHS,
         node.id + 2 // Concatenation of strings
-        );
+      );
 
       setNodesArray((prevNodes) => [...prevNodes, newNode1, newNode2]);
 
@@ -360,14 +366,15 @@ const Decomposition = () => {
       let newLowerFDs = [];
       newLowerFDs.push(...newNode1.data.FDs);
       newLowerFDs.push(...newNode2.data.FDs);
-      
-      let lostFlag = '';
-      if (functionalDependencyFunctionsInstance.lostDependencies(
-            node.data.FDs, // original FDs from parent node // MKOP 2025/09/24 works even for non-canonical set of FDs
-            newLowerFDs // new FDs from its children
-            ).length > 0
-        ) {
-        lostFlag = String.fromCharCode(0x26A0)+' '; // MKOP 2025/09/14 Warning Sign U+26A0 (&#x26A0;)
+
+      let lostFlag = "";
+      if (
+        functionalDependencyFunctionsInstance.lostDependencies(
+          node.data.FDs, // original FDs from parent node // MKOP 2025/09/24 works even for non-canonical set of FDs
+          newLowerFDs // new FDs from its children
+        ).length > 0
+      ) {
+        lostFlag = String.fromCharCode(0x26a0) + " "; // MKOP 2025/09/14 Warning Sign U+26A0 (&#x26A0;)
       }
 
       const newEdge1 = {
@@ -401,8 +408,8 @@ const Decomposition = () => {
   };
 
   const randomDecomposition = (nodeIdPrefix, depth) => {
-  // MKOP 2025/10/10 new parameter, expand only nodes with this prefix
-  // MKOP 2025/10/11 new parameter, expand only limited number of levels, null means unlimited
+    // MKOP 2025/10/10 new parameter, expand only nodes with this prefix
+    // MKOP 2025/10/11 new parameter, expand only limited number of levels, null means unlimited
     while (true) {
       let leafNodes = currLeafNodesList;
       let leafNodesWithFaultyDeps = [];
@@ -411,7 +418,7 @@ const Decomposition = () => {
           node.data.faultyFDs &&
           node.data.faultyFDs.length > 0 &&
           node.id.startsWith(nodeIdPrefix) && // MKOP 2025/10/10
-          (depth == null || node.id.length < (nodeIdPrefix.length + depth)) // MKOP 2025/10/11
+          (depth == null || node.id.length < nodeIdPrefix.length + depth) // MKOP 2025/10/11
         ) {
           leafNodesWithFaultyDeps.push(node);
         }
@@ -428,9 +435,7 @@ const Decomposition = () => {
         let faultyDependencies = [];
 
         for (let i = 0; i < leafNode.data.faultyFDs.length; i++) {
-          faultyDependencies.push(
-            leafNode.data.faultyFDs[i].dependency
-          );
+          faultyDependencies.push(leafNode.data.faultyFDs[i].dependency);
         }
 
         const combinedDependencies =
@@ -452,7 +457,13 @@ const Decomposition = () => {
       setNodesArray([]);
       setEdgesArray([]);
       setLostFDs([]);
-      const initialNodes = [CustomNodeFunctionsInstance.initNode(attributes, fPlusOriginSingleRHS, "1")]; // Node id
+      const initialNodes = [
+        CustomNodeFunctionsInstance.initNode(
+          attributes,
+          fPlusOriginSingleRHS,
+          "1"
+        ),
+      ]; // Node id
       setNodesArray(initialNodes);
       currLeafNodesList = initialNodes;
     };
@@ -463,12 +474,12 @@ const Decomposition = () => {
   }, [setNodesArray, setEdgesArray]);
 
   // MKOP 2025/10/10 new version, creating random tree under given node
-  const handleRandomDecompositionClick = (selectedNode, depth) => { 
-//const showRandomNodeDecomposition = useCallback((selectedNode) => () => { // showRandomNodeDecomposition
-    handleDependencyClick(null, selectedNode);  
+  const handleRandomDecompositionClick = (selectedNode, depth) => {
+    //const showRandomNodeDecomposition = useCallback((selectedNode) => () => { // showRandomNodeDecomposition
+    handleDependencyClick(null, selectedNode);
     // MKOP 2025/10/10 expand only leaf nodes with ID starting by node.id, ie. its subtree
     // MKOP 2025/10/10 limit expansion to given number of levels, null means unlimited
-    randomDecomposition(selectedNode.id, depth); // node.id 
+    randomDecomposition(selectedNode.id, depth); // node.id
   };
 
   const handleNavigate = (fd) => {
@@ -525,7 +536,9 @@ const Decomposition = () => {
         icon: "warning",
         confirmButtonText: "Ok",
       });
-    } else if (selectedValue.toString() === selectedNode.data.normalForm.toString()) {
+    } else if (
+      selectedValue.toString() === selectedNode.data.normalForm.toString()
+    ) {
       Swal.fire({
         title: t("problem-decomposition.correct"),
         icon: "success",
@@ -649,10 +662,11 @@ const Decomposition = () => {
                       <button
                         className="howButton"
                         style={{
-                          backgroundColor: helperColorFunctionsInstance.nodeBackgroundColor(
-                            typeNF,
-                            practiceMode
-                          ),
+                          backgroundColor:
+                            helperColorFunctionsInstance.nodeBackgroundColor(
+                              typeNF,
+                              practiceMode
+                            ),
                           border: "none",
                         }}
                         onClick={() => handleNavigate(fd)}
@@ -727,14 +741,19 @@ const Decomposition = () => {
             position="top-right"
           />
           <Controls position="top-left" />
-      {/* <Background color="#ffffff" variant="lines" gap={0} /> */}
-      {/* MKOP 2025/09/10 pokusné jednolité světle šedé pozadí grafu */}
-      {/* <Background color="#ffffff" variant="dots"  gap={1} /> */}
-      {/* <Background color="#ffffff" variant="dots" gap={14} /> */}
+          {/* <Background color="#ffffff" variant="lines" gap={0} /> */}
+          {/* MKOP 2025/09/10 pokusné jednolité světle šedé pozadí grafu */}
+          {/* <Background color="#ffffff" variant="dots"  gap={1} /> */}
+          {/* <Background color="#ffffff" variant="dots" gap={14} /> */}
           <Background
-            color={helperColorFunctionsInstance.uiSkinProperty("ReactFlowColor")} 
-            variant={helperColorFunctionsInstance.uiSkinProperty("ReactFlowVariant")}
-            gap={helperColorFunctionsInstance.uiSkinProperty("ReactFlowGap")} />
+            color={helperColorFunctionsInstance.uiSkinProperty(
+              "ReactFlowColor"
+            )}
+            variant={helperColorFunctionsInstance.uiSkinProperty(
+              "ReactFlowVariant"
+            )}
+            gap={helperColorFunctionsInstance.uiSkinProperty("ReactFlowGap")}
+          />
         </ReactFlow>
 
         <ReactModal
@@ -762,9 +781,7 @@ const Decomposition = () => {
                 </p>
                 <p>
                   <b>{t("problem-decomposition.keys")}</b>{" "}
-                  {showFunctionsInstance.showKeysAsText(
-                    selectedNode.data.keys
-                  )}{" "}
+                  {showFunctionsInstance.showKeysAsText(selectedNode.data.keys)}{" "}
                 </p>
                 <p>
                   <b>{t("problem-decomposition.normalForm")}</b>{" "}
@@ -790,7 +807,7 @@ const Decomposition = () => {
                   {selectedNode.data.normalForm !== "BCNF" && (
                     <li key="drndn">
                       <button
-                        onClick={() => 
+                        onClick={() =>
                           handleRandomDecompositionClick(selectedNode, 1)
                         }
                       >
@@ -801,7 +818,7 @@ const Decomposition = () => {
                   {selectedNode.data.normalForm !== "BCNF" && (
                     <li key="drndt">
                       <button
-                        onClick={() => 
+                        onClick={() =>
                           handleRandomDecompositionClick(selectedNode, null)
                         }
                       >
@@ -955,29 +972,30 @@ const Decomposition = () => {
                           </button>
                         </li>
                       )}
-                    {/*selectedNode.data.normalForm !== "BCNF" &&*/ (
-                      <li key="drndn">
+                    {
+                      /*selectedNode.data.normalForm !== "BCNF" &&*/ <li key="drndn">
                         <button
-                          onClick={() => 
+                          onClick={() =>
                             handleRandomDecompositionClick(selectedNode, 1)
                           }
                         >
                           {t("ownDecomposition.decomposeRandomlyNode")}
                         </button>
                       </li>
-                    )}
-                    {/*selectedNode.data.normalForm !== "BCNF" &&*/ (
-                      <li key="drndt">
+                    }
+                    {
+                      /*selectedNode.data.normalForm !== "BCNF" &&*/ <li key="drndt">
                         <button
-                          onClick={() => 
+                          onClick={() =>
                             handleRandomDecompositionClick(selectedNode, null)
                           }
                         >
                           {t("ownDecomposition.decomposeRandomlySubtree")}
                         </button>
                       </li>
-                    )}
-                    {/*selectedNode.data.normalForm !== "BCNF" &&*/ ( // MKOP 2025/09/10 v practice módu zobraz tlačítko i pro BCNF relaci
+                    }
+                    {
+                      /*selectedNode.data.normalForm !== "BCNF" &&*/ // MKOP 2025/09/10 v practice módu zobraz tlačítko i pro BCNF relaci
                       <li id="dm">
                         <button
                           onClick={() => setIsModalDecompositeOwnWayOpen(true)}
@@ -985,7 +1003,7 @@ const Decomposition = () => {
                           {t("ownDecomposition.decomposeManually")}
                         </button>
                       </li>
-                    )}
+                    }
                   </ul>
 
                   <div className="normalFormPracticeArea">

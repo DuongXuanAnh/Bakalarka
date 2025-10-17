@@ -16,7 +16,6 @@ const functionalDependencyFunctionsInstance =
   new FunctionalDependencyFunctions();
 const findingKeysFunctionsInstance = new FindingKeysFunctions();
 
-
 // MKOP 2025/10/06
 // Note: object.hasOwnProperty("propName")
 // class node{
@@ -24,7 +23,7 @@ const findingKeysFunctionsInstance = new FindingKeysFunctions();
 //   type: String, ... "customNode"
 //   isSubset: Boolean, ... Is this node a subset of another node T/F?
 //   subsetOfIndex: Integer, ... Zero-based index of the node this one is subset of
-//   subsetOf: Array of Array of String, ... Set of longest nodes this one is a subset of ... TODO: Used by MergeTablesAfterDecompose.jsx, not by Decomposition.jsx. 
+//   subsetOf: Array of Array of String, ... Set of longest nodes this one is a subset of ... TODO: Used by MergeTablesAfterDecompose.jsx, not by Decomposition.jsx.
 //   data { // calss node.data
 //     attributes: Array of String, ... Set of attributes
 //     label: String, ... Text representation of attributes
@@ -36,7 +35,7 @@ const findingKeysFunctionsInstance = new FindingKeysFunctions();
 //       dependency: {left: Array of String, right: Array of String}, // TODO: check if it is correct
 //       violates: String, ... "2NF", "3NF", "BCNF"
 //       }, ... faulty functional dependencies (??? in canonical form ???) ... (originally faultyDependencies)
-//     subsetOf: Array of Array of String, ... Set of longest nodes this one is a subset of ... TODO: Used by Decomposition.jsx. Move to node, not keep in data 
+//     subsetOf: Array of Array of String, ... Set of longest nodes this one is a subset of ... TODO: Used by Decomposition.jsx. Move to node, not keep in data
 //     }
 //   }
 
@@ -65,9 +64,13 @@ export class CustomNodeFunctions {
 
     return data;
   };
-  
+
   initNodeData = (attr, fPlusOrig) => {
-    const fPlus = functionalDependencyFunctionsInstance.getAllDependenciesDependsOnAttr(attr, fPlusOrig);
+    const fPlus =
+      functionalDependencyFunctionsInstance.getAllDependenciesDependsOnAttr(
+        attr,
+        fPlusOrig
+      );
     const normalForm = normalFormInstance.normalFormType(fPlus, attr);
     const keys = findingKeysFunctionsInstance.getAllKeys(fPlus, attr);
     let data = {
@@ -106,8 +109,8 @@ export class CustomNodeFunctions {
     const node = {
       id: id, // MKOP 2025/10/08 was "1"
       type: "customNode",
-      isSubset: false,       // MKOP newly initialized
-      subsetOf: [],          // MKOP new
+      isSubset: false, // MKOP newly initialized
+      subsetOf: [], // MKOP new
       data: nodeData,
       position,
     };
@@ -119,15 +122,14 @@ export class CustomNodeFunctions {
     const attr = Array.from(
       new Set([...table1.data.attributes, ...table2.data.attributes])
     );
-    
+
     return this.initNode(attr, fPlusOrig, table1.id);
-  };
+  }
 
   // MKOP 2025/10/04 Rewritten to match to Synthesis code as much as possible
   // MKOP 2025/10/06 Rewritten to unify code in Synthesis, Decomposition and MergeTablesAfterDecompose
   // MKOP 2025/10/06 Moved to CustomNodeFunctiosn.jsx
   highlightSubsetNodes = (tablesInfo, onlyBCNF = false) => {
-
     tablesInfo.forEach((table, index) => {
       let isSubset = false;
       let subsetOfIndex = null;
@@ -136,16 +138,22 @@ export class CustomNodeFunctions {
 
       tablesInfo.forEach((otherTable, otherIndex) => {
         // Skip non-BCNF tables in Decomposition tree
-        if ( onlyBCNF
-             && ( table.data.normalForm != "BCNF" 
-                  || otherTable.data.normalForm != "BCNF" ) ) return;
+        if (
+          onlyBCNF &&
+          (table.data.normalForm !== "BCNF" ||
+            otherTable.data.normalForm !== "BCNF")
+        )
+          return;
 
         const tableAttributes = table.data.attributes;
         const otherAttributes = otherTable.data.attributes;
-        if ( helperSetFunctionsInstance.isRedundant(
-               tableAttributes, index,
-               otherAttributes, otherIndex
-               )
+        if (
+          helperSetFunctionsInstance.isRedundant(
+            tableAttributes,
+            index,
+            otherAttributes,
+            otherIndex
+          )
         ) {
           isSubset = true;
           // MKOP 2025/10/03 Synthesis uses index
@@ -160,12 +168,11 @@ export class CustomNodeFunctions {
           }
         }
       });
-      
+
       table.isSubset = isSubset;
       table.subsetOfIndex = subsetOfIndex; // MKOP 2025/10/03 Synthesis uses index
       table.data.subsetOf = longestSubsets; // MKOP 2025/10/03 Decomposition uses longestSubsets array
       table.subsetOf = longestSubsets; // MKOP 2025/10/07 MergeTablesAfterDecompose uses this array
-
     });
   };
 }
@@ -188,7 +195,10 @@ export default memo(({ node, practiceMode }) => {
         display: "flex",
         flexDirection: "column",
         alignItems: "center", // Vycentrování obsahu
-        background: helperColorFunctionsInstance.nodeBackgroundColor(node.data.normalForm, practiceMode),
+        background: helperColorFunctionsInstance.nodeBackgroundColor(
+          node.data.normalForm,
+          practiceMode
+        ),
         opacity: node.data.subsetOf.length > 0 ? 0.5 : 1,
         color: "#000",
       }}
@@ -217,7 +227,8 @@ export default memo(({ node, practiceMode }) => {
             textOverflow: "ellipsis",
           }}
         >
-          {t("problem-decomposition.customeNode.keys")} [ {node.data.keysLabel} ]
+          {t("problem-decomposition.customeNode.keys")} [ {node.data.keysLabel}{" "}
+          ]
         </div>
 
         {node.data.subsetOf.length > 0 && (

@@ -17,8 +17,6 @@ export class NormalFormALG {
     this.check_BCNF = this.check_BCNF.bind(this);
     this.normalFormType = this.normalFormType.bind(this);
     this.moreWayHowToSplitNode = this.moreWayHowToSplitNode.bind(this);
-
-    // this.check_3NF_transitivity = this.check_3NF_transitivity.bind(this);
   }
 
   check_2NF(FDs, A) {
@@ -98,36 +96,6 @@ export class NormalFormALG {
       result: faultyDependencies.length === 0,
     };
   }
-
-  // check_3NF_transitivity(FDs, attributes) {
-  //     if (!this.check_2NF(FDs, attributes)) {
-  //         return false; // If it's not in 2NF, it can't be in 3NF.
-  //     }
-
-  //     const candidateKeys = algoInstance.getAllKeys(FDs, attributes).keys;
-
-  //     for (let i = 0; i < FDs.length; i++) {
-  //         const X = FDs[i].left;
-  //         const Y = FDs[i].right;
-
-  //         // Check for transitive dependency X -> Y -> Z
-  //         for (let j = 0; j < FDs.length; j++) {
-  //             if (i === j) continue; // Skip the same functional dependency
-  //             const Y_prime = FDs[j].left;
-  //             const Z = FDs[j].right;
-
-  //             // Check if Y -> Z
-  //             if (algoInstance.equals(Y, Y_prime) && !this.isSuperKey(candidateKeys, X)) {
-  //                 // Check if Z is not a prime attribute, which means X -> Z is a transitive dependency
-  //                 if (!Z.every(attr => this.isPartOfKey(candidateKeys, attr))) {
-  //                     console.log(X + "->" + Z + " is a transitive dependency.");
-  //                     return false;
-  //                 }
-  //             }
-  //         }
-  //     }
-  //     return true;
-  // }
 
   check_BCNF(FDs, A) {
     let faultyDependencies = [];
