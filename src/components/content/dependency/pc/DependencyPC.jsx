@@ -33,7 +33,7 @@ function DependencyPC() {
   const handleSolveProblem = () => {
     let everythingOk = true;
 
-    dependencies.map((dep) => {
+    dependencies.forEach((dep) => {
       if (dep.left.length === 0 || dep.right.length === 0) {
         everythingOk = false;
         return;

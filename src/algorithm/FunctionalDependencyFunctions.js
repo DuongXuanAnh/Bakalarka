@@ -19,7 +19,8 @@ export class FunctionalDependencyFunctions {
     this.mergeDependenciesWithTheSameLHS =
       this.mergeDependenciesWithTheSameLHS.bind(this);
     this.isAttributeRedundant = this.isAttributeRedundant.bind(this);
-    this.getAllDependenciesDependsOnAttr = this.getAllDependenciesDependsOnAttr.bind(this);
+    this.getAllDependenciesDependsOnAttr =
+      this.getAllDependenciesDependsOnAttr.bind(this);
   }
 
   // Algorithm to determine if an attribute is redundant or not.
@@ -37,26 +38,22 @@ export class FunctionalDependencyFunctions {
   }
 
   // Find and return dependencies from originalFDs
-  // that cannot be derived from newFDs   
+  // that cannot be derived from newFDs
   lostDependencies(
     originalFDs, // set of original FDs, supposedly in canonical form
     newFDs // some dependencies in originalFDs can be underivable from these FDs
-    ) {
+  ) {
     let lostFDs = [];
-    
-      originalFDs.map((fd, index) => {
-        // MKOP 2025/09/24 works even for non-canonical FDs fd.left->fd.right
-        if (!this.isDependencyInClosure(
-               newFDs,
-               fd.left,
-               fd.right
-               )) {
-          lostFDs.push(fd);
-        }
-      });
-    return lostFDs; 
+
+    originalFDs.forEach((fd, index) => {
+      // MKOP 2025/09/24 works even for non-canonical FDs fd.left->fd.right
+      if (!this.isDependencyInClosure(newFDs, fd.left, fd.right)) {
+        lostFDs.push(fd);
+      }
+    });
+    return lostFDs;
   }
-  
+
   getReducedAttributes(FDs, X, Y) {
     let XPrime = [...X]; // X’ := X;
     for (let a of X) {
@@ -225,7 +222,7 @@ export class FunctionalDependencyFunctions {
       right: Array.from(rightSet), // Převod Setu zpět na pole
     }));
   }
-  
+
   // MKOP 2025/10/08 moved from Decomposition.jsx
   // fPlus is a set of (canonical, but works universally) FDs
   // function returns a subset that can be applied on given set of attributes
@@ -249,5 +246,4 @@ export class FunctionalDependencyFunctions {
 
     return dependenciesDependsOnAttr;
   };
-  
 }
