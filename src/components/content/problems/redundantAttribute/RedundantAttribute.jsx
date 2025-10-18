@@ -15,7 +15,7 @@ function usePrevious(value) {
   const ref = useRef();
   useEffect(() => {
     ref.current = value;
-  }, [value]); // Only re-run if value changes
+  }, [value]);
   return ref.current;
 }
 
@@ -43,7 +43,7 @@ function RedundantAttribute() {
       prevLeftSideAttributes &&
       leftSideAttributes.length < prevLeftSideAttributes.length
     ) {
-      setRightSideAttributes([]); // Clear rightSideAttributes only when an attribute is removed from the left side
+      setRightSideAttributes([]);
     }
     setIsPracticing(false);
   }, [leftSideAttributes]);
@@ -227,7 +227,9 @@ function RedundantAttribute() {
         <div className="problemContainer">
           <h2>{t("problem-redundantAttribute.schema")}</h2>
           {attributes.length > 0 ? (
-            <p className="IS">IS ( {showFunctionsInstance.attributesArrayToText(attributes)} )</p>
+            <p className="IS">
+              IS ( {showFunctionsInstance.attributesArrayToText(attributes)} )
+            </p>
           ) : (
             <p>{t("problem-redundantAttribute.youWillSeeTheSchemaHere")}</p>
           )}
@@ -407,7 +409,11 @@ function RedundantAttribute() {
             <h2>{t("problem-redundantAttribute.redundantAttributes")}</h2>
             <div className="area">
               {redundantAttributes.length > 0 ? (
-                <p>{showFunctionsInstance.attributesArrayToText(redundantAttributes)}</p>
+                <p>
+                  {showFunctionsInstance.attributesArrayToText(
+                    redundantAttributes
+                  )}
+                </p>
               ) : (
                 <p>{t("problem-redundantAttribute.noRedundantAttributes")}</p>
               )}

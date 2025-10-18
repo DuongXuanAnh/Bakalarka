@@ -97,7 +97,6 @@ function RedundantDependency() {
       JSON.stringify({ left: fd.left, right: fd.right })
     );
 
-    // Inicializace nového stavu pro selectedFDs
     const newSelectedFDs = {};
 
     let noRedundant = true;
@@ -120,7 +119,6 @@ function RedundantDependency() {
         confirmButtonText: t("problem-redundantDependency.closeButton"),
       });
     }
-    // Aktualizace stavu selectedFDs
     setSelectedFDs(newSelectedFDs);
     setShowExplanation(true);
   };
@@ -133,12 +131,9 @@ function RedundantDependency() {
   const mixRandomDependencies = () => {
     setSelectedFDs({});
     setDisplayedDependencies((prevFDs) => {
-      // Copy the array to a new variable
       let array = [...prevFDs];
       for (let i = array.length - 1; i > 0; i--) {
-        // Generate a random index from 0 to i
         const j = Math.floor(Math.random() * (i + 1));
-        // Swap elements array[i] and array[j]
         [array[i], array[j]] = [array[j], array[i]];
       }
       return array;

@@ -202,13 +202,12 @@ function Derivability() {
     ) {
       return null;
     } else {
-      // setfPlusForStep4([...fPlusForStep4, {left: subset, right: relevantClosure}]);
-
       return (
         <div key={index} className="powerSetSubset">
           <div className="subset">
             {showFunctionsInstance.dependencySideArrayToText(subset)}
-            {" → " + showFunctionsInstance.dependencySideArrayToText(relevantClosure)}
+            {" → " +
+              showFunctionsInstance.dependencySideArrayToText(relevantClosure)}
           </div>
         </div>
       );
@@ -233,7 +232,9 @@ function Derivability() {
       <div className="problemContainer">
         <h2>{t("problem-derivability.schema")}</h2>
         {attributes.length > 0 ? (
-          <p className="IS">IS ( {showFunctionsInstance.attributesArrayToText(attributes)} )</p>
+          <p className="IS">
+            IS ( {showFunctionsInstance.attributesArrayToText(attributes)} )
+          </p>
         ) : (
           <p>{t("problem-derivability.youWillSeeTheSchemaHere")}</p>
         )}
@@ -459,12 +460,18 @@ function Derivability() {
                   {powerSet.slice(0, 15).map((subset, index) => (
                     <div key={index} className="powerSetSubset">
                       <div className="subset">
-                        ({showFunctionsInstance.dependencySideArrayToText(subset)})<sup>+</sup>
+                        (
+                        {showFunctionsInstance.dependencySideArrayToText(
+                          subset
+                        )}
+                        )<sup>+</sup>
                         {" → " +
                           showFunctionsInstance.dependencySideArrayToText(
-                            attributeFunctionsInstance
-                              .attributeClosure(dependencies, subset)
-                            )}
+                            attributeFunctionsInstance.attributeClosure(
+                              dependencies,
+                              subset
+                            )
+                          )}
                       </div>
                     </div>
                   ))}
@@ -474,12 +481,18 @@ function Derivability() {
                   {powerSet.slice(-5).map((subset, index) => (
                     <div key={`last-${index}`} className="powerSetSubset">
                       <div className="subset">
-                        ({showFunctionsInstance.dependencySideArrayToText(subset)})<sup>+</sup>
+                        (
+                        {showFunctionsInstance.dependencySideArrayToText(
+                          subset
+                        )}
+                        )<sup>+</sup>
                         {" → " +
                           showFunctionsInstance.dependencySideArrayToText(
-                            attributeFunctionsInstance
-                              .attributeClosure(dependencies, subset)
-                            )}
+                            attributeFunctionsInstance.attributeClosure(
+                              dependencies,
+                              subset
+                            )
+                          )}
                       </div>
                     </div>
                   ))}
@@ -488,12 +501,15 @@ function Derivability() {
                 powerSet.map((subset, index) => (
                   <div key={index} className="powerSetSubset">
                     <div className="subset">
-                      ({showFunctionsInstance.dependencySideArrayToText(subset)})<sup>+</sup>
+                      ({showFunctionsInstance.dependencySideArrayToText(subset)}
+                      )<sup>+</sup>
                       {" → " +
                         showFunctionsInstance.dependencySideArrayToText(
-                          attributeFunctionsInstance
-                            .attributeClosure(dependencies, subset)
-                          )}
+                          attributeFunctionsInstance.attributeClosure(
+                            dependencies,
+                            subset
+                          )
+                        )}
                     </div>
                   </div>
                 ))

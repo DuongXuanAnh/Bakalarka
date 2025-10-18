@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import { NormalFormALG } from "../../../../algorithm/NormalFormALG";
 import { useAttributeContext } from "../../../../contexts/AttributeContext";
 import { useDependencyContext } from "../../../../contexts/DependencyContext";
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
@@ -10,7 +9,6 @@ import { HelperColorFunctions } from "../../../../algorithm/HelperColorFunctions
 import { useTranslation } from "react-i18next";
 import "./synthesis.scss";
 import { FunctionalDependencyFunctions } from "../../../../algorithm/FunctionalDependencyFunctions";
-import { AttributeFunctions } from "../../../../algorithm/AttributeFunctions";
 import { HelperSetFunctions } from "../../../../algorithm/HelperSetFunctions";
 import { FPlusFunctions } from "../../../../algorithm/FPlusFunctions";
 import { ShowFunctions } from "../../../../algorithm/ShowFunctions";
@@ -20,18 +18,16 @@ const CustomNodeFunctionsInstance = new CustomNodeFunctions();
 const helperColorFunctionsInstance = new HelperColorFunctions();
 const functionalDependencyFunctionsInstance =
   new FunctionalDependencyFunctions();
-const attributeFunctionsInstance = new AttributeFunctions();
 const helperSetFunctionsInstance = new HelperSetFunctions();
 const fPlusFunctionsInstance = new FPlusFunctions();
 const showFunctionsInstance = new ShowFunctions();
 const findingKeysFunctionsInstance = new FindingKeysFunctions();
-const normalFormInstance = new NormalFormALG();
 
 function Synthesis() {
   const { t } = useTranslation();
 
   const { attributes } = useAttributeContext();
-  const { dependencies, setDependencies } = useDependencyContext();
+  const { dependencies } = useDependencyContext();
 
   const initialRewrittenFDs =
     functionalDependencyFunctionsInstance.rewriteFDSingleRHS(dependencies);
@@ -39,19 +35,20 @@ function Synthesis() {
   const [rewrittenFDs, setRewrittenFDs] = useState(initialRewrittenFDs);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  const [tablesInfo, setTablesInfo] = useState([ // MKOP it seems that an empty array works as well
-  //{
-  //  id: "",
-  //  isSubset: false,       // MKOP newly initialized
-  //  subsetOf: [],          // MKOP new
-  //  data: {
-  //    attributes: [],      // MKOP moved to data
-  //    FDs: [],             // MKOP moved to data
-  //    keys: [],            // MKOP moved to data
-  //    normalForm: "",      // MKOP moved to data from normalForm.type        
-  //    faultyFDs: [],       // MKOP moved to data from normalForm.faultyDependencies
-  //  },
-  //},
+  const [tablesInfo, setTablesInfo] = useState([
+    // MKOP it seems that an empty array works as well
+    //{
+    //  id: "",
+    //  isSubset: false,       // MKOP newly initialized
+    //  subsetOf: [],          // MKOP new
+    //  data: {
+    //    attributes: [],      // MKOP moved to data
+    //    FDs: [],             // MKOP moved to data
+    //    keys: [],            // MKOP moved to data
+    //    normalForm: "",      // MKOP moved to data from normalForm.type
+    //    faultyFDs: [],       // MKOP moved to data from normalForm.faultyDependencies
+    //  },
+    //},
   ]);
 
   const [draggingOverIndex, setDraggingOverIndex] = useState(null);
@@ -66,9 +63,9 @@ function Synthesis() {
     setDraggingOverIndex(update.destination ? update.destination.index : null);
   };
 
-  const [modalContent, setModalContent] = useState(() => 
+  const [modalContent, setModalContent] = useState(() =>
     CustomNodeFunctionsInstance.emptyNode()
-    );
+  );
 
   const fPlus = fPlusFunctionsInstance.FPlus(dependencies, attributes);
 
@@ -184,31 +181,30 @@ function Synthesis() {
   useEffect(() => {
     setTablesInfo([]);
     const newTablesInfo = condensedFDs.map((fd, index) => {
-//    let attrs = [...fd.left, ...fd.right];
-//
-//    const FDs = functionalDependencyFunctionsInstance.getAllDependenciesDependsOnAttr(attrs, singleRHS_fPlus);
-//    const keys = findingKeysFunctionsInstance.getAllKeys(FDs, attrs);
-//    const normalForm = normalFormInstance.normalFormType(FDs, attrs);
-//
-//    return  {
-//      id: index.toString(),
-//      data: {
-//        attributes: attrs,
-//        FDs: FDs,
-//        keys: keys,
-//        normalForm: normalForm.type,
-//        faultyFDs: normalForm.faultyDependencies,
-//      },
-//    };
+      //    let attrs = [...fd.left, ...fd.right];
+      //
+      //    const FDs = functionalDependencyFunctionsInstance.getAllDependenciesDependsOnAttr(attrs, singleRHS_fPlus);
+      //    const keys = findingKeysFunctionsInstance.getAllKeys(FDs, attrs);
+      //    const normalForm = normalFormInstance.normalFormType(FDs, attrs);
+      //
+      //    return  {
+      //      id: index.toString(),
+      //      data: {
+      //        attributes: attrs,
+      //        FDs: FDs,
+      //        keys: keys,
+      //        normalForm: normalForm.type,
+      //        faultyFDs: normalForm.faultyDependencies,
+      //      },
+      //    };
 
       const newAttr = [...fd.left, ...fd.right];
-  
-      const retVal =  
-        CustomNodeFunctionsInstance.initNode(
-          newAttr,
-          singleRHS_fPlus,
-          index.toString()
-          );
+
+      const retVal = CustomNodeFunctionsInstance.initNode(
+        newAttr,
+        singleRHS_fPlus,
+        index.toString()
+      );
       return retVal;
     });
 
@@ -222,31 +218,6 @@ function Synthesis() {
     setIsModalOpen(true);
     setModalContent(table);
   };
-
-//function mergeTables(table1, table2) {
-//  // Sloučení atributů s odstraněním duplikátů
-//  const mergedAttributes = Array.from(
-//    new Set([...table1.data.attributes, ...table2.data.attributes])
-//  );
-//
-//  const FDs = functionalDependencyFunctionsInstance.getAllDependenciesDependsOnAttr(mergedAttributes, singleRHS_fPlus);
-//  const keys = findingKeysFunctionsInstance.getAllKeys(FDs, mergedAttributes);
-//  const normalForm = normalFormInstance.normalFormType(FDs, mergedAttributes);
-//
-//  // Vytvoření nové tabulky s informacemi
-//  const mergedTable = {
-//    id: table1.id,
-//    data: {
-//      attributes: mergedAttributes,
-//      FDs: FDs,
-//      keys: keys,
-//      normalForm: normalForm.type,
-//      faultyFDs: normalForm.faultyDependencies,
-//    },
-//  };
-//
-//  return mergedTable;
-//}
 
   const onDragEndTables = (result) => {
     const { source, destination } = result;
@@ -289,8 +260,11 @@ function Synthesis() {
           )
         )
       ) {
-      //const mergedValue = mergeTables(sourceItem, destinationItem);
-        const mergedValue = CustomNodeFunctionsInstance.mergeTables(sourceItem, destinationItem, singleRHS_fPlus);
+        const mergedValue = CustomNodeFunctionsInstance.mergeTables(
+          sourceItem,
+          destinationItem,
+          singleRHS_fPlus
+        );
 
         if (
           mergedValue.data.normalForm === "BCNF" ||
@@ -424,7 +398,7 @@ function Synthesis() {
                           className={`TableButton ${
                             table.isSubset ? "SubsetTable" : ""
                           }`}
-                          disabled={table.isSubset} // Nastavení disabled na základě příznaku isSubset
+                          disabled={table.isSubset}
                           onClick={() => {
                             showInformationModal(table);
                           }}
@@ -436,7 +410,10 @@ function Synthesis() {
                               index === draggingOverIndex &&
                               index !== draggingItemIndex
                                 ? "#ccc"
-                                : helperColorFunctionsInstance.nodeBackgroundColor(table.data.normalForm, false),
+                                : helperColorFunctionsInstance.nodeBackgroundColor(
+                                    table.data.normalForm,
+                                    false
+                                  ),
                             border: "1px solid #ddd",
                             ...provided.draggableProps.style,
                             transform: snapshot.isDragging
@@ -449,11 +426,17 @@ function Synthesis() {
                               {t("problem-synthesis.table")} {index + 1}:
                             </p>
                             <p>
-                              R{index + 1}({showFunctionsInstance.attributesArrayToText(table.data.attributes)})
+                              R{index + 1}(
+                              {showFunctionsInstance.attributesArrayToText(
+                                table.data.attributes
+                              )}
+                              )
                             </p>
                             <p className="tableKeys">
                               {t("problem-synthesis.keys")}: [{" "}
-                              {showFunctionsInstance.showKeysAsText(table.data.keys)}{" "}
+                              {showFunctionsInstance.showKeysAsText(
+                                table.data.keys
+                              )}{" "}
                               ]
                             </p>
                             {table.isSubset && (
@@ -488,7 +471,11 @@ function Synthesis() {
                         userSelect: "none",
                         padding: 16,
                         margin: "0 0 8px 0",
-                        backgroundColor: helperColorFunctionsInstance.nodeBackgroundColor("BCNF", false),
+                        backgroundColor:
+                          helperColorFunctionsInstance.nodeBackgroundColor(
+                            "BCNF",
+                            false
+                          ),
                         border: "1px solid #ddd",
                         transform: "none",
                       }}
@@ -496,10 +483,19 @@ function Synthesis() {
                       <p>
                         {t("problem-synthesis.table")} {tablesInfo.length + 1}:
                       </p>
-                      R{tablesInfo.length + 1} ({showFunctionsInstance.attributesArrayToText(originKeys[0])})
+                      R{tablesInfo.length + 1} (
+                      {showFunctionsInstance.attributesArrayToText(
+                        originKeys[0]
+                      )}
+                      )
                       <p className="tableKeys">
                         {t("problem-synthesis.keys")}: [{" "}
-                        {"{" + showFunctionsInstance.attributesArrayToText(originKeys[0]) + "}"} ]
+                        {"{" +
+                          showFunctionsInstance.attributesArrayToText(
+                            originKeys[0]
+                          ) +
+                          "}"}{" "}
+                        ]
                       </p>
                       <p>
                         {

@@ -15,7 +15,6 @@ function AttributeClosure() {
   const { attributes } = useAttributeContext();
   const { dependencies } = useDependencyContext();
 
-  // const attributeFunctionsInstance = new Algorithm();
   const attributeFunctionsInstance = new AttributeFunctions();
   const helperSetFunctionsInstance = new HelperSetFunctions();
   const showFunctionsInstance = new ShowFunctions();
@@ -179,7 +178,9 @@ function AttributeClosure() {
         <div className="problemContainer">
           <h2>{t("problem-attributeClosure.schema")}</h2>
           {attributes.length > 0 ? (
-            <p className="IS">IS ( {showFunctionsInstance.attributesArrayToText(attributes)} )</p>
+            <p className="IS">
+              IS ( {showFunctionsInstance.attributesArrayToText(attributes)} )
+            </p>
           ) : (
             <p>{t("problem-attributeClosure.youWillSeeTheSchemaHere")}</p>
           )}

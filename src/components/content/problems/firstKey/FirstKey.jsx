@@ -26,7 +26,6 @@ function FirstKey() {
 
   const { attributes, setAttributes } = useAttributeContext();
   const { dependencies } = useDependencyContext();
-  // const schema = attributes;
   const candidateKey = findingKeysFunctionsInstance.findFirstKeyWithExplain(
     dependencies,
     attributes
@@ -72,7 +71,7 @@ function FirstKey() {
     } else {
       setCurrentStepIndex((prevIndex) =>
         Math.min(prevIndex + 1, steps.length - 1)
-      ); // Další krok
+      );
     }
   };
 
@@ -155,14 +154,13 @@ function FirstKey() {
             // Přejít na další krok, pokud je odpověď správná
             setCurrentStepIndex(currentStepIndex + 1);
           } else {
-            // Zobrazit alert znovu s chybovou zprávou
             promptUser(t("problem-firstKey.errorAlertText"));
           }
         }
       });
     };
 
-    promptUser(); // První volání funkce bez chybové zprávy
+    promptUser();
   };
 
   const mixRandomAttributes = () => {
