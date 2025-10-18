@@ -220,7 +220,7 @@ export class FunctionalDependencyFunctions {
 
     // Převod výsledku zpět na požadovaný formát
     return Object.entries(merged).map(([left, rightSet]) => ({
-      left: left.split(","), // Rozdělení klíče zpět na pole
+      left: left.split(", "), // Rozdělení klíče zpět na pole (split by comma + space)
       right: Array.from(rightSet), // Převod Setu zpět na pole
     }));
   }

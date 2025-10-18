@@ -11,7 +11,7 @@ describe("ShowFunctions", () => {
     test("should format keys as text", () => {
       const keys = [["A"], ["B", "C"]];
       const result = showFunctions.showKeysAsText(keys);
-      expect(result).toBe("{ A }, { B,C }");
+      expect(result).toBe("{ A }, { B, C }");
     });
   });
 
@@ -19,7 +19,7 @@ describe("ShowFunctions", () => {
     test("should format array with curly brackets", () => {
       const array = ["A", "B", "C"];
       const result = showFunctions.showArrayWithBrackets(array);
-      expect(result).toBe("{ A,B,C }");
+      expect(result).toBe("{ A, B, C }");
     });
   });
 
