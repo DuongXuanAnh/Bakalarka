@@ -62,7 +62,6 @@ function MinimalCover() {
     setCurrentStep((currentStep) => Math.min(currentStep + 1, maxSteps));
   };
 
-  // Funkce pro zobrazení všech kroků
   const showAllSteps = () => {
     setCurrentStep(maxSteps);
   };
@@ -81,7 +80,6 @@ function MinimalCover() {
 
   const handleAttributeCheckboxChange = (fdIndex, attrIndex) => {
     setCheckedDependencies((prevChecked) => {
-      // Vytvoření kopie předchozího stavu pro úpravu
       const newChecked = { ...prevChecked };
 
       // Přidání nebo odstranění attrIndex z pole na základě přítomnosti
@@ -117,7 +115,7 @@ function MinimalCover() {
           step: 1,
           note: t("problem-minimalCover.modalNote.selectTrivialFDs"),
         };
-        setIsModalOpenStep13(true); // Otevření modálního okna
+        setIsModalOpenStep13(true);
 
         break;
       case 2:
@@ -138,12 +136,12 @@ function MinimalCover() {
           step: 3,
           note: t("problem-minimalCover.modalNote.selectRedundantFDs"),
         };
-        setIsModalOpenStep13(true); // Otevření modálního okna
-
+        setIsModalOpenStep13(true);
         break;
-      // Přidat další case podle potřeby
+      default:
+        break;
     }
-    setModalContent(content); // Nastavení obsahu modálního okna
+    setModalContent(content);
   };
 
   const submitAnswer = (content) => {
@@ -179,7 +177,7 @@ function MinimalCover() {
     } else if (content.step === 2) {
       let isError = false;
 
-      nonTrivial_FDs.map((fd, index) => {
+      nonTrivial_FDs.forEach((fd, index) => {
         if (isError) return;
 
         const reducedLeftSide =
@@ -534,7 +532,10 @@ function MinimalCover() {
               ))}
               <span className="dependency-right">
                 {" "}
-                → {showFunctionsInstance.dependencySideArrayToText(dependency.right)}
+                →{" "}
+                {showFunctionsInstance.dependencySideArrayToText(
+                  dependency.right
+                )}
               </span>
             </div>
           ))}

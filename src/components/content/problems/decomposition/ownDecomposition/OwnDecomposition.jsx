@@ -15,7 +15,7 @@ function usePrevious(value) {
   const ref = useRef();
   useEffect(() => {
     ref.current = value;
-  }, [value]); // Only re-run if value changes
+  }, [value]);
   return ref.current;
 }
 
@@ -107,10 +107,7 @@ function OwnDecomposition({
         text: t("ownDecomposition.giveTableContainAllAttr"),
       });
     } else if (
-      normalFormInstance.isSuperKey(
-        selectedNode.data.keys,
-        leftSideAttributes
-      )
+      normalFormInstance.isSuperKey(selectedNode.data.keys, leftSideAttributes)
     ) {
       Swal.fire({
         icon: "warning",

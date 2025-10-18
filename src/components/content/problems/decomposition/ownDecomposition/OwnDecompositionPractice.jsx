@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState } from "react";
 import { NormalFormALG } from "../../../../../algorithm/NormalFormALG";
 import Swal from "sweetalert2";
 import { useTranslation } from "react-i18next";
@@ -182,10 +182,7 @@ function OwnDecompositionPractice({
         text: t("ownDecomposition.giveTableContainAllAttr"),
       });
     } else if (
-      normalFormInstance.isSuperKey(
-        selectedNode.data.keys,
-        leftSideAttributes
-      )
+      normalFormInstance.isSuperKey(selectedNode.data.keys, leftSideAttributes)
     ) {
       Swal.fire({
         icon: "warning",
