@@ -67,7 +67,6 @@ describe("FunctionalDependencyFunctions", () => {
     });
   });
 
-
   describe("lostDependencies", () => {
     test("should return empty set for the same sets of FDs", () => {
       const FDs1 = [
@@ -75,8 +74,6 @@ describe("FunctionalDependencyFunctions", () => {
         { left: ["B", "C"], right: ["D"] },
         { left: ["C"], right: ["A"] },
       ];
-      const X = ["A"];
-      const Y = ["C"];
 
       const result = fdFunctions.lostDependencies(FDs1, FDs1);
       expect(result).toEqual([]);
@@ -113,7 +110,6 @@ describe("FunctionalDependencyFunctions", () => {
       expect(result).toEqual([{ left: ["B"], right: ["C"] }]);
     });
   });
-
 
   describe("getReducedAttributes", () => {
     test("should remove redundant attributes from left side", () => {
@@ -340,6 +336,7 @@ describe("FunctionalDependencyFunctions", () => {
       const abFD = result.find(
         (fd) => JSON.stringify(fd.left) === JSON.stringify(["A", "B"])
       );
+
       expect(abFD.right.sort()).toEqual(["C", "D"].sort());
     });
 
