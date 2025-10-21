@@ -22,7 +22,7 @@ function usePrevious(value) {
 function RedundantAttribute() {
   const { t } = useTranslation();
   const { attributes } = useAttributeContext();
-  const { dependencies, setDependencies } = useDependencyContext();
+  const { dependencies } = useDependencyContext();
   const navigate = useNavigate();
   const helperSetFunctionsInstance = new HelperSetFunctions();
   const attributeFunctionsInstance = new AttributeFunctions();

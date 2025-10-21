@@ -100,7 +100,7 @@ function Derivability() {
     if (side === "right") {
       setRightSideAttributes([...rightSideAttributes, value]);
     }
-    if (side == "fplus") {
+    if (side === "fplus") {
       setAttributesAreaFplus([...attributesAreaFplus, value]);
       setShowFPlusResult(false);
       setCurrentStep(0);
