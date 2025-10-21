@@ -20,8 +20,8 @@ function OwnDecompositionPractice({
   const normalFormInstance = new NormalFormALG();
   const [leftSideAttributes, setLeftSideAttributes] = useState([]);
   const [rightSideAttributes, setRightSideAttributes] = useState([]);
-  const [attributes, setAttributes] = useState(selectedNode.data.attributes);
-  const [dependencies, setDependencies] = useState(selectedNode.data.FDs);
+  const [attributes] = useState(selectedNode.data.attributes);
+  const [dependencies] = useState(selectedNode.data.FDs);
   const [leftSubRelationAttributes, setLeftSubRelationAttributes] = useState(
     []
   );

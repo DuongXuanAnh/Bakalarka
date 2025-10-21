@@ -10,27 +10,23 @@ import "./mergeTablesAfterDecompose.scss";
 import { CustomNodeFunctions } from "../../../../../algorithm/CustomNodeFunctions";
 import { FPlusFunctions } from "../../../../../algorithm/FPlusFunctions";
 import { FunctionalDependencyFunctions } from "../../../../../algorithm/FunctionalDependencyFunctions";
-import { FindingKeysFunctions } from "../../../../../algorithm/FindingKeysFunctions";
 import { ShowFunctions } from "../../../../../algorithm/ShowFunctions";
 import { HelperSetFunctions } from "../../../../../algorithm/HelperSetFunctions";
-import { AttributeFunctions } from "../../../../../algorithm/AttributeFunctions";
 
 const CustomNodeFunctionsInstance = new CustomNodeFunctions();
 const helperColorFunctionsInstance = new HelperColorFunctions();
 const fPlusFunctionsInstance = new FPlusFunctions();
 const functionalDependencyFunctionsInstance =
   new FunctionalDependencyFunctions();
-const findingKeysFunctionsInstance = new FindingKeysFunctions();
 const showFunctionsInstance = new ShowFunctions();
 const helperSetFunctionsInstance = new HelperSetFunctions();
-const attributeFunctionsInstance = new AttributeFunctions();
 
 function MergeTablesAfterDecompose({ tables, originKeys, lostFDs }) {
   const { t } = useTranslation();
   const normalFormInstance = new NormalFormALG();
 
   const { attributes } = useAttributeContext();
-  const { dependencies, setDependencies } = useDependencyContext();
+  const { dependencies } = useDependencyContext();
 
   const [tablesInfo, setTablesInfo] = useState(tables);
   const [lostFDsInfo, setLostFDsInfo] = useState(lostFDs);
@@ -96,10 +92,17 @@ function MergeTablesAfterDecompose({ tables, originKeys, lostFDs }) {
           )
         )
       ) {
-      //const mergedValue = mergeTables(sourceItem, destinationItem);
-        const mergedValue = CustomNodeFunctionsInstance.mergeTables(sourceItem, destinationItem, singleRHS_fPlus);
+        //const mergedValue = mergeTables(sourceItem, destinationItem);
+        const mergedValue = CustomNodeFunctionsInstance.mergeTables(
+          sourceItem,
+          destinationItem,
+          singleRHS_fPlus
+        );
 
-        if (mergedValue.data.normalForm === "BCNF" || mergedValue.data.normalForm === "3") {
+        if (
+          mergedValue.data.normalForm === "BCNF" ||
+          mergedValue.data.normalForm === "3"
+        ) {
           const newTablesInfo = [...tablesInfo];
           newTablesInfo[destination.index] = mergedValue;
           newTablesInfo.splice(source.index, 1);
@@ -110,8 +113,8 @@ function MergeTablesAfterDecompose({ tables, originKeys, lostFDs }) {
               lostFDsInfo, // previously lost FDs // MKOP 2025/10/02 would work even for non-canonical set of FDs
               newTablesInfo.map((table) => table.data.FDs).flat() // tablesFDs  // new FDs - some originaly FDs may be derivable now and some are still lost
               // MKOP 2025/09/23 canonical Fplus is not needed, attributeClosure will be the same
-              )
-            );
+            )
+          );
 
           Swal.fire({
             icon: "success",
@@ -138,13 +141,12 @@ function MergeTablesAfterDecompose({ tables, originKeys, lostFDs }) {
   };
 
   const addLostDependency = (fd) => {
-
-    const newAttr = [...fd.left, ...fd.right]; 
+    const newAttr = [...fd.left, ...fd.right];
     const newNode = CustomNodeFunctionsInstance.initNode(
       newAttr,
       singleRHS_fPlus,
       showFunctionsInstance.attributesArrayToText(newAttr)
-      );
+    );
     const newTablesInfo = [...tablesInfo];
     newTablesInfo.push(newNode);
     setTablesInfo(newTablesInfo);
@@ -154,12 +156,12 @@ function MergeTablesAfterDecompose({ tables, originKeys, lostFDs }) {
         lostFDsInfo, // previously lost FDs // MKOP 2025/10/02 would work even for non-canonical set of FDs
         newTablesInfo.map((table) => table.data.FDs).flat() // tablesFDs  // new FDs - some originaly FDs may be derivable now and some are still lost
         // MKOP 2025/09/23 canonical Fplus is not needed, attributeClosure will be the same
-        )
-      );
+      )
+    );
   };
-  
+
   let practiceMode = localStorage.getItem("practiceMode");
-  practiceMode = practiceMode !== null ? JSON.parse(practiceMode) : false; 
+  practiceMode = practiceMode !== null ? JSON.parse(practiceMode) : false;
 
   CustomNodeFunctionsInstance.highlightSubsetNodes(tablesInfo, false);
 
@@ -208,7 +210,11 @@ function MergeTablesAfterDecompose({ tables, originKeys, lostFDs }) {
                       >
                         <div>
                           <p className="tableAttrs">
-                            ({showFunctionsInstance.attributesArrayToText(table.data.attributes)})
+                            (
+                            {showFunctionsInstance.attributesArrayToText(
+                              table.data.attributes
+                            )}
+                            )
                           </p>
                           <p className="tableKeys">
                             {t("problem-synthesis.keys")}: [{" "}
@@ -261,10 +267,11 @@ function MergeTablesAfterDecompose({ tables, originKeys, lostFDs }) {
                     <button
                       className="addButton"
                       style={{
-                        backgroundColor: helperColorFunctionsInstance.nodeBackgroundColor(
-                          typeNF,
-                          practiceMode /*false*/ /*practiceMode*/
-                        ),
+                        backgroundColor:
+                          helperColorFunctionsInstance.nodeBackgroundColor(
+                            typeNF,
+                            practiceMode /*false*/ /*practiceMode*/
+                          ),
                         border: "none",
                       }}
                       onClick={() => addLostDependency(fd)}
@@ -287,6 +294,5 @@ function MergeTablesAfterDecompose({ tables, originKeys, lostFDs }) {
 //<div>
 //<p hidden="hidden">a) {JSON.stringify(tablesInfo)}</p>
 //</div>
-
 
 export default MergeTablesAfterDecompose;

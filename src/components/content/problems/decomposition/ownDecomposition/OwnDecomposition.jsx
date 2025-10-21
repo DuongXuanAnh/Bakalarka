@@ -3,7 +3,6 @@ import { NormalFormALG } from "../../../../../algorithm/NormalFormALG";
 import Swal from "sweetalert2";
 import { useTranslation } from "react-i18next";
 import "./ownDecomposition.scss";
-
 import { AttributeFunctions } from "../../../../../algorithm/AttributeFunctions";
 import { HelperSetFunctions } from "../../../../../algorithm/HelperSetFunctions";
 
@@ -29,8 +28,8 @@ function OwnDecomposition({
   const normalFormInstance = new NormalFormALG();
   const [leftSideAttributes, setLeftSideAttributes] = useState([]);
   const [rightSideAttributes, setRightSideAttributes] = useState([]);
-  const [attributes, setAttributes] = useState(selectedNode.data.attributes);
-  const [dependencies, setDependencies] = useState(selectedNode.data.FDs);
+  const [attributes] = useState(selectedNode.data.attributes);
+  const [dependencies] = useState(selectedNode.data.FDs);
 
   const prevLeftSideAttributes = usePrevious(leftSideAttributes);
 

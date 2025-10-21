@@ -333,9 +333,7 @@ const Decomposition = () => {
         node.id + "1" // Concatenation of strings
       );
       const newNode2 = CustomNodeFunctionsInstance.initNode(
-        node.data.attributes.filter(
-          (item) => !dependency.right.includes(item)
-          ),
+        node.data.attributes.filter((item) => !dependency.right.includes(item)),
         fPlusOriginSingleRHS,
         node.id + "2" // Concatenation of strings
       );
@@ -358,12 +356,13 @@ const Decomposition = () => {
         edgeLost = String.fromCharCode(0x26a0) + " "; // MKOP 2025/09/14 Warning Sign U+26A0 (&#x26A0;)
       }
 
-    // MKOP 2025/10/20 practiceMode is false (???) in case of original showRandomDecomposition() callback implementation
-    // MKOP 2025/10/21 practiceMode is set correctly in handleRandomDecompositionClick() and new version of showRandomDecomposition()
-    //let isPracticeMode = localStorage.getItem("practiceMode");
-    //isPracticeMode = isPracticeMode !== null ? JSON.parse(isPracticeMode) : false; 
-      
-      const edgeLabel0 = showFunctionsInstance.showTextDependencyWithArrow(dependency);
+      // MKOP 2025/10/20 practiceMode is false (???) in case of original showRandomDecomposition() callback implementation
+      // MKOP 2025/10/21 practiceMode is set correctly in handleRandomDecompositionClick() and new version of showRandomDecomposition()
+      //let isPracticeMode = localStorage.getItem("practiceMode");
+      //isPracticeMode = isPracticeMode !== null ? JSON.parse(isPracticeMode) : false;
+
+      const edgeLabel0 =
+        showFunctionsInstance.showTextDependencyWithArrow(dependency);
 
       const newEdge1 = {
         id: newNode1.id,
@@ -373,8 +372,8 @@ const Decomposition = () => {
         label0: edgeLabel0,
         lost: edgeLost, // MKOP 2025/09/09
         label: practiceMode // isPracticeMode
-                 ? edgeLabel0 
-                 : edgeLost + edgeLabel0, // MKOP 2025/09/20
+          ? edgeLabel0
+          : edgeLost + edgeLabel0, // MKOP 2025/09/20
       };
 
       const newEdge2 = {
@@ -443,35 +442,35 @@ const Decomposition = () => {
   };
 
   // MKOP original version, making complete random tree
-//const showRandomDecomposition = useCallback(() => {
-//  const restoreGraph = async () => {
-//    setNodesArray([]);
-//    setEdgesArray([]);
-//    setLostFDs([]);
-//    const initialNodes = [
-//      CustomNodeFunctionsInstance.initNode(
-//        attributes,
-//        fPlusOriginSingleRHS,
-//        "1"
-//      ),
-//    ]; // Node id
-//    setNodesArray(initialNodes);
-//    currLeafNodesList = initialNodes;
-//  };
-//
-//  restoreGraph();
-//
-//  randomDecomposition("1", null); // MKOP 2025/10/10 expand only leaf nodes with ID starting by "1", ie. all of them
-//}, [setNodesArray, setEdgesArray]);
+  //const showRandomDecomposition = useCallback(() => {
+  //  const restoreGraph = async () => {
+  //    setNodesArray([]);
+  //    setEdgesArray([]);
+  //    setLostFDs([]);
+  //    const initialNodes = [
+  //      CustomNodeFunctionsInstance.initNode(
+  //        attributes,
+  //        fPlusOriginSingleRHS,
+  //        "1"
+  //      ),
+  //    ]; // Node id
+  //    setNodesArray(initialNodes);
+  //    currLeafNodesList = initialNodes;
+  //  };
+  //
+  //  restoreGraph();
+  //
+  //  randomDecomposition("1", null); // MKOP 2025/10/10 expand only leaf nodes with ID starting by "1", ie. all of them
+  //}, [setNodesArray, setEdgesArray]);
 
   // MKOP 2025/10/21 new version, creating random tree under root node
   const showRandomDecomposition = () => {
-    const selectedNode = nodesArray.find(node => node.id === "1");
+    const selectedNode = nodesArray.find((node) => node.id === "1");
     handleDependencyClick(null, selectedNode);
     // MKOP 2025/10/10 expand only leaf nodes with ID starting by node.id, ie. its subtree
     // MKOP 2025/10/10 limit expansion to given number of levels, null means unlimited
     randomDecomposition(selectedNode.id, null);
-    };
+  };
 
   // MKOP 2025/10/10 new version, creating random tree under given node up to given depth
   const handleRandomDecompositionClick = (selectedNode, depth) => {
@@ -702,7 +701,11 @@ const Decomposition = () => {
                     // Return a new array to trigger a re-render
                     return prevEdges.map((edge) => ({
                       ...edge,
-                      label: edge.label0 ? (isChecked ? `${edge.label0}` : `${edge.lost}${edge.label}`) : undefined,
+                      label: edge.label0
+                        ? isChecked
+                          ? `${edge.label0}`
+                          : `${edge.lost}${edge.label}`
+                        : undefined,
                     }));
                   });
                 }}
@@ -786,9 +789,7 @@ const Decomposition = () => {
                 </p>
                 <p>
                   <b>{t("problem-decomposition.keys")}:</b>{" "}
-                  {showFunctionsInstance.showKeysAsText(
-                    selectedNode.data.keys
-                  )}{" "}
+                  {showFunctionsInstance.showKeysAsText(selectedNode.data.keys)}{" "}
                 </p>
                 <p>
                   <b>{t("problem-decomposition.normalForm")}:</b>{" "}
@@ -888,7 +889,8 @@ const Decomposition = () => {
                             {showFunctionsInstance.showTextDependencyWithArrow(
                               faultyDependency.dependency
                             )}{" "}
-                            - {t("problem-decomposition.violates")} {faultyDependency.violates}
+                            - {t("problem-decomposition.violates")}{" "}
+                            {faultyDependency.violates}
                           </button>
                         </li>
                       )
