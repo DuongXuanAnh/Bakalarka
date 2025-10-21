@@ -160,27 +160,6 @@ const Decomposition = () => {
 
   const [edgesArray, setEdgesArray] = useState([]);
 
-  // MKOP 2025/09/09 pokud se změnil practiceMode, přidej/odeber výstrahu z labelů hran
-  edgesArray.forEach((edge) => {
-    if (
-      edge.label &&
-      practiceMode &&
-      edge.label[0] === String.fromCharCode(0x26a0)
-    ) {
-      // MKOP 2025/09/14 Warning Sign U+26A0 (&#x26A0;)
-      edge.label = edge.label.substring(2);
-    }
-    if (
-      edge.label &&
-      edge.lost &&
-      !practiceMode &&
-      edge.label[0] !== String.fromCharCode(0x26a0)
-    ) {
-      // MKOP 2025/09/14 Warning Sign U+26A0 (&#x26A0;)
-      edge.label = edge.lost + edge.label;
-    }
-  });
-
   let { nodes: layoutedNodes, edges: layoutedEdges } = getLayoutedElements(
     nodesArray,
     edgesArray
@@ -369,23 +348,33 @@ const Decomposition = () => {
       newLowerFDs.push(...newNode1.data.FDs);
       newLowerFDs.push(...newNode2.data.FDs);
 
-      let lostFlag = "";
+      let edgeLost = "";
       if (
         functionalDependencyFunctionsInstance.lostDependencies(
           node.data.FDs, // original FDs from parent node // MKOP 2025/09/24 works even for non-canonical set of FDs
           newLowerFDs // new FDs from its children
         ).length > 0
       ) {
-        lostFlag = String.fromCharCode(0x26a0) + " "; // MKOP 2025/09/14 Warning Sign U+26A0 (&#x26A0;)
+        edgeLost = String.fromCharCode(0x26a0) + " "; // MKOP 2025/09/14 Warning Sign U+26A0 (&#x26A0;)
       }
+
+    // MKOP 2025/10/20 practiceMode is false (???) in case of original showRandomDecomposition() callback implementation
+    // MKOP 2025/10/21 practiceMode is set correctly in handleRandomDecompositionClick() and new version of showRandomDecomposition()
+    //let isPracticeMode = localStorage.getItem("practiceMode");
+    //isPracticeMode = isPracticeMode !== null ? JSON.parse(isPracticeMode) : false; 
+      
+      const edgeLabel0 = showFunctionsInstance.showTextDependencyWithArrow(dependency);
 
       const newEdge1 = {
         id: newNode1.id,
         source: node.id,
         target: newNode1.id,
         type: edgeType,
-        label: showFunctionsInstance.showTextDependencyWithArrow(dependency),
-        lost: lostFlag, // MKOP 2025/09/09
+        label0: edgeLabel0,
+        lost: edgeLost, // MKOP 2025/09/09
+        label: practiceMode // isPracticeMode
+                 ? edgeLabel0 
+                 : edgeLost + edgeLabel0, // MKOP 2025/09/20
       };
 
       const newEdge2 = {
@@ -454,30 +443,38 @@ const Decomposition = () => {
   };
 
   // MKOP original version, making complete random tree
-  const showRandomDecomposition = useCallback(() => {
-    const restoreGraph = async () => {
-      setNodesArray([]);
-      setEdgesArray([]);
-      setLostFDs([]);
-      const initialNodes = [
-        CustomNodeFunctionsInstance.initNode(
-          attributes,
-          fPlusOriginSingleRHS,
-          "1"
-        ),
-      ]; // Node id
-      setNodesArray(initialNodes);
-      currLeafNodesList = initialNodes;
+//const showRandomDecomposition = useCallback(() => {
+//  const restoreGraph = async () => {
+//    setNodesArray([]);
+//    setEdgesArray([]);
+//    setLostFDs([]);
+//    const initialNodes = [
+//      CustomNodeFunctionsInstance.initNode(
+//        attributes,
+//        fPlusOriginSingleRHS,
+//        "1"
+//      ),
+//    ]; // Node id
+//    setNodesArray(initialNodes);
+//    currLeafNodesList = initialNodes;
+//  };
+//
+//  restoreGraph();
+//
+//  randomDecomposition("1", null); // MKOP 2025/10/10 expand only leaf nodes with ID starting by "1", ie. all of them
+//}, [setNodesArray, setEdgesArray]);
+
+  // MKOP 2025/10/21 new version, creating random tree under root node
+  const showRandomDecomposition = () => {
+    const selectedNode = nodesArray.find(node => node.id === "1");
+    handleDependencyClick(null, selectedNode);
+    // MKOP 2025/10/10 expand only leaf nodes with ID starting by node.id, ie. its subtree
+    // MKOP 2025/10/10 limit expansion to given number of levels, null means unlimited
+    randomDecomposition(selectedNode.id, null);
     };
 
-    restoreGraph();
-
-    randomDecomposition("1", null); // MKOP 2025/10/10 expand only leaf nodes with ID starting by "1", ie. all of them
-  }, [setNodesArray, setEdgesArray]);
-
-  // MKOP 2025/10/10 new version, creating random tree under given node
+  // MKOP 2025/10/10 new version, creating random tree under given node up to given depth
   const handleRandomDecompositionClick = (selectedNode, depth) => {
-    //const showRandomNodeDecomposition = useCallback((selectedNode) => () => { // showRandomNodeDecomposition
     handleDependencyClick(null, selectedNode);
     // MKOP 2025/10/10 expand only leaf nodes with ID starting by node.id, ie. its subtree
     // MKOP 2025/10/10 limit expansion to given number of levels, null means unlimited
@@ -701,7 +698,13 @@ const Decomposition = () => {
                   );
                   // MKOP 2025/09/10 Zajistí překreslení grafu včetně změn v labelech hran
                   // MKOP TODO: zároveň se udělá nový layout a ztratí se tak případné vzájemné posuny uzlů
-                  setEdgesArray((prevEdges) => [...prevEdges]);
+                  setEdgesArray((prevEdges) => {
+                    // Return a new array to trigger a re-render
+                    return prevEdges.map((edge) => ({
+                      ...edge,
+                      label: edge.label0 ? (isChecked ? `${edge.label0}` : `${edge.lost}${edge.label}`) : undefined,
+                    }));
+                  });
                 }}
               />
             </label>
