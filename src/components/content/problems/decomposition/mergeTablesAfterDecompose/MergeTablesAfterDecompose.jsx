@@ -157,6 +157,9 @@ function MergeTablesAfterDecompose({ tables, originKeys, lostFDs }) {
         )
       );
   };
+  
+  let practiceMode = localStorage.getItem("practiceMode");
+  practiceMode = practiceMode !== null ? JSON.parse(practiceMode) : false; 
 
   CustomNodeFunctionsInstance.highlightSubsetNodes(tablesInfo, false);
 
@@ -195,7 +198,7 @@ function MergeTablesAfterDecompose({ tables, originKeys, lostFDs }) {
                               ? "#ccc"
                               : helperColorFunctionsInstance.nodeBackgroundColor(
                                   table.data.normalForm,
-                                  false /*practiceMode*/
+                                  practiceMode /*false*/ /*practiceMode*/
                                 ),
                           border: "1px solid #ddd",
                           transform: snapshot.isDragging
@@ -260,7 +263,7 @@ function MergeTablesAfterDecompose({ tables, originKeys, lostFDs }) {
                       style={{
                         backgroundColor: helperColorFunctionsInstance.nodeBackgroundColor(
                           typeNF,
-                          false /*practiceMode*/
+                          practiceMode /*false*/ /*practiceMode*/
                         ),
                         border: "none",
                       }}

@@ -529,39 +529,69 @@ function Synthesis() {
             X
           </button>
         </div>
-        <div className="modal-content">
-          <div>
-            {t("problem-synthesis.key")}:{" "}
-            {showFunctionsInstance.showKeysAsText(modalContent.data.keys)}
-          </div>
-          <div>
-            {t("problem-synthesis.dependencies")}:
-            {modalContent.data.FDs &&
-              modalContent.data.FDs.map((fd, index) => (
-                <p key={index}>
-                  {showFunctionsInstance.showTextDependencyWithArrow(fd)}
-                </p>
-              ))}
-          </div>
 
-          <div>
-            {t("problem-synthesis.normalForm")}:{" "}
-            {modalContent.data.normalForm === "BCNF"
-              ? "BCNF"
-              : modalContent.data.normalForm + " NF"}
-          </div>
-          {modalContent.data.faultyFDs.length > 0 && (
+        <div className="modal-content">
+          {modalContent && (
             <>
-              <ul>
-                {modalContent.data.faultyFDs.map((fd, index) => (
-                  <li key={index}>
-                    {showFunctionsInstance.showTextDependencyWithArrow(
-                      fd.dependency
-                    )}{" "}
-                    - {t("problem-synthesis.violates")} {fd.violates}
-                  </li>
-                ))}
-              </ul>
+              <p>
+                <b>{t("problem-synthesis.attributes")}:</b>{" "}
+                {modalContent.data.label}
+              </p>
+              <p>
+                <b>{t("problem-synthesis.keys")}:</b>{" "}
+                {showFunctionsInstance.showKeysAsText(
+                  modalContent.data.keys
+                )}{" "}
+              </p>
+              <p>
+                <b>{t("problem-synthesis.normalForm")}:</b>{" "}
+                 {modalContent.data.normalForm === "BCNF"
+                   ? "BCNF"
+                   : modalContent.data.normalForm + " NF"}
+              </p>
+            </>
+          )}
+        </div>
+
+        <div className="modal-middle">
+          {modalContent && (
+            <>
+              <p>
+                <b>{t("problem-synthesis.dependencies")}:</b>{" "}
+              </p>
+                {functionalDependencyFunctionsInstance
+                  .mergeSingleRHSFDs(modalContent.data.FDs)
+                  .map((dependency, index) => {
+                    return (
+                      <p key={index}>
+                        {showFunctionsInstance.showTextDependencyWithArrow(
+                          dependency
+                        )}
+                      </p>
+                    );
+                  })}
+              </>
+            )}
+        </div>
+
+        <div className="modal-middle">
+          {modalContent && modalContent.data.faultyFDs.length > 0 && (
+            <>
+              <div>
+                <b>{t("problem-synthesis.unwantedDependencies")}:</b>{" "}
+                <ul>
+                  {modalContent.data.faultyFDs.map(
+                    (faultyDependency, index) => (
+                      <li key={index}>
+                        {showFunctionsInstance.showTextDependencyWithArrow(
+                          faultyDependency.dependency
+                        )}{" "}
+                        - {t("problem-synthesis.violates")} {faultyDependency.violates}
+                      </li>
+                    )
+                  )}
+                </ul>
+              </div>
             </>
           )}
         </div>

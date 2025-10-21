@@ -781,17 +781,17 @@ const Decomposition = () => {
             {selectedNode && (
               <>
                 <p>
-                  <b>{t("problem-decomposition.attributes")}</b>{" "}
+                  <b>{t("problem-decomposition.attributes")}:</b>{" "}
                   {selectedNode.data.label}
                 </p>
                 <p>
-                  <b>{t("problem-decomposition.keys")}</b>{" "}
+                  <b>{t("problem-decomposition.keys")}:</b>{" "}
                   {showFunctionsInstance.showKeysAsText(
                     selectedNode.data.keys
                   )}{" "}
                 </p>
                 <p>
-                  <b>{t("problem-decomposition.normalForm")}</b>{" "}
+                  <b>{t("problem-decomposition.normalForm")}:</b>{" "}
                   {selectedNode.data.normalForm === "BCNF"
                     ? "BCNF"
                     : selectedNode.data.normalForm + " NF"}
@@ -851,7 +851,7 @@ const Decomposition = () => {
             {selectedNode && (
               <>
                 <p>
-                  <b>{t("problem-decomposition.dependencies")}</b>
+                  <b>{t("problem-decomposition.dependencies")}:</b>{" "}
                 </p>
                 {functionalDependencyFunctionsInstance
                   .mergeSingleRHSFDs(selectedNode.data.FDs)
@@ -869,10 +869,10 @@ const Decomposition = () => {
           </div>
 
           <div className="modal-middle">
-            {selectedNode && (
+            {selectedNode && selectedNode.data.faultyFDs.length > 0 && (
               <>
                 <div>
-                  <b>{t("problem-decomposition.unwantedDependencies")}</b>
+                  <b>{t("problem-decomposition.unwantedDependencies")}:</b>{" "}
                   <ul>
                     {selectedNode.data.faultyFDs.map(
                       (faultyDependency, index) => (
@@ -888,7 +888,7 @@ const Decomposition = () => {
                             {showFunctionsInstance.showTextDependencyWithArrow(
                               faultyDependency.dependency
                             )}{" "}
-                            - porušuje {faultyDependency.violates}
+                            - {t("problem-decomposition.violates")} {faultyDependency.violates}
                           </button>
                         </li>
                       )
@@ -955,11 +955,11 @@ const Decomposition = () => {
               {selectedNode && (
                 <>
                   <p>
-                    <b>{t("problem-decomposition.attributes")}</b>{" "}
+                    <b>{t("problem-decomposition.attributes")}:</b>{" "}
                     {selectedNode.data.label}
                   </p>
                   <p>
-                    <b>{t("problem-decomposition.keys")}</b>{" "}
+                    <b>{t("problem-decomposition.keys")}:</b>{" "}
                     {showFunctionsInstance.showKeysAsText(
                       selectedNode.data.keys
                     )}
@@ -1015,7 +1015,7 @@ const Decomposition = () => {
 
                   <div className="normalFormPracticeArea">
                     <div className="radioButtonsArea">
-                      <b>{t("problem-decomposition.normalForm")}</b>
+                      <b>{t("problem-decomposition.normalForm")}:</b>{" "}
                       <label className="radioBtn">
                         <input
                           type="radio"
