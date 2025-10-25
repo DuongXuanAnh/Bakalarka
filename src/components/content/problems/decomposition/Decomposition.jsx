@@ -333,7 +333,9 @@ const Decomposition = () => {
         node.id + "1" // Concatenation of strings
       );
       const newNode2 = CustomNodeFunctionsInstance.initNode(
-        node.data.attributes.filter((item) => !dependency.right.includes(item)),
+        node.data.attributes.filter(
+          (item) => !dependency.right.includes(item)
+          ),
         fPlusOriginSingleRHS,
         node.id + "2" // Concatenation of strings
       );
@@ -634,6 +636,169 @@ const Decomposition = () => {
     }
   };
 
+  // MKOP 2025/10/22 TODO: How to use shared CustomNodeFunctionsInstance.uiModalNodeInfo_Header code and pass onClick callback function?
+  const uiModalNodeInfo_Header = (
+    problem, // "problem-synthesis", "problem-decomposition", ...
+    {onClickCallback},
+    ) => {
+    return (
+        <div className="modal-header">
+          <h2 className="black">{t(problem+".tableDetail")}</h2>
+          <button
+            onClick={() => setIsModalOpen(false)}
+            className="close-button"
+          >
+            X
+          </button>
+        </div>
+      );
+  };
+  
+  const uiModalNodeActions = (
+    problem, // "problem-synthesis", "problem-decomposition", ...
+    node,
+    leafNodes, // MKOP TODO: set isLeaf flag in nodes instead
+    {onClickCallbackDND},   // Do Not Necompose
+    {onClickCallbackDRNDN}, // Decompose RaNDomly Node
+    {onClickCallbackDRNDS}, // Decompose RaNDomly Subtree
+    {onClickCallbackDM},    // Decompose Manually
+    ) => {
+    return (
+        <div className="modal-content">
+          {node && (
+            <>
+              {leafNodes.length > 0 &&
+                !leafNodes.some(
+                  (leafNode) => leafNode.id === node.id
+                ) && (
+                <p key="dnd">
+                  <button
+                    onClick={() =>
+                      handleDependencyClick(null, node)
+                    }
+                  >
+                    {t(problem+".doNotDecompose")}
+                  </button>
+                </p>
+              )}
+              {node.data.normalForm !== "BCNF" && (
+                <p key="drndn">
+                  <button
+                    onClick={() =>
+                      handleRandomDecompositionClick(node, 1)
+                    }
+                  >
+                    {t(problem+".decomposeRandomlyNode")}
+                  </button>
+                </p>
+              )}
+              {node.data.normalForm !== "BCNF" && (
+                <p key="drndt">
+                  <button
+                    onClick={() =>
+                      handleRandomDecompositionClick(node, null)
+                    }
+                  >
+                    {t(problem+".decomposeRandomlySubtree")}
+                  </button>
+                </p>
+              )}
+              {node.data.normalForm !== "BCNF" && (
+                <p key="dm">
+                  <button
+                    onClick={() => setIsModalDecompositeOwnWayOpen(true)}
+                  >
+                    {t(problem+".decomposeManually")}
+                  </button>
+                </p>
+              )}
+            </>
+          )}
+        </div>
+      );
+  };
+
+  const uiModalNodeActions_FaultyFDs = (
+    problem, // "problem-synthesis", "problem-decomposition", ...
+    node,
+    {onClickCallbackDN}, // Decompose Node
+    ) => {
+    return (
+        <>
+          {node && node.data.faultyFDs.length > 0 && (
+            <div className="modal-middle">
+              <p>
+                <b>{t(problem+".unwantedDependencies")}:</b>{" "}
+              </p>
+              {node.data.faultyFDs
+                .map(
+                  (faultyDependency, index) => {
+                    return (
+                      <p key={index}>
+                        <button
+                          onClick={() =>
+                            handleDependencyClick(
+                              faultyDependency.dependency,
+                              node
+                            )
+                          }
+                        >
+                        {showFunctionsInstance.showTextDependencyWithArrow(
+                          faultyDependency.dependency
+                        )}{" "}
+                        - {t("problem-decomposition.violates")} {faultyDependency.violates}
+                        </button>
+                      </p>
+                    );
+                  })}
+              </div>
+            )}
+        </>
+      );
+  };
+
+  const uiModalNodeActions_OtherFDs = (
+    problem, // "problem-synthesis", "problem-decomposition", ...
+    node,
+    faultlyDependenciesFooter,
+    {onClickCallbackDN}, // Decompose Node
+    ) => {
+    return (
+        <>  
+          {node && faultlyDependenciesFooter.length > 0 && (
+            <div className="modal-footer">
+              <p>
+                <b><Trans
+                     i18nKey={problem+".moreWayHowToDecomposite"}
+                     components={[<sup></sup>]}
+                /></b>
+              </p>
+              {faultlyDependenciesFooter
+                .map(
+                  (faultyDependency, index) => {
+                    return (
+                      <p key={index}>
+                        <button
+                          onClick={() =>
+                            handleDependencyClick(
+                              faultyDependency,
+                              node
+                            )
+                          }
+                        >
+                        {showFunctionsInstance.showTextDependencyWithArrow(
+                          faultyDependency
+                        )}
+                        </button>
+                      </p>
+                  );
+                })}
+            </div>
+          )}
+        </>
+      );
+  };
+
   const showMergeTableModal = () => {
     setIsModalMergeTablesAfterDecomposeOpen(true);
   };
@@ -704,7 +869,7 @@ const Decomposition = () => {
                       label: edge.label0
                         ? isChecked
                           ? `${edge.label0}`
-                          : `${edge.lost}${edge.label}`
+                          : `${edge.lost}${edge.label0}`
                         : undefined,
                     }));
                   });
@@ -769,171 +934,12 @@ const Decomposition = () => {
           onRequestClose={() => setIsModalOpen(false)}
           className="custom-modal"
         >
-          <div className="modal-header">
-            <h2>{t("problem-decomposition.nodeDetail")}</h2>
-
-            <button
-              onClick={() => setIsModalOpen(false)}
-              className="close-button"
-            >
-              X
-            </button>
-          </div>
-
-          <div className="modal-content">
-            {selectedNode && (
-              <>
-                <p>
-                  <b>{t("problem-decomposition.attributes")}:</b>{" "}
-                  {selectedNode.data.label}
-                </p>
-                <p>
-                  <b>{t("problem-decomposition.keys")}:</b>{" "}
-                  {showFunctionsInstance.showKeysAsText(selectedNode.data.keys)}{" "}
-                </p>
-                <p>
-                  <b>{t("problem-decomposition.normalForm")}:</b>{" "}
-                  {selectedNode.data.normalForm === "BCNF"
-                    ? "BCNF"
-                    : selectedNode.data.normalForm + " NF"}
-                </p>
-                <ul>
-                  {currLeafNodesList.length > 0 &&
-                    !currLeafNodesList.some(
-                      (node) => node.id === selectedNode.id
-                    ) && (
-                      <li key="dnd">
-                        <button
-                          onClick={() =>
-                            handleDependencyClick(null, selectedNode)
-                          }
-                        >
-                          {t("ownDecomposition.doNotDecompose")}
-                        </button>
-                      </li>
-                    )}
-                  {selectedNode.data.normalForm !== "BCNF" && (
-                    <li key="drndn">
-                      <button
-                        onClick={() =>
-                          handleRandomDecompositionClick(selectedNode, 1)
-                        }
-                      >
-                        {t("ownDecomposition.decomposeRandomlyNode")}
-                      </button>
-                    </li>
-                  )}
-                  {selectedNode.data.normalForm !== "BCNF" && (
-                    <li key="drndt">
-                      <button
-                        onClick={() =>
-                          handleRandomDecompositionClick(selectedNode, null)
-                        }
-                      >
-                        {t("ownDecomposition.decomposeRandomlySubtree")}
-                      </button>
-                    </li>
-                  )}
-                  {selectedNode.data.normalForm !== "BCNF" && (
-                    <li key="dm">
-                      <button
-                        onClick={() => setIsModalDecompositeOwnWayOpen(true)}
-                      >
-                        {t("ownDecomposition.decomposeManually")}
-                      </button>
-                    </li>
-                  )}
-                </ul>
-              </>
-            )}
-          </div>
-
-          <div className="modal-middle">
-            {selectedNode && (
-              <>
-                <p>
-                  <b>{t("problem-decomposition.dependencies")}:</b>{" "}
-                </p>
-                {functionalDependencyFunctionsInstance
-                  .mergeSingleRHSFDs(selectedNode.data.FDs)
-                  .map((dependency, index) => {
-                    return (
-                      <p key={index}>
-                        {showFunctionsInstance.showTextDependencyWithArrow(
-                          dependency
-                        )}
-                      </p>
-                    );
-                  })}
-              </>
-            )}
-          </div>
-
-          <div className="modal-middle">
-            {selectedNode && selectedNode.data.faultyFDs.length > 0 && (
-              <>
-                <div>
-                  <b>{t("problem-decomposition.unwantedDependencies")}:</b>{" "}
-                  <ul>
-                    {selectedNode.data.faultyFDs.map(
-                      (faultyDependency, index) => (
-                        <li key={index}>
-                          <button
-                            onClick={() =>
-                              handleDependencyClick(
-                                faultyDependency.dependency,
-                                selectedNode
-                              )
-                            }
-                          >
-                            {showFunctionsInstance.showTextDependencyWithArrow(
-                              faultyDependency.dependency
-                            )}{" "}
-                            - {t("problem-decomposition.violates")}{" "}
-                            {faultyDependency.violates}
-                          </button>
-                        </li>
-                      )
-                    )}
-                  </ul>
-                </div>
-              </>
-            )}
-          </div>
-          <div className="modal-footer">
-            {selectedNode && (
-              <>
-                <div>
-                  <b>
-                    <Trans
-                      i18nKey="problem-decomposition.moreWayHowToDecomposite"
-                      components={[<sup></sup>]}
-                    />
-                  </b>
-                  <ul>
-                    {faultlyDependenciesFooter.map(
-                      (faultyDependency, index) => (
-                        <li key={index}>
-                          <button
-                            onClick={() =>
-                              handleDependencyClick(
-                                faultyDependency,
-                                selectedNode
-                              )
-                            }
-                          >
-                            {showFunctionsInstance.showTextDependencyWithArrow(
-                              faultyDependency
-                            )}
-                          </button>
-                        </li>
-                      )
-                    )}
-                  </ul>
-                </div>
-              </>
-            )}
-          </div>
+          {uiModalNodeInfo_Header("problem-decomposition", {})} {/* MKOP 2025/10/22 TODO: How to use shared code and pass onClick callback function? */}  
+          {CustomNodeFunctionsInstance.uiModalNodeInfo_AttrsKeysNF("problem-decomposition", selectedNode)}
+          {uiModalNodeActions("ownDecomposition", selectedNode, currLeafNodesList, {}, {}, {}, {})} {/* MKOP 2025/10/25 TODO: "problem-decomposition"; How to use shared code and pass onClick callback functions? */}  
+          {CustomNodeFunctionsInstance.uiModalNodeInfo_FDs("problem-decomposition", selectedNode)}
+          {uiModalNodeActions_FaultyFDs("problem-decomposition", selectedNode, {})} {/* MKOP 2025/10/25 TODO: How to use shared code and pass onClick callback functions? */}
+          {uiModalNodeActions_OtherFDs("problem-decomposition", selectedNode, faultlyDependenciesFooter, {})} {/* MKOP 2025/10/25 TODO: How to use shared code and pass onClick callback functions? */}
         </ReactModal>
 
         <ReactModal
@@ -942,7 +948,7 @@ const Decomposition = () => {
           className="custom-modal minimal-cover-modal practice-modal custom-scroll"
         >
           <div className="modal-header">
-            <h2>{t("problem-decomposition.nodeDetail")}</h2>
+            <h2>{t("problem-decomposition.tableDetail")}</h2>
 
             <button
               onClick={() => setIsPracticeModalOpen(false)}
@@ -951,70 +957,12 @@ const Decomposition = () => {
               X
             </button>
           </div>
+          {CustomNodeFunctionsInstance.uiModalNodeInfo_AttrsKeysNF("problem-decomposition", selectedNode, /*showNF=*/ false)}
+          {uiModalNodeActions("ownDecomposition", selectedNode, currLeafNodesList, {}, {}, {}, {})}
 
           <div className="modal-content">
             <div className="modal-content-header">
               {selectedNode && (
-                <>
-                  <p>
-                    <b>{t("problem-decomposition.attributes")}:</b>{" "}
-                    {selectedNode.data.label}
-                  </p>
-                  <p>
-                    <b>{t("problem-decomposition.keys")}:</b>{" "}
-                    {showFunctionsInstance.showKeysAsText(
-                      selectedNode.data.keys
-                    )}
-                  </p>
-                  <ul>
-                    {currLeafNodesList.length > 0 &&
-                      !currLeafNodesList.some(
-                        (node) => node.id === selectedNode.id
-                      ) && (
-                        <li id="dnd">
-                          <button
-                            onClick={() =>
-                              handleDependencyClick(null, selectedNode)
-                            }
-                          >
-                            {t("ownDecomposition.doNotDecompose")}
-                          </button>
-                        </li>
-                      )}
-                    {
-                      /*selectedNode.data.normalForm !== "BCNF" &&*/ <li key="drndn">
-                        <button
-                          onClick={() =>
-                            handleRandomDecompositionClick(selectedNode, 1)
-                          }
-                        >
-                          {t("ownDecomposition.decomposeRandomlyNode")}
-                        </button>
-                      </li>
-                    }
-                    {
-                      /*selectedNode.data.normalForm !== "BCNF" &&*/ <li key="drndt">
-                        <button
-                          onClick={() =>
-                            handleRandomDecompositionClick(selectedNode, null)
-                          }
-                        >
-                          {t("ownDecomposition.decomposeRandomlySubtree")}
-                        </button>
-                      </li>
-                    }
-                    {
-                      /*selectedNode.data.normalForm !== "BCNF" &&*/ // MKOP 2025/09/10 v practice módu zobraz tlačítko i pro BCNF relaci
-                      <li id="dm">
-                        <button
-                          onClick={() => setIsModalDecompositeOwnWayOpen(true)}
-                        >
-                          {t("ownDecomposition.decomposeManually")}
-                        </button>
-                      </li>
-                    }
-                  </ul>
-
                   <div className="normalFormPracticeArea">
                     <div className="radioButtonsArea">
                       <b>{t("problem-decomposition.normalForm")}:</b>{" "}
@@ -1073,7 +1021,6 @@ const Decomposition = () => {
                       </button>
                     </div>
                   </div>
-                </>
               )}
             </div>
 

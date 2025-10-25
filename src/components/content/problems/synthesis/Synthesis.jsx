@@ -34,7 +34,8 @@ function Synthesis() {
 
   const [rewrittenFDs, setRewrittenFDs] = useState(initialRewrittenFDs);
   const [isModalOpen, setIsModalOpen] = useState(false);
-
+  const MyAlert = () => {alert("Au!")}; 
+  
   const [tablesInfo, setTablesInfo] = useState([
     // MKOP it seems that an empty array works as well
     //{
@@ -219,6 +220,24 @@ function Synthesis() {
     setModalContent(table);
   };
 
+  // MKOP 2025/10/22 TODO: How to use shared CustomNodeFunctionsInstance.uiModalNodeInfo_Header code and pass onClick callback function?
+  const uiModalNodeInfo_Header = (
+    problem, // "problem-synthesis", "problem-decomposition", ...
+    {onClickCallback},
+    ) => {
+    return (
+        <div className="modal-header">
+          <h2 className="black">{t(problem+".tableDetail")}</h2>
+          <button
+            onClick={() => setIsModalOpen(false)}
+            className="close-button"
+          >
+            X
+          </button>
+        </div>
+      );
+  };
+  
   const onDragEndTables = (result) => {
     const { source, destination } = result;
     setDraggingOverIndex(null); // Reset dragging over index
@@ -520,81 +539,10 @@ function Synthesis() {
         onRequestClose={() => setIsModalOpen(false)}
         className="custom-modal"
       >
-        <div className="modal-header">
-          <h2 className="black">{t("problem-synthesis.tableDetail")}</h2>
-          <button
-            onClick={() => setIsModalOpen(false)}
-            className="close-button"
-          >
-            X
-          </button>
-        </div>
-
-        <div className="modal-content">
-          {modalContent && (
-            <>
-              <p>
-                <b>{t("problem-synthesis.attributes")}:</b>{" "}
-                {modalContent.data.label}
-              </p>
-              <p>
-                <b>{t("problem-synthesis.keys")}:</b>{" "}
-                {showFunctionsInstance.showKeysAsText(
-                  modalContent.data.keys
-                )}{" "}
-              </p>
-              <p>
-                <b>{t("problem-synthesis.normalForm")}:</b>{" "}
-                 {modalContent.data.normalForm === "BCNF"
-                   ? "BCNF"
-                   : modalContent.data.normalForm + " NF"}
-              </p>
-            </>
-          )}
-        </div>
-
-        <div className="modal-middle">
-          {modalContent && (
-            <>
-              <p>
-                <b>{t("problem-synthesis.dependencies")}:</b>{" "}
-              </p>
-                {functionalDependencyFunctionsInstance
-                  .mergeSingleRHSFDs(modalContent.data.FDs)
-                  .map((dependency, index) => {
-                    return (
-                      <p key={index}>
-                        {showFunctionsInstance.showTextDependencyWithArrow(
-                          dependency
-                        )}
-                      </p>
-                    );
-                  })}
-              </>
-            )}
-        </div>
-
-        <div className="modal-middle">
-          {modalContent && modalContent.data.faultyFDs.length > 0 && (
-            <>
-              <div>
-                <b>{t("problem-synthesis.unwantedDependencies")}:</b>{" "}
-                <ul>
-                  {modalContent.data.faultyFDs.map(
-                    (faultyDependency, index) => (
-                      <li key={index}>
-                        {showFunctionsInstance.showTextDependencyWithArrow(
-                          faultyDependency.dependency
-                        )}{" "}
-                        - {t("problem-synthesis.violates")} {faultyDependency.violates}
-                      </li>
-                    )
-                  )}
-                </ul>
-              </div>
-            </>
-          )}
-        </div>
+        {uiModalNodeInfo_Header("problem-synthesis", {})} {false && "/* MKOP 2025/10/22 TODO: How to use shared code and pass onClick callback function? */"}  
+        {CustomNodeFunctionsInstance.uiModalNodeInfo_AttrsKeysNF("problem-synthesis", modalContent)}
+        {CustomNodeFunctionsInstance.uiModalNodeInfo_FDs("problem-synthesis", modalContent)}
+        {CustomNodeFunctionsInstance.uiModalNodeInfo_FaultyFDs("problem-synthesis", modalContent)}
       </ReactModal>
     </div>
   );

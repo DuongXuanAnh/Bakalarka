@@ -48,6 +48,10 @@ export class CustomNodeFunctions {
     this.initNode = this.initNode.bind(this);
     this.mergeTables = this.mergeTables.bind(this);
     this.highlightSubsetNodes = this.highlightSubsetNodes.bind(this);
+    this.uiModalNodeInfo_Header = this.uiModalNodeInfo_Header.bind(this);
+    this.uiModalNodeInfo_AttrsKeysNF = this.uiModalNodeInfo_AttrsKeysNF.bind(this); 
+    this.uiModalNodeInfo_FDs = this.uiModalNodeInfo_FDs.bind(this);
+    this.uiModalNodeInfo_FaultyFDs = this.uiModalNodeInfo_FaultyFDs.bind(this);
   }
 
   emptyNodeData = () => {
@@ -175,7 +179,122 @@ export class CustomNodeFunctions {
       table.subsetOf = longestSubsets; // MKOP 2025/10/07 MergeTablesAfterDecompose uses this array
     });
   };
+
+  // MKOP 2025/10/22 User Interface fragments - unified rendering of screens
+  // Header of node info modal window
+  uiModalNodeInfo_Header = (
+    problem, // "problem-synthesis", "problem-decomposition", ...
+    {onClickCallback},
+    ) => {
+      const { t } = useTranslation();
+      return (
+        <div className="modal-header">
+          <h2 className="black">{t(problem+".tableDetail")}</h2>
+          <button
+            onClick={onClickCallback} // {() => setIsModalOpen(false)}
+            className="close-button"
+          >
+            X
+          </button>
+        </div>
+      );
+  };
+  
+  uiModalNodeInfo_AttrsKeysNF = (
+    problem, // "problem-synthesis", "problem-decomposition", ...
+    node,
+    showNF = true
+    ) => {
+      const { t } = useTranslation();
+      return (
+        <div className="modal-content">
+          {node && (
+            <>
+              <p>
+                <b>{t(problem+".attributes")}:</b>{" "}
+                {node.data.label}
+              </p>
+              <p>
+                <b>{t(problem+".keys")}:</b>{" "}
+                {showFunctionsInstance.showKeysAsText(
+                  node.data.keys
+                )}{" "}
+              </p>
+              {showNF && (
+              <p>
+                <b>{t(problem+".normalForm")}:</b>{" "}
+                 {node.data.normalForm === "BCNF"
+                   ? "BCNF"
+                   : node.data.normalForm + " NF"}
+              </p>
+              )}
+            </>
+          )}
+        </div>
+      );
+  };
+  
+  uiModalNodeInfo_FDs = (
+    problem, // "problem-synthesis", "problem-decomposition", ...
+    node,
+    ) => {
+      const { t } = useTranslation();
+      return (
+        <div className="modal-middle">
+          {node && (
+            <>
+              <p>
+                <b>{t(problem+".dependencies")}:</b>{" "}
+              </p>
+              {functionalDependencyFunctionsInstance
+                .mergeSingleRHSFDs(node.data.FDs)
+                .map((dependency, index) => {
+                  return (
+                    <p key={index}>
+                      {showFunctionsInstance.showTextDependencyWithArrow(
+                        dependency
+                      )}
+                    </p>
+                  );
+                })}
+            </>
+          )}
+        </div>
+      );
+  };
+  
+  uiModalNodeInfo_FaultyFDs = (
+    problem, // "problem-synthesis", "problem-decomposition", ...
+    node,
+    ) => {
+      const { t } = useTranslation();
+      return (
+        <>
+          {node && node.data.faultyFDs.length > 0 && (
+            <div className="modal-middle">
+              <p>
+                <b>{t(problem+".unwantedDependencies")}:</b>{" "}
+              </p>
+              {node.data.faultyFDs
+                .map((faultyDependency, index) => {
+                  return (
+                    <p key={index}>
+                      {showFunctionsInstance.showTextDependencyWithArrow(
+                        faultyDependency.dependency
+                      )}{" "}
+                      - {t(problem+".violates")} {faultyDependency.violates}
+                    </p>
+                  );
+                })}
+            </div>
+          )}
+        </>
+      );
+  };
+
 }
+
+// Rendering of nodes in ReactFlow
 
 const nodeWidth = "200px"; // Nastavení šířky
 
