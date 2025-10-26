@@ -220,24 +220,6 @@ function Synthesis() {
     setModalContent(table);
   };
 
-  // MKOP 2025/10/22 TODO: How to use shared CustomNodeFunctionsInstance.uiModalNodeInfo_Header code and pass onClick callback function?
-  const uiModalNodeInfo_Header = (
-    problem, // "problem-synthesis", "problem-decomposition", ...
-    {onClickCallback},
-    ) => {
-    return (
-        <div className="modal-header">
-          <h2 className="black">{t(problem+".tableDetail")}</h2>
-          <button
-            onClick={() => setIsModalOpen(false)}
-            className="close-button"
-          >
-            X
-          </button>
-        </div>
-      );
-  };
-  
   const onDragEndTables = (result) => {
     const { source, destination } = result;
     setDraggingOverIndex(null); // Reset dragging over index
@@ -539,9 +521,18 @@ function Synthesis() {
         onRequestClose={() => setIsModalOpen(false)}
         className="custom-modal"
       >
-        {uiModalNodeInfo_Header("problem-synthesis", {})} {false && "/* MKOP 2025/10/22 TODO: How to use shared code and pass onClick callback function? */"}  
-        {CustomNodeFunctionsInstance.uiModalNodeInfo_AttrsKeysNF("problem-synthesis", modalContent)}
-        {CustomNodeFunctionsInstance.uiModalNodeInfo_FDs("problem-synthesis", modalContent)}
+        <CustomNodeFunctionsInstance.UiModalNodeInfo_Header
+          problem={"problem-synthesis"}
+          onClickCallback={() => setIsModalOpen(false)}
+        />  
+        <CustomNodeFunctionsInstance.UiModalNodeInfo_AttrsKeysNF
+          problem={"problem-synthesis"}
+          node={modalContent}
+        />
+        <CustomNodeFunctionsInstance.UiModalNodeInfo_FDs
+          problem={"problem-synthesis"}
+          node={modalContent}
+        />
         {CustomNodeFunctionsInstance.uiModalNodeInfo_FaultyFDs("problem-synthesis", modalContent)}
       </ReactModal>
     </div>

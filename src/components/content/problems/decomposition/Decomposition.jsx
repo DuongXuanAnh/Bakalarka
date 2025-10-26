@@ -718,45 +718,6 @@ const Decomposition = () => {
       );
   };
 
-  const uiModalNodeActions_FaultyFDs = (
-    problem, // "problem-synthesis", "problem-decomposition", ...
-    node,
-    {onClickCallbackDN}, // Decompose Node
-    ) => {
-    return (
-        <>
-          {node && node.data.faultyFDs.length > 0 && (
-            <div className="modal-middle">
-              <p>
-                <b>{t(problem+".unwantedDependencies")}:</b>{" "}
-              </p>
-              {node.data.faultyFDs
-                .map(
-                  (faultyDependency, index) => {
-                    return (
-                      <p key={index}>
-                        <button
-                          onClick={() =>
-                            handleDependencyClick(
-                              faultyDependency.dependency,
-                              node
-                            )
-                          }
-                        >
-                        {showFunctionsInstance.showTextDependencyWithArrow(
-                          faultyDependency.dependency
-                        )}{" "}
-                        - {t("problem-decomposition.violates")} {faultyDependency.violates}
-                        </button>
-                      </p>
-                    );
-                  })}
-              </div>
-            )}
-        </>
-      );
-  };
-
   const uiModalNodeActions_OtherFDs = (
     problem, // "problem-synthesis", "problem-decomposition", ...
     node,
@@ -934,11 +895,24 @@ const Decomposition = () => {
           onRequestClose={() => setIsModalOpen(false)}
           className="custom-modal"
         >
-          {uiModalNodeInfo_Header("problem-decomposition", {})} {/* MKOP 2025/10/22 TODO: How to use shared code and pass onClick callback function? */}  
-          {CustomNodeFunctionsInstance.uiModalNodeInfo_AttrsKeysNF("problem-decomposition", selectedNode)}
+          <CustomNodeFunctionsInstance.UiModalNodeInfo_Header
+            problem={"problem-decomposition"}
+            onClickCallback={() => setIsModalOpen(false)}
+          />  
+          <CustomNodeFunctionsInstance.UiModalNodeInfo_AttrsKeysNF
+            problem={"problem-decomposition"}
+            node={selectedNode}
+          />
           {uiModalNodeActions("ownDecomposition", selectedNode, currLeafNodesList, {}, {}, {}, {})} {/* MKOP 2025/10/25 TODO: "problem-decomposition"; How to use shared code and pass onClick callback functions? */}  
-          {CustomNodeFunctionsInstance.uiModalNodeInfo_FDs("problem-decomposition", selectedNode)}
-          {uiModalNodeActions_FaultyFDs("problem-decomposition", selectedNode, {})} {/* MKOP 2025/10/25 TODO: How to use shared code and pass onClick callback functions? */}
+          <CustomNodeFunctionsInstance.UiModalNodeInfo_FDs
+            problem={"problem-decomposition"}
+            node={selectedNode}
+          />
+          <CustomNodeFunctionsInstance.UiModalNodeActions_FaultyFDs
+            problem={"problem-decomposition"}
+            node={selectedNode}
+            onClickCallbackDN={handleDependencyClick}
+          />
           {uiModalNodeActions_OtherFDs("problem-decomposition", selectedNode, faultlyDependenciesFooter, {})} {/* MKOP 2025/10/25 TODO: How to use shared code and pass onClick callback functions? */}
         </ReactModal>
 
@@ -947,17 +921,15 @@ const Decomposition = () => {
           onRequestClose={() => setIsPracticeModalOpen(false)}
           className="custom-modal minimal-cover-modal practice-modal custom-scroll"
         >
-          <div className="modal-header">
-            <h2>{t("problem-decomposition.tableDetail")}</h2>
-
-            <button
-              onClick={() => setIsPracticeModalOpen(false)}
-              className="close-button"
-            >
-              X
-            </button>
-          </div>
-          {CustomNodeFunctionsInstance.uiModalNodeInfo_AttrsKeysNF("problem-decomposition", selectedNode, /*showNF=*/ false)}
+          <CustomNodeFunctionsInstance.UiModalNodeInfo_Header
+            problem={"problem-decomposition"}
+            onClickCallback={() => setIsPracticeModalOpen(false)}
+          />  
+          <CustomNodeFunctionsInstance.UiModalNodeInfo_AttrsKeysNF
+            problem={"problem-decomposition"}
+            node={selectedNode}
+            showNF={false}
+          />
           {uiModalNodeActions("ownDecomposition", selectedNode, currLeafNodesList, {}, {}, {}, {})}
 
           <div className="modal-content">

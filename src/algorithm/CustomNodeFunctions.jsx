@@ -48,9 +48,9 @@ export class CustomNodeFunctions {
     this.initNode = this.initNode.bind(this);
     this.mergeTables = this.mergeTables.bind(this);
     this.highlightSubsetNodes = this.highlightSubsetNodes.bind(this);
-    this.uiModalNodeInfo_Header = this.uiModalNodeInfo_Header.bind(this);
-    this.uiModalNodeInfo_AttrsKeysNF = this.uiModalNodeInfo_AttrsKeysNF.bind(this); 
-    this.uiModalNodeInfo_FDs = this.uiModalNodeInfo_FDs.bind(this);
+    this.UiModalNodeInfo_Header = this.UiModalNodeInfo_Header.bind(this);
+    this.UiModalNodeInfo_AttrsKeysNF = this.UiModalNodeInfo_AttrsKeysNF.bind(this); 
+    this.UiModalNodeInfo_FDs = this.UiModalNodeInfo_FDs.bind(this);
     this.uiModalNodeInfo_FaultyFDs = this.uiModalNodeInfo_FaultyFDs.bind(this);
   }
 
@@ -182,10 +182,10 @@ export class CustomNodeFunctions {
 
   // MKOP 2025/10/22 User Interface fragments - unified rendering of screens
   // Header of node info modal window
-  uiModalNodeInfo_Header = (
+  UiModalNodeInfo_Header = ({
     problem, // "problem-synthesis", "problem-decomposition", ...
-    {onClickCallback},
-    ) => {
+    onClickCallback,
+    }) => {
       const { t } = useTranslation();
       return (
         <div className="modal-header">
@@ -200,11 +200,11 @@ export class CustomNodeFunctions {
       );
   };
   
-  uiModalNodeInfo_AttrsKeysNF = (
+  UiModalNodeInfo_AttrsKeysNF = ({
     problem, // "problem-synthesis", "problem-decomposition", ...
     node,
     showNF = true
-    ) => {
+    }) => {
       const { t } = useTranslation();
       return (
         <div className="modal-content">
@@ -234,10 +234,10 @@ export class CustomNodeFunctions {
       );
   };
   
-  uiModalNodeInfo_FDs = (
+  UiModalNodeInfo_FDs = ({
     problem, // "problem-synthesis", "problem-decomposition", ...
     node,
-    ) => {
+    }) => {
       const { t } = useTranslation();
       return (
         <div className="modal-middle">
@@ -286,6 +286,44 @@ export class CustomNodeFunctions {
                     </p>
                   );
                 })}
+            </div>
+          )}
+        </>
+      );
+  };
+
+  UiModalNodeActions_FaultyFDs = ({
+    problem, // "problem-synthesis", "problem-decomposition", ...
+    node,
+    onClickCallbackDN, // Decompose Node
+    }) => {
+      const { t } = useTranslation();
+      return (
+        <>
+          {node && node.data.faultyFDs.length > 0 && (
+            <div className="modal-middle">
+              <p>
+                <b>{t(problem+".unwantedDependencies")}:</b>{" "}
+              </p>
+              {node.data.faultyFDs
+                .map(
+                  (faultyDependency, index) => {
+                    const handleOnClickEvent = (event) => {
+                      onClickCallbackDN(faultyDependency.dependency, node)
+                      };
+                    return (
+                      <p key={index}>
+                        <button
+                          onClick={handleOnClickEvent}
+                        >
+                        {showFunctionsInstance.showTextDependencyWithArrow(
+                          faultyDependency.dependency
+                        )}{" "}
+                        - {t("problem-decomposition.violates")} {faultyDependency.violates}
+                        </button>
+                      </p>
+                    );
+                  })}
             </div>
           )}
         </>
