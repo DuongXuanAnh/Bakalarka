@@ -653,112 +653,6 @@ const Decomposition = () => {
         </div>
       );
   };
-  
-  const uiModalNodeActions = (
-    problem, // "problem-synthesis", "problem-decomposition", ...
-    node,
-    leafNodes, // MKOP TODO: set isLeaf flag in nodes instead
-    {onClickCallbackDND},   // Do Not Necompose
-    {onClickCallbackDRNDN}, // Decompose RaNDomly Node
-    {onClickCallbackDRNDS}, // Decompose RaNDomly Subtree
-    {onClickCallbackDM},    // Decompose Manually
-    ) => {
-    return (
-        <div className="modal-content">
-          {node && (
-            <>
-              {leafNodes.length > 0 &&
-                !leafNodes.some(
-                  (leafNode) => leafNode.id === node.id
-                ) && (
-                <p key="dnd">
-                  <button
-                    onClick={() =>
-                      handleDependencyClick(null, node)
-                    }
-                  >
-                    {t(problem+".doNotDecompose")}
-                  </button>
-                </p>
-              )}
-              {node.data.normalForm !== "BCNF" && (
-                <p key="drndn">
-                  <button
-                    onClick={() =>
-                      handleRandomDecompositionClick(node, 1)
-                    }
-                  >
-                    {t(problem+".decomposeRandomlyNode")}
-                  </button>
-                </p>
-              )}
-              {node.data.normalForm !== "BCNF" && (
-                <p key="drndt">
-                  <button
-                    onClick={() =>
-                      handleRandomDecompositionClick(node, null)
-                    }
-                  >
-                    {t(problem+".decomposeRandomlySubtree")}
-                  </button>
-                </p>
-              )}
-              {node.data.normalForm !== "BCNF" && (
-                <p key="dm">
-                  <button
-                    onClick={() => setIsModalDecompositeOwnWayOpen(true)}
-                  >
-                    {t(problem+".decomposeManually")}
-                  </button>
-                </p>
-              )}
-            </>
-          )}
-        </div>
-      );
-  };
-
-  const uiModalNodeActions_OtherFDs = (
-    problem, // "problem-synthesis", "problem-decomposition", ...
-    node,
-    faultlyDependenciesFooter,
-    {onClickCallbackDN}, // Decompose Node
-    ) => {
-    return (
-        <>  
-          {node && faultlyDependenciesFooter.length > 0 && (
-            <div className="modal-footer">
-              <p>
-                <b><Trans
-                     i18nKey={problem+".moreWayHowToDecomposite"}
-                     components={[<sup></sup>]}
-                /></b>
-              </p>
-              {faultlyDependenciesFooter
-                .map(
-                  (faultyDependency, index) => {
-                    return (
-                      <p key={index}>
-                        <button
-                          onClick={() =>
-                            handleDependencyClick(
-                              faultyDependency,
-                              node
-                            )
-                          }
-                        >
-                        {showFunctionsInstance.showTextDependencyWithArrow(
-                          faultyDependency
-                        )}
-                        </button>
-                      </p>
-                  );
-                })}
-            </div>
-          )}
-        </>
-      );
-  };
 
   const showMergeTableModal = () => {
     setIsModalMergeTablesAfterDecomposeOpen(true);
@@ -903,17 +797,35 @@ const Decomposition = () => {
             problem={"problem-decomposition"}
             node={selectedNode}
           />
-          {uiModalNodeActions("ownDecomposition", selectedNode, currLeafNodesList, {}, {}, {}, {})} {/* MKOP 2025/10/25 TODO: "problem-decomposition"; How to use shared code and pass onClick callback functions? */}  
+          <CustomNodeFunctionsInstance.UiModalNodeActions
+            problem={"ownDecomposition"}
+            node={selectedNode}
+            leafNodes={currLeafNodesList}
+            onClickCallbackDND={handleDependencyClick}
+            onClickCallbackDRNDN={handleRandomDecompositionClick}
+            onClickCallbackDRNDS={handleRandomDecompositionClick}
+            onClickCallbackDM={() => setIsModalDecompositeOwnWayOpen(true)}
+          />  
           <CustomNodeFunctionsInstance.UiModalNodeInfo_FDs
             problem={"problem-decomposition"}
             node={selectedNode}
           />
           <CustomNodeFunctionsInstance.UiModalNodeActions_FaultyFDs
             problem={"problem-decomposition"}
+            label={"unwantedDependencies"}
             node={selectedNode}
+            faultyDependencies={selectedNode ? selectedNode.data.faultyFDs.map((fd) => fd.dependency) : []}
+            violations={selectedNode ? selectedNode.data.faultyFDs.map((fd) => fd.violates) : []}
             onClickCallbackDN={handleDependencyClick}
           />
-          {uiModalNodeActions_OtherFDs("problem-decomposition", selectedNode, faultlyDependenciesFooter, {})} {/* MKOP 2025/10/25 TODO: How to use shared code and pass onClick callback functions? */}
+          <CustomNodeFunctionsInstance.UiModalNodeActions_FaultyFDs
+            problem={"problem-decomposition"}
+            label={"moreWayHowToDecomposite"}
+            node={selectedNode}
+            faultyDependencies={faultlyDependenciesFooter}
+            violations={[]}
+            onClickCallbackDN={handleDependencyClick}
+          />
         </ReactModal>
 
         <ReactModal
@@ -930,7 +842,15 @@ const Decomposition = () => {
             node={selectedNode}
             showNF={false}
           />
-          {uiModalNodeActions("ownDecomposition", selectedNode, currLeafNodesList, {}, {}, {}, {})}
+          <CustomNodeFunctionsInstance.UiModalNodeActions
+            problem={"ownDecomposition"}
+            node={selectedNode}
+            leafNodes={currLeafNodesList}
+            onClickCallbackDND={handleDependencyClick}
+            onClickCallbackDRNDN={handleRandomDecompositionClick}
+            onClickCallbackDRNDS={handleRandomDecompositionClick}
+            onClickCallbackDM={() => setIsModalDecompositeOwnWayOpen(true)}
+          />  
 
           <div className="modal-content">
             <div className="modal-content-header">

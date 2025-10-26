@@ -3,7 +3,7 @@ import { Handle, Position } from "reactflow";
 import { NormalFormALG } from "./NormalFormALG";
 import { HelperColorFunctions } from "./HelperColorFunctions";
 import { HelperSetFunctions } from "./HelperSetFunctions";
-import { useTranslation } from "react-i18next";
+import { Trans, useTranslation } from "react-i18next";
 import { ShowFunctions } from "./ShowFunctions";
 import { FunctionalDependencyFunctions } from "./FunctionalDependencyFunctions";
 import { FindingKeysFunctions } from "./FindingKeysFunctions";
@@ -51,7 +51,8 @@ export class CustomNodeFunctions {
     this.UiModalNodeInfo_Header = this.UiModalNodeInfo_Header.bind(this);
     this.UiModalNodeInfo_AttrsKeysNF = this.UiModalNodeInfo_AttrsKeysNF.bind(this); 
     this.UiModalNodeInfo_FDs = this.UiModalNodeInfo_FDs.bind(this);
-    this.uiModalNodeInfo_FaultyFDs = this.uiModalNodeInfo_FaultyFDs.bind(this);
+    this.UiModalNodeInfo_FaultyFDs = this.UiModalNodeInfo_FaultyFDs.bind(this);
+    this.UiModalNodeActions_FaultyFDs = this.UiModalNodeActions_FaultyFDs.bind(this);
   }
 
   emptyNodeData = () => {
@@ -263,7 +264,7 @@ export class CustomNodeFunctions {
       );
   };
   
-  uiModalNodeInfo_FaultyFDs = (
+  UiModalNodeInfo_FaultyFDs = (
     problem, // "problem-synthesis", "problem-decomposition", ...
     node,
     ) => {
@@ -294,39 +295,117 @@ export class CustomNodeFunctions {
 
   UiModalNodeActions_FaultyFDs = ({
     problem, // "problem-synthesis", "problem-decomposition", ...
+    label,
     node,
+    faultyDependencies,
+    violations,
     onClickCallbackDN, // Decompose Node
     }) => {
       const { t } = useTranslation();
       return (
         <>
-          {node && node.data.faultyFDs.length > 0 && (
+          {node && faultyDependencies.length > 0 && (
             <div className="modal-middle">
               <p>
-                <b>{t(problem+".unwantedDependencies")}:</b>{" "}
+                <b><Trans
+                     i18nKey={problem+"."+label}
+                     components={[<sup></sup>]}
+                />:</b>
               </p>
-              {node.data.faultyFDs
+              {faultyDependencies
                 .map(
                   (faultyDependency, index) => {
                     const handleOnClickEvent = (event) => {
-                      onClickCallbackDN(faultyDependency.dependency, node)
+                      onClickCallbackDN(faultyDependency, node)
                       };
+                    const violationInfo =
+                      violations.length > 0 
+                        ? " - " + t(problem+".violates") + " " + violations[index]
+                        : "";
                     return (
                       <p key={index}>
                         <button
                           onClick={handleOnClickEvent}
                         >
                         {showFunctionsInstance.showTextDependencyWithArrow(
-                          faultyDependency.dependency
-                        )}{" "}
-                        - {t("problem-decomposition.violates")} {faultyDependency.violates}
+                          faultyDependency
+                        )}
                         </button>
+                        {violationInfo}
                       </p>
                     );
                   })}
             </div>
           )}
         </>
+      );
+  };
+  
+  UiModalNodeActions = ({
+    problem, // "problem-synthesis", "problem-decomposition", ...
+    node,
+    leafNodes, // MKOP TODO: set isLeaf flag in nodes instead
+    onClickCallbackDND,   // Do Not Necompose
+    onClickCallbackDRNDN, // Decompose RaNDomly Node
+    onClickCallbackDRNDS, // Decompose RaNDomly Subtree
+    onClickCallbackDM,    // Decompose Manually
+    }) => {
+      const { t } = useTranslation();
+      const handleOnClickEventDND = (event) => {
+        onClickCallbackDND(null, node) // handleDependencyClick - Do Not Necompose
+        };
+      const handleOnClickEventDRNDN = (event) => {
+        onClickCallbackDRNDN(node, 1) // handleRandomDecompositionClick - Decompose RaNDomly Node
+        };
+      const handleOnClickEventDRNDS = (event) => {
+        onClickCallbackDRNDS(node, null) // handleRandomDecompositionClick - Decompose RaNDomly Subtree
+        };
+      return (
+        <div className="modal-content">
+          {node && (
+            <>
+              {leafNodes.length > 0 &&
+                !leafNodes.some(
+                  (leafNode) => leafNode.id === node.id
+                ) && (
+                <p key="dnd">
+                  <button
+                    onClick={handleOnClickEventDND}
+                  >
+                    {t(problem+".doNotDecompose")}
+                  </button>
+                </p>
+              )}
+              {node.data.normalForm !== "BCNF" && (
+                <p key="drndn">
+                  <button
+                    onClick={handleOnClickEventDRNDN}
+                  >
+                    {t(problem+".decomposeRandomlyNode")}
+                  </button>
+                </p>
+              )}
+              {node.data.normalForm !== "BCNF" && (
+                <p key="drndt">
+                  <button
+                    onClick={handleOnClickEventDRNDS}
+                  >
+                    {t(problem+".decomposeRandomlySubtree")}
+                  </button>
+                </p>
+              )}
+              {node.data.normalForm !== "BCNF" && (
+                <p key="dm">
+                  <button
+                    onClick={onClickCallbackDM}
+                  >
+                    {t(problem+".decomposeManually")}
+                  </button>
+                </p>
+              )}
+            </>
+          )}
+        </div>
       );
   };
 

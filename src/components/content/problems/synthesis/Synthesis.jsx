@@ -533,7 +533,7 @@ function Synthesis() {
           problem={"problem-synthesis"}
           node={modalContent}
         />
-        {CustomNodeFunctionsInstance.uiModalNodeInfo_FaultyFDs("problem-synthesis", modalContent)}
+        {CustomNodeFunctionsInstance.UiModalNodeInfo_FaultyFDs("problem-synthesis", modalContent)}
       </ReactModal>
     </div>
   );
