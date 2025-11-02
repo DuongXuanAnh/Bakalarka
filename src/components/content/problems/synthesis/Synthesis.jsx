@@ -523,6 +523,7 @@ function Synthesis() {
       >
         <CustomNodeFunctionsInstance.UiModalNodeInfo_Header
           problem={"problem-synthesis"}
+          label={"tableDetail"}
           onClickCallback={() => setIsModalOpen(false)}
         />  
         <CustomNodeFunctionsInstance.UiModalNodeInfo_AttrsKeysNF

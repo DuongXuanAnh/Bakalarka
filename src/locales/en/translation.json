@@ -263,6 +263,8 @@
     "showTablesAfterDecomposition": "Show tables after decomposition",
     "insertYourDependency": "Insert dependency",
     "tablesAfterDecomposition": "Tables after decomposition",
+    "correctFdCheck": "Správně!",
+    "incorrectFdCheck": "Your answer is is not correct!",
     "customeNode": {
       "keys": "Keys: ",
       "isSubsetOf": "Subset of: "

@@ -613,7 +613,7 @@ const Decomposition = () => {
 
     if (correctAnswercounter === totalCorrectAnswers) {
       Swal.fire({
-        title: "Správně!",
+        title: t("problem-decomposition.correctFdCheck"), // "Správně!",
         icon: "success",
         confirmButtonText: "Ok",
       });
@@ -629,31 +629,111 @@ const Decomposition = () => {
       }
     } else {
       Swal.fire({
-        title: "Vaše odpověď není správná!",
+        title: t("problem-decomposition.incorrectFdCheck"), // "Vaše odpověď není správná!"
         icon: "error",
         confirmButtonText: "Ok",
       });
     }
   };
+  
+  const UiModalNodePractice = ({
+    problem,         // "problem-synthesis", "problem-decomposition", ...
+    }) => {
+      return (
+          <div className="modal-content">
+            <div className="practiceDependenciesArea">
+              <p>{t("problem-decomposition.rewrittenDependenciesRHS")}</p>
+              <button
+                className="howButton"
+                onClick={() =>
+                  handleNavigateFromPracticeModal(
+                    selectedNode.data.attributes,
+                    "derivablity"
+                  )
+                }
+              >
+                <Trans
+                  i18nKey="problem-decomposition.howToIdentifyFplus"
+                  components={[<sup></sup>]}
+                />
+              </button>
 
-  // MKOP 2025/10/22 TODO: How to use shared CustomNodeFunctionsInstance.uiModalNodeInfo_Header code and pass onClick callback function?
-  const uiModalNodeInfo_Header = (
-    problem, // "problem-synthesis", "problem-decomposition", ...
-    {onClickCallback},
-    ) => {
-    return (
-        <div className="modal-header">
-          <h2 className="black">{t(problem+".tableDetail")}</h2>
-          <button
-            onClick={() => setIsModalOpen(false)}
-            className="close-button"
-          >
-            X
-          </button>
-        </div>
+              {selectedNode && (
+                <ul className="practiceDependenisWrapperUL">
+                  {selectedNode.data.FDs.map((dependency, index) => {
+                    return (
+                      <li key={index} className="practiceDependencyRow">
+                        <div>
+                          <div
+                            style={{
+                              display: "flex",
+                              gap: "10px",
+                              alignItems: "center",
+                            }}
+                          >
+                            <p
+                              className="practiceDependency"
+                              id={`dependency${index}`}
+                            >
+                              {showFunctionsInstance.showTextDependencyWithArrow(
+                                dependency
+                              )}
+                            </p>
+                            <label>
+                              <div className="practiceCheckBoxViolate">
+                                <input
+                                  type="checkbox"
+                                  className={"violateCheckbox"}
+                                  id={`violate${index}`}
+                                  onChange={() => {
+                                    document.getElementById(
+                                      `violateComboBox${index}`
+                                    ).style.display = document.querySelector(
+                                      `#violate${index}`
+                                    ).checked
+                                      ? "inline-block"
+                                      : "none";
+                                  }}
+                                  style={{ marginLeft: "5px" }}
+                                />
+                                <span>
+                                  {t("problem-decomposition.violates")}
+                                </span>
+                                <div
+                                  id={`violateComboBox${index}`}
+                                  style={{ display: "none" }}
+                                >
+                                  <select
+                                    name="cBox_normalForm"
+                                    id={`cBox_normalForm${index}`}
+                                  >
+                                    <option value="2NF">2NF</option>
+                                    <option value="3NF">3NF</option>
+                                    <option value="BCNF">BCNF</option>
+                                  </select>
+                                </div>
+                              </div>
+                            </label>
+                          </div>
+                        </div>
+                      </li>
+                    );
+                  })}
+                </ul>
+              )}
+
+              <button
+                className="checkButton"
+                id="checkButton_FaultyDep"
+                onClick={() => checkDependenciesViolateAnswer(selectedNode)}
+              >
+                {t("problem-decomposition.checkChosenDependencies")}
+              </button>
+            </div>
+          </div>
       );
   };
-
+  
   const showMergeTableModal = () => {
     setIsModalMergeTablesAfterDecomposeOpen(true);
   };
@@ -791,6 +871,7 @@ const Decomposition = () => {
         >
           <CustomNodeFunctionsInstance.UiModalNodeInfo_Header
             problem={"problem-decomposition"}
+            label={"tableDetail"}
             onClickCallback={() => setIsModalOpen(false)}
           />  
           <CustomNodeFunctionsInstance.UiModalNodeInfo_AttrsKeysNF
@@ -835,6 +916,7 @@ const Decomposition = () => {
         >
           <CustomNodeFunctionsInstance.UiModalNodeInfo_Header
             problem={"problem-decomposition"}
+            label={"tableDetail"}
             onClickCallback={() => setIsPracticeModalOpen(false)}
           />  
           <CustomNodeFunctionsInstance.UiModalNodeInfo_AttrsKeysNF
@@ -852,160 +934,17 @@ const Decomposition = () => {
             onClickCallbackDM={() => setIsModalDecompositeOwnWayOpen(true)}
           />  
 
-          <div className="modal-content">
-            <div className="modal-content-header">
-              {selectedNode && (
-                  <div className="normalFormPracticeArea">
-                    <div className="radioButtonsArea">
-                      <b>{t("problem-decomposition.normalForm")}:</b>{" "}
-                      <label className="radioBtn">
-                        <input
-                          type="radio"
-                          name="normalFormRadioBtn"
-                          value="1"
-                        />
-                        1NF
-                      </label>
-                      <label className="radioBtn">
-                        <input
-                          type="radio"
-                          name="normalFormRadioBtn"
-                          value="2"
-                        />
-                        2NF
-                      </label>
-                      <label className="radioBtn">
-                        <input
-                          type="radio"
-                          name="normalFormRadioBtn"
-                          value="3"
-                        />
-                        3NF
-                      </label>
-                      <label className="radioBtn">
-                        <input
-                          type="radio"
-                          name="normalFormRadioBtn"
-                          value="BCNF"
-                        />
-                        BCNF
-                      </label>
-                    </div>
+          <CustomNodeFunctionsInstance.UiModalNodePractice_NF
+            problem={"problem-decomposition"}
+            node={selectedNode}
+            onClickCallbackCheck={checkNormalFormAnswer}
+            onClickCallbackHowTo={handleNavigateFromPracticeModal}
+          />
 
-                    <div className="buttonsArea">
-                      <button
-                        className="checkButton"
-                        id="checkButton_NF"
-                        onClick={() => checkNormalFormAnswer(selectedNode)}
-                      >
-                        {t("problem-decomposition.check")}
-                      </button>
-                      <button
-                        className="howButton"
-                        onClick={() =>
-                          handleNavigateFromPracticeModal(
-                            selectedNode.data.attributes,
-                            "normalForm"
-                          )
-                        }
-                      >
-                        {t("problem-decomposition.howToIdentifyNormalForm")}
-                      </button>
-                    </div>
-                  </div>
-              )}
-            </div>
-
-            <div className="practiceDependenciesArea">
-              <p>{t("problem-decomposition.rewrittenDependenciesRHS")}</p>
-              <button
-                className="howButton"
-                onClick={() =>
-                  handleNavigateFromPracticeModal(
-                    selectedNode.data.attributes,
-                    "derivablity"
-                  )
-                }
-              >
-                <Trans
-                  i18nKey="problem-decomposition.howToIdentifyFplus"
-                  components={[<sup></sup>]}
-                />
-              </button>
-
-              {selectedNode && (
-                <ul className="practiceDependenisWrapperUL">
-                  {selectedNode.data.FDs.map((dependency, index) => {
-                    return (
-                      <li key={index} className="practiceDependencyRow">
-                        <div>
-                          <div
-                            style={{
-                              display: "flex",
-                              gap: "10px",
-                              alignItems: "center",
-                            }}
-                          >
-                            <p
-                              className="practiceDependency"
-                              id={`dependency${index}`}
-                            >
-                              {showFunctionsInstance.showTextDependencyWithArrow(
-                                dependency
-                              )}
-                            </p>
-                            <label>
-                              <div className="practiceCheckBoxViolate">
-                                <input
-                                  type="checkbox"
-                                  className={"violateCheckbox"}
-                                  id={`violate${index}`}
-                                  onChange={() => {
-                                    document.getElementById(
-                                      `violateComboBox${index}`
-                                    ).style.display = document.querySelector(
-                                      `#violate${index}`
-                                    ).checked
-                                      ? "inline-block"
-                                      : "none";
-                                  }}
-                                  style={{ marginLeft: "5px" }}
-                                />
-                                <span>
-                                  {t("problem-decomposition.violates")}
-                                </span>
-                                <div
-                                  id={`violateComboBox${index}`}
-                                  style={{ display: "none" }}
-                                >
-                                  <select
-                                    name="cBox_normalForm"
-                                    id={`cBox_normalForm${index}`}
-                                  >
-                                    <option value="2NF">2NF</option>
-                                    <option value="3NF">3NF</option>
-                                    <option value="BCNF">BCNF</option>
-                                  </select>
-                                </div>
-                              </div>
-                            </label>
-                          </div>
-                        </div>
-                      </li>
-                    );
-                  })}
-                </ul>
-              )}
-
-              <button
-                className="checkButton"
-                id="checkButton_FaultyDep"
-                onClick={() => checkDependenciesViolateAnswer(selectedNode)}
-              >
-                {t("problem-decomposition.checkChosenDependencies")}
-              </button>
-            </div>
-          </div>
+          <UiModalNodePractice
+            problem={"problem-decomposition"}
+          />
+            
         </ReactModal>
 
         <ReactModal
@@ -1013,16 +952,11 @@ const Decomposition = () => {
           onRequestClose={() => setIsModalDecompositeOwnWayOpen(false)}
           className="custom-modal"
         >
-          <div className="modal-header">
-            <h2>{t("problem-decomposition.insertYourDependency")}</h2>
-
-            <button
-              onClick={() => setIsModalDecompositeOwnWayOpen(false)}
-              className="close-button"
-            >
-              X
-            </button>
-          </div>
+          <CustomNodeFunctionsInstance.UiModalNodeInfo_Header
+            problem={"problem-decomposition"}
+            label={"insertYourDependency"}
+            onClickCallback={() => setIsModalDecompositeOwnWayOpen(false)}
+          />  
 
           <div className="modal-content">
             {practiceMode && (
@@ -1058,16 +992,11 @@ const Decomposition = () => {
             },
           }}
         >
-          <div className="modal-header">
-            <h2>{t("problem-decomposition.tablesAfterDecomposition")}</h2>
-
-            <button
-              onClick={() => setIsModalMergeTablesAfterDecomposeOpen(false)}
-              className="close-button"
-            >
-              X
-            </button>
-          </div>
+          <CustomNodeFunctionsInstance.UiModalNodeInfo_Header
+            problem={"problem-decomposition"}
+            label={"tablesAfterDecomposition"}
+            onClickCallback={() => setIsModalMergeTablesAfterDecomposeOpen(false)}
+          />  
 
           <div className="modal-content">
             <MergeTablesAfterDecompose

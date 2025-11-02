@@ -53,6 +53,7 @@ export class CustomNodeFunctions {
     this.UiModalNodeInfo_FDs = this.UiModalNodeInfo_FDs.bind(this);
     this.UiModalNodeInfo_FaultyFDs = this.UiModalNodeInfo_FaultyFDs.bind(this);
     this.UiModalNodeActions_FaultyFDs = this.UiModalNodeActions_FaultyFDs.bind(this);
+    this.UiModalNodePractice_NF = this.UiModalNodePractice_NF.bind(this);
   }
 
   emptyNodeData = () => {
@@ -184,15 +185,16 @@ export class CustomNodeFunctions {
   // MKOP 2025/10/22 User Interface fragments - unified rendering of screens
   // Header of node info modal window
   UiModalNodeInfo_Header = ({
-    problem, // "problem-synthesis", "problem-decomposition", ...
-    onClickCallback,
+    problem,         // "problem-synthesis", "problem-decomposition", ...
+    label,           // "tableDetail"
+    onClickCallback, // {() => setIsModalOpen(false)}
     }) => {
       const { t } = useTranslation();
       return (
         <div className="modal-header">
-          <h2 className="black">{t(problem+".tableDetail")}</h2>
+          <h2 className="black">{t(problem+"."+label)}</h2>
           <button
-            onClick={onClickCallback} // {() => setIsModalOpen(false)}
+            onClick={onClickCallback}
             className="close-button"
           >
             X
@@ -409,6 +411,230 @@ export class CustomNodeFunctions {
       );
   };
 
+  UiModalNodePractice_labelNF = ({
+    rbLabel, // "1NF", "2NF", "3NF", "BCNF"
+    rbValue, // "1", "2", "3", "BCNF"
+    }) => {
+      return (
+        <label className="radioBtn">
+          <input
+            type="radio"
+            name="normalFormRadioBtn"
+            value={rbValue}
+          />
+          {rbLabel}
+        </label>
+      );
+  };
+  
+  UiModalNodePractice_NF = ({
+    problem,         // "problem-synthesis", "problem-decomposition", ...
+    node,
+    onClickCallbackCheck,   // Check
+    onClickCallbackHowTo, // How to achieve normal form
+    }) => {
+      const { t } = useTranslation();
+      const handleOnClickEventCheck = (event) => {
+        onClickCallbackCheck(node) // checkNormalFormAnswer - Check
+        };
+      const handleOnClickEventHowTo = (event) => {
+        onClickCallbackHowTo(node.data.attributes, "normalForm") // handleNavigateFromPracticeModal - How to achieve normal form
+        };
+      return (
+        <div className="modal-content">
+          <div className="modal-content-header">
+            {node && (
+              <div className="normalFormPracticeArea">
+                <div className="radioButtonsArea">
+                  <b>{t(problem+".normalForm")}:</b>{" "}
+                  <this.UiModalNodePractice_labelNF rbLabel={  "1NF"} rbValue={   "1"} />
+                  <this.UiModalNodePractice_labelNF rbLabel={  "2NF"} rbValue={   "2"} />
+                  <this.UiModalNodePractice_labelNF rbLabel={  "3NF"} rbValue={   "3"} />
+                  <this.UiModalNodePractice_labelNF rbLabel={ "BCNF"} rbValue={"BCNF"} />
+                </div>
+                <div className="buttonsArea">
+                  <button
+                    className="checkButton"
+                    id="checkButton_NF"
+                    onClick={handleOnClickEventCheck}
+                  >
+                    {t("problem-decomposition.check")}
+                  </button>
+                  <button
+                    className="howButton"
+                    onClick={handleOnClickEventHowTo}
+                  >
+                    {t("problem-decomposition.howToIdentifyNormalForm")}
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      );
+  };
+/*  
+  const UiModalNodePractice = ({
+    problem,         // "problem-synthesis", "problem-decomposition", ...
+    }) => {
+      return (
+          <div className="modal-content">
+            <div className="modal-content-header">
+              {selectedNode && (
+                  <div className="normalFormPracticeArea">
+                    <div className="radioButtonsArea">
+                      <b>{t("problem-decomposition.normalForm")}:</b>{" "}
+                      <label className="radioBtn">
+                        <input
+                          type="radio"
+                          name="normalFormRadioBtn"
+                          value="1"
+                        />
+                        1NF
+                      </label>
+                      <label className="radioBtn">
+                        <input
+                          type="radio"
+                          name="normalFormRadioBtn"
+                          value="2"
+                        />
+                        2NF
+                      </label>
+                      <label className="radioBtn">
+                        <input
+                          type="radio"
+                          name="normalFormRadioBtn"
+                          value="3"
+                        />
+                        3NF
+                      </label>
+                      <label className="radioBtn">
+                        <input
+                          type="radio"
+                          name="normalFormRadioBtn"
+                          value="BCNF"
+                        />
+                        BCNF
+                      </label>
+                    </div>
+
+                    <div className="buttonsArea">
+                      <button
+                        className="checkButton"
+                        id="checkButton_NF"
+                        onClick={() => checkNormalFormAnswer(selectedNode)}
+                      >
+                        {t("problem-decomposition.check")}
+                      </button>
+                      <button
+                        className="howButton"
+                        onClick={() =>
+                          handleNavigateFromPracticeModal(
+                            selectedNode.data.attributes,
+                            "normalForm"
+                          )
+                        }
+                      >
+                        {t("problem-decomposition.howToIdentifyNormalForm")}
+                      </button>
+                    </div>
+                  </div>
+              )}
+            </div>
+
+            <div className="practiceDependenciesArea">
+              <p>{t("problem-decomposition.rewrittenDependenciesRHS")}</p>
+              <button
+                className="howButton"
+                onClick={() =>
+                  handleNavigateFromPracticeModal(
+                    selectedNode.data.attributes,
+                    "derivablity"
+                  )
+                }
+              >
+                <Trans
+                  i18nKey="problem-decomposition.howToIdentifyFplus"
+                  components={[<sup></sup>]}
+                />
+              </button>
+
+              {selectedNode && (
+                <ul className="practiceDependenisWrapperUL">
+                  {selectedNode.data.FDs.map((dependency, index) => {
+                    return (
+                      <li key={index} className="practiceDependencyRow">
+                        <div>
+                          <div
+                            style={{
+                              display: "flex",
+                              gap: "10px",
+                              alignItems: "center",
+                            }}
+                          >
+                            <p
+                              className="practiceDependency"
+                              id={`dependency${index}`}
+                            >
+                              {showFunctionsInstance.showTextDependencyWithArrow(
+                                dependency
+                              )}
+                            </p>
+                            <label>
+                              <div className="practiceCheckBoxViolate">
+                                <input
+                                  type="checkbox"
+                                  className={"violateCheckbox"}
+                                  id={`violate${index}`}
+                                  onChange={() => {
+                                    document.getElementById(
+                                      `violateComboBox${index}`
+                                    ).style.display = document.querySelector(
+                                      `#violate${index}`
+                                    ).checked
+                                      ? "inline-block"
+                                      : "none";
+                                  }}
+                                  style={{ marginLeft: "5px" }}
+                                />
+                                <span>
+                                  {t("problem-decomposition.violates")}
+                                </span>
+                                <div
+                                  id={`violateComboBox${index}`}
+                                  style={{ display: "none" }}
+                                >
+                                  <select
+                                    name="cBox_normalForm"
+                                    id={`cBox_normalForm${index}`}
+                                  >
+                                    <option value="2NF">2NF</option>
+                                    <option value="3NF">3NF</option>
+                                    <option value="BCNF">BCNF</option>
+                                  </select>
+                                </div>
+                              </div>
+                            </label>
+                          </div>
+                        </div>
+                      </li>
+                    );
+                  })}
+                </ul>
+              )}
+
+              <button
+                className="checkButton"
+                id="checkButton_FaultyDep"
+                onClick={() => checkDependenciesViolateAnswer(selectedNode)}
+              >
+                {t("problem-decomposition.checkChosenDependencies")}
+              </button>
+            </div>
+          </div>
+      );
+  };
+*/  
 }
 
 // Rendering of nodes in ReactFlow

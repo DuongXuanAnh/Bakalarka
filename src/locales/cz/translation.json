@@ -263,6 +263,8 @@
     "showTablesAfterDecomposition": "Zobrazit tabulky po dekompozici",
     "insertYourDependency": "Zadejte závislost",
     "tablesAfterDecomposition": "Tabulky po dekompozici",
+    "correctFdCheck": "Správně!",
+    "incorrectFdCheck": "Vaše odpověď není správná!",
     "customeNode": {
       "keys": "Klíče: ",
       "isSubsetOf": "Je podmnožinou: "
