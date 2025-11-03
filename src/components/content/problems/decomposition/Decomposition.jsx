@@ -737,6 +737,13 @@ const Decomposition = () => {
   const showMergeTableModal = () => {
     setIsModalMergeTablesAfterDecomposeOpen(true);
   };
+  
+  // MKOP 2025/11/03 recompute redundant leaf nodes when closing the dialog
+  // do not keep nodes redundant with respect to added lost FDs in MergeTablesAfterDecompose.jsx
+  const hideMergeTableModal = () => {
+    setIsModalMergeTablesAfterDecomposeOpen(false);
+    CustomNodeFunctionsInstance.highlightSubsetNodes(currLeafNodesList, true);
+  };
 
   return (
     <div className="decomposition-container">
@@ -984,7 +991,7 @@ const Decomposition = () => {
 
         <ReactModal
           isOpen={isModalMergeTablesAfterDecomposeOpen}
-          onRequestClose={() => setIsModalMergeTablesAfterDecomposeOpen(false)}
+          onRequestClose={() => hideMergeTableModal()} // setIsModalMergeTablesAfterDecomposeOpen(false)
           className="custom-modal"
           style={{
             content: {
@@ -995,7 +1002,7 @@ const Decomposition = () => {
           <CustomNodeFunctionsInstance.UiModalNodeInfo_Header
             problem={"problem-decomposition"}
             label={"tablesAfterDecomposition"}
-            onClickCallback={() => setIsModalMergeTablesAfterDecomposeOpen(false)}
+            onClickCallback={() => hideMergeTableModal()} // setIsModalMergeTablesAfterDecomposeOpen(false)
           />  
 
           <div className="modal-content">
