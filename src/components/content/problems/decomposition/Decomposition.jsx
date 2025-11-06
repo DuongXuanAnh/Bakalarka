@@ -1,4 +1,5 @@
 import React, {
+//EdgeLabelRenderer, // MKOP not needed yet
   useCallback,
   useState,
   useEffect,
@@ -371,6 +372,9 @@ const Decomposition = () => {
         source: node.id,
         target: newNode1.id,
         type: edgeType,
+        zIndex: 1, // MKOP 2025/11/05 on foreground
+      //deletable: false, // MKOP 2025/11/05 not deleteable
+      //selectable: false, // MKOP 2025/11/05 not selectable	
         label0: edgeLabel0,
         lost: edgeLost, // MKOP 2025/09/09
         label: practiceMode // isPracticeMode
@@ -383,6 +387,9 @@ const Decomposition = () => {
         source: node.id,
         target: newNode2.id,
         type: edgeType,
+        zIndex: -1, // MKOP 2025/11/05 on background, not overlap newEdge1's label
+      //deletable: false, // MKOP 2025/11/05 not deleteable
+      //selectable: false, // MKOP 2025/11/05 not selectable
       };
 
       setEdgesArray((prevEdges) => [...prevEdges, newEdge1, newEdge2]);

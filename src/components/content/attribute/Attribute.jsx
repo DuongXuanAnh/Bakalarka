@@ -384,7 +384,7 @@ export default function Attribute() {
           value={inputValue}
           onChange={handleInputChange}
           onKeyDown={handleKeyDown}
-          maxLength={10}
+          maxLength={20}
         />
         <button
           type="button"
