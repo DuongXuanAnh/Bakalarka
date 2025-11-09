@@ -49,10 +49,12 @@ export class CustomNodeFunctions {
     this.mergeTables = this.mergeTables.bind(this);
     this.highlightSubsetNodes = this.highlightSubsetNodes.bind(this);
     this.UiModalNodeInfo_Header = this.UiModalNodeInfo_Header.bind(this);
-    this.UiModalNodeInfo_AttrsKeysNF = this.UiModalNodeInfo_AttrsKeysNF.bind(this); 
+    this.UiModalNodeInfo_AttrsKeysNF =
+      this.UiModalNodeInfo_AttrsKeysNF.bind(this);
     this.UiModalNodeInfo_FDs = this.UiModalNodeInfo_FDs.bind(this);
     this.UiModalNodeInfo_FaultyFDs = this.UiModalNodeInfo_FaultyFDs.bind(this);
-    this.UiModalNodeActions_FaultyFDs = this.UiModalNodeActions_FaultyFDs.bind(this);
+    this.UiModalNodeActions_FaultyFDs =
+      this.UiModalNodeActions_FaultyFDs.bind(this);
     this.UiModalNodePractice_NF = this.UiModalNodePractice_NF.bind(this);
   }
 
@@ -185,114 +187,118 @@ export class CustomNodeFunctions {
   // MKOP 2025/10/22 User Interface fragments - unified rendering of screens
   // Header of node info modal window
   UiModalNodeInfo_Header = ({
-    problem,         // "problem-synthesis", "problem-decomposition", ...
-    label,           // "tableDetail"
+    problem, // "problem-synthesis", "problem-decomposition", ...
+    label, // "tableDetail"
     onClickCallback, // {() => setIsModalOpen(false)}
-    }) => {
-      const { t } = useTranslation();
-      return (
-        <div className="modal-header">
-          <h2 className="black">{t(problem+"."+label)}</h2>
-          <button
-            onClick={onClickCallback}
-            className="close-button"
-          >
-            X
-          </button>
-        </div>
-      );
+    prefillAttributes = [],
+    prefillDependencies = [],
+    prefillTargetPath = "/",
+  }) => {
+    const { t } = useTranslation();
+    const handleCreateNewExample = () => {
+      onCreateNewExample({
+        attributes: prefillAttributes,
+        dependencies: prefillDependencies,
+        targetPath: prefillTargetPath,
+      });
+    };
+    return (
+      <div className="modal-header">
+        <h2 className="black">{t(problem + "." + label)}</h2>
+        <button onClick={handleCreateNewExample}>Create new example</button>
+        <button onClick={onClickCallback} className="close-button">
+          X
+        </button>
+      </div>
+    );
   };
-  
+
   UiModalNodeInfo_AttrsKeysNF = ({
     problem, // "problem-synthesis", "problem-decomposition", ...
     node,
-    showNF = true
-    }) => {
-      const { t } = useTranslation();
-      return (
-        <div className="modal-content">
-          {node && (
-            <>
+    showNF = true,
+  }) => {
+    const { t } = useTranslation();
+    return (
+      <div className="modal-content">
+        {node && (
+          <>
+            <p>
+              <b>{t(problem + ".attributes")}:</b> {node.data.label}
+            </p>
+            <p>
+              <b>{t(problem + ".keys")}:</b>{" "}
+              {showFunctionsInstance.showKeysAsText(node.data.keys)}{" "}
+            </p>
+            {showNF && (
               <p>
-                <b>{t(problem+".attributes")}:</b>{" "}
-                {node.data.label}
+                <b>{t(problem + ".normalForm")}:</b>{" "}
+                {node.data.normalForm === "BCNF"
+                  ? "BCNF"
+                  : node.data.normalForm + " NF"}
               </p>
-              <p>
-                <b>{t(problem+".keys")}:</b>{" "}
-                {showFunctionsInstance.showKeysAsText(
-                  node.data.keys
-                )}{" "}
-              </p>
-              {showNF && (
-              <p>
-                <b>{t(problem+".normalForm")}:</b>{" "}
-                 {node.data.normalForm === "BCNF"
-                   ? "BCNF"
-                   : node.data.normalForm + " NF"}
-              </p>
-              )}
-            </>
-          )}
-        </div>
-      );
+            )}
+          </>
+        )}
+      </div>
+    );
   };
-  
+
   UiModalNodeInfo_FDs = ({
     problem, // "problem-synthesis", "problem-decomposition", ...
     node,
-    }) => {
-      const { t } = useTranslation();
-      return (
-        <div className="modal-middle">
-          {node && (
-            <>
-              <p>
-                <b>{t(problem+".dependencies")}:</b>{" "}
-              </p>
-              {functionalDependencyFunctionsInstance
-                .mergeSingleRHSFDs(node.data.FDs)
-                .map((dependency, index) => {
-                  return (
-                    <p key={index}>
-                      {showFunctionsInstance.showTextDependencyWithArrow(
-                        dependency
-                      )}
-                    </p>
-                  );
-                })}
-            </>
-          )}
-        </div>
-      );
+  }) => {
+    const { t } = useTranslation();
+    return (
+      <div className="modal-middle">
+        {node && (
+          <>
+            <p>
+              <b>{t(problem + ".dependencies")}:</b>{" "}
+            </p>
+            {functionalDependencyFunctionsInstance
+              .mergeSingleRHSFDs(node.data.FDs)
+              .map((dependency, index) => {
+                return (
+                  <p key={index}>
+                    {showFunctionsInstance.showTextDependencyWithArrow(
+                      dependency
+                    )}
+                  </p>
+                );
+              })}
+          </>
+        )}
+      </div>
+    );
   };
-  
+
   UiModalNodeInfo_FaultyFDs = (
     problem, // "problem-synthesis", "problem-decomposition", ...
-    node,
-    ) => {
-      const { t } = useTranslation();
-      return (
-        <>
-          {node && node.data.faultyFDs.length > 0 && (
-            <div className="modal-middle">
-              <p>
-                <b>{t(problem+".unwantedDependencies")}:</b>{" "}
-              </p>
-              {node.data.faultyFDs
-                .map((faultyDependency, index) => {
-                  return (
-                    <p key={index}>
-                      {showFunctionsInstance.showTextDependencyWithArrow(
-                        faultyDependency.dependency
-                      )}{" "}
-                      - {t(problem+".violates")} {faultyDependency.violates}
-                    </p>
-                  );
-                })}
-            </div>
-          )}
-        </>
-      );
+    node
+  ) => {
+    const { t } = useTranslation();
+    return (
+      <>
+        {node && node.data.faultyFDs.length > 0 && (
+          <div className="modal-middle">
+            <p>
+              <b>{t(problem + ".unwantedDependencies")}:</b>{" "}
+            </p>
+            {node.data.faultyFDs.map((faultyDependency, index) => {
+              return (
+                <p key={index}>
+                  {showFunctionsInstance.showTextDependencyWithArrow(
+                    faultyDependency.dependency
+                  )}{" "}
+                  - {t(problem + ".violates")} {faultyDependency.violates}
+                </p>
+              );
+            })}
+          </div>
+        )}
+      </>
+    );
   };
 
   UiModalNodeActions_FaultyFDs = ({
@@ -302,178 +308,172 @@ export class CustomNodeFunctions {
     faultyDependencies,
     violations,
     onClickCallbackDN, // Decompose Node
-    }) => {
-      const { t } = useTranslation();
-      return (
-        <>
-          {node && faultyDependencies.length > 0 && (
-            <div className="modal-middle">
-              <p>
-                <b><Trans
-                     i18nKey={problem+"."+label}
-                     components={[<sup></sup>]}
-                />:</b>
-              </p>
-              {faultyDependencies
-                .map(
-                  (faultyDependency, index) => {
-                    const handleOnClickEvent = (event) => {
-                      onClickCallbackDN(faultyDependency, node)
-                      };
-                    const violationInfo =
-                      violations.length > 0 
-                        ? " - " + t(problem+".violates") + " " + violations[index]
-                        : "";
-                    return (
-                      <p key={index}>
-                        <button
-                          onClick={handleOnClickEvent}
-                        >
-                        {showFunctionsInstance.showTextDependencyWithArrow(
-                          faultyDependency
-                        )}
-                        </button>
-                        {violationInfo}
-                      </p>
-                    );
-                  })}
-            </div>
-          )}
-        </>
-      );
+  }) => {
+    const { t } = useTranslation();
+    return (
+      <>
+        {node && faultyDependencies.length > 0 && (
+          <div className="modal-middle">
+            <p>
+              <b>
+                <Trans
+                  i18nKey={problem + "." + label}
+                  components={[<sup></sup>]}
+                />
+                :
+              </b>
+            </p>
+            {faultyDependencies.map((faultyDependency, index) => {
+              const handleOnClickEvent = (event) => {
+                onClickCallbackDN(faultyDependency, node);
+              };
+              const violationInfo =
+                violations.length > 0
+                  ? " - " + t(problem + ".violates") + " " + violations[index]
+                  : "";
+              return (
+                <p key={index}>
+                  <button onClick={handleOnClickEvent}>
+                    {showFunctionsInstance.showTextDependencyWithArrow(
+                      faultyDependency
+                    )}
+                  </button>
+                  {violationInfo}
+                </p>
+              );
+            })}
+          </div>
+        )}
+      </>
+    );
   };
-  
+
   UiModalNodeActions = ({
     problem, // "problem-synthesis", "problem-decomposition", ...
     node,
     leafNodes, // MKOP TODO: set isLeaf flag in nodes instead
-    onClickCallbackDND,   // Do Not Necompose
+    onClickCallbackDND, // Do Not Necompose
     onClickCallbackDRNDN, // Decompose RaNDomly Node
     onClickCallbackDRNDS, // Decompose RaNDomly Subtree
-    onClickCallbackDM,    // Decompose Manually
-    }) => {
-      const { t } = useTranslation();
-      const handleOnClickEventDND = (event) => {
-        onClickCallbackDND(null, node) // handleDependencyClick - Do Not Necompose
-        };
-      const handleOnClickEventDRNDN = (event) => {
-        onClickCallbackDRNDN(node, 1) // handleRandomDecompositionClick - Decompose RaNDomly Node
-        };
-      const handleOnClickEventDRNDS = (event) => {
-        onClickCallbackDRNDS(node, null) // handleRandomDecompositionClick - Decompose RaNDomly Subtree
-        };
-      return (
-        <div className="modal-content">
-          {node && (
-            <>
-              {leafNodes.length > 0 &&
-                !leafNodes.some(
-                  (leafNode) => leafNode.id === node.id
-                ) && (
+    onClickCallbackDM, // Decompose Manually
+  }) => {
+    const { t } = useTranslation();
+    const handleOnClickEventDND = (event) => {
+      onClickCallbackDND(null, node); // handleDependencyClick - Do Not Necompose
+    };
+    const handleOnClickEventDRNDN = (event) => {
+      onClickCallbackDRNDN(node, 1); // handleRandomDecompositionClick - Decompose RaNDomly Node
+    };
+    const handleOnClickEventDRNDS = (event) => {
+      onClickCallbackDRNDS(node, null); // handleRandomDecompositionClick - Decompose RaNDomly Subtree
+    };
+    return (
+      <div className="modal-content">
+        {node && (
+          <>
+            {leafNodes.length > 0 &&
+              !leafNodes.some((leafNode) => leafNode.id === node.id) && (
                 <p key="dnd">
-                  <button
-                    onClick={handleOnClickEventDND}
-                  >
-                    {t(problem+".doNotDecompose")}
+                  <button onClick={handleOnClickEventDND}>
+                    {t(problem + ".doNotDecompose")}
                   </button>
                 </p>
               )}
-              {node.data.normalForm !== "BCNF" && (
-                <p key="drndn">
-                  <button
-                    onClick={handleOnClickEventDRNDN}
-                  >
-                    {t(problem+".decomposeRandomlyNode")}
-                  </button>
-                </p>
-              )}
-              {node.data.normalForm !== "BCNF" && (
-                <p key="drndt">
-                  <button
-                    onClick={handleOnClickEventDRNDS}
-                  >
-                    {t(problem+".decomposeRandomlySubtree")}
-                  </button>
-                </p>
-              )}
-              {node.data.normalForm !== "BCNF" && (
-                <p key="dm">
-                  <button
-                    onClick={onClickCallbackDM}
-                  >
-                    {t(problem+".decomposeManually")}
-                  </button>
-                </p>
-              )}
-            </>
-          )}
-        </div>
-      );
+            {node.data.normalForm !== "BCNF" && (
+              <p key="drndn">
+                <button onClick={handleOnClickEventDRNDN}>
+                  {t(problem + ".decomposeRandomlyNode")}
+                </button>
+              </p>
+            )}
+            {node.data.normalForm !== "BCNF" && (
+              <p key="drndt">
+                <button onClick={handleOnClickEventDRNDS}>
+                  {t(problem + ".decomposeRandomlySubtree")}
+                </button>
+              </p>
+            )}
+            {node.data.normalForm !== "BCNF" && (
+              <p key="dm">
+                <button onClick={onClickCallbackDM}>
+                  {t(problem + ".decomposeManually")}
+                </button>
+              </p>
+            )}
+          </>
+        )}
+      </div>
+    );
   };
 
   UiModalNodePractice_labelNF = ({
     rbLabel, // "1NF", "2NF", "3NF", "BCNF"
     rbValue, // "1", "2", "3", "BCNF"
-    }) => {
-      return (
-        <label className="radioBtn">
-          <input
-            type="radio"
-            name="normalFormRadioBtn"
-            value={rbValue}
-          />
-          {rbLabel}
-        </label>
-      );
+  }) => {
+    return (
+      <label className="radioBtn">
+        <input type="radio" name="normalFormRadioBtn" value={rbValue} />
+        {rbLabel}
+      </label>
+    );
   };
-  
+
   UiModalNodePractice_NF = ({
-    problem,         // "problem-synthesis", "problem-decomposition", ...
+    problem, // "problem-synthesis", "problem-decomposition", ...
     node,
-    onClickCallbackCheck,   // Check
+    onClickCallbackCheck, // Check
     onClickCallbackHowTo, // How to achieve normal form
-    }) => {
-      const { t } = useTranslation();
-      const handleOnClickEventCheck = (event) => {
-        onClickCallbackCheck(node) // checkNormalFormAnswer - Check
-        };
-      const handleOnClickEventHowTo = (event) => {
-        onClickCallbackHowTo(node.data.attributes, "normalForm") // handleNavigateFromPracticeModal - How to achieve normal form
-        };
-      return (
-        <div className="modal-content">
-          <div className="modal-content-header">
-            {node && (
-              <div className="normalFormPracticeArea">
-                <div className="radioButtonsArea">
-                  <b>{t(problem+".normalForm")}:</b>{" "}
-                  <this.UiModalNodePractice_labelNF rbLabel={  "1NF"} rbValue={   "1"} />
-                  <this.UiModalNodePractice_labelNF rbLabel={  "2NF"} rbValue={   "2"} />
-                  <this.UiModalNodePractice_labelNF rbLabel={  "3NF"} rbValue={   "3"} />
-                  <this.UiModalNodePractice_labelNF rbLabel={ "BCNF"} rbValue={"BCNF"} />
-                </div>
-                <div className="buttonsArea">
-                  <button
-                    className="checkButton"
-                    id="checkButton_NF"
-                    onClick={handleOnClickEventCheck}
-                  >
-                    {t("problem-decomposition.check")}
-                  </button>
-                  <button
-                    className="howButton"
-                    onClick={handleOnClickEventHowTo}
-                  >
-                    {t("problem-decomposition.howToIdentifyNormalForm")}
-                  </button>
-                </div>
+  }) => {
+    const { t } = useTranslation();
+    const handleOnClickEventCheck = (event) => {
+      onClickCallbackCheck(node); // checkNormalFormAnswer - Check
+    };
+    const handleOnClickEventHowTo = (event) => {
+      onClickCallbackHowTo(node.data.attributes, "normalForm"); // handleNavigateFromPracticeModal - How to achieve normal form
+    };
+    return (
+      <div className="modal-content">
+        <div className="modal-content-header">
+          {node && (
+            <div className="normalFormPracticeArea">
+              <div className="radioButtonsArea">
+                <b>{t(problem + ".normalForm")}:</b>{" "}
+                <this.UiModalNodePractice_labelNF
+                  rbLabel={"1NF"}
+                  rbValue={"1"}
+                />
+                <this.UiModalNodePractice_labelNF
+                  rbLabel={"2NF"}
+                  rbValue={"2"}
+                />
+                <this.UiModalNodePractice_labelNF
+                  rbLabel={"3NF"}
+                  rbValue={"3"}
+                />
+                <this.UiModalNodePractice_labelNF
+                  rbLabel={"BCNF"}
+                  rbValue={"BCNF"}
+                />
               </div>
-            )}
-          </div>
+              <div className="buttonsArea">
+                <button
+                  className="checkButton"
+                  id="checkButton_NF"
+                  onClick={handleOnClickEventCheck}
+                >
+                  {t("problem-decomposition.check")}
+                </button>
+                <button className="howButton" onClick={handleOnClickEventHowTo}>
+                  {t("problem-decomposition.howToIdentifyNormalForm")}
+                </button>
+              </div>
+            </div>
+          )}
         </div>
-      );
+      </div>
+    );
   };
-/*  
+  /*  
   const UiModalNodePractice = ({
     problem,         // "problem-synthesis", "problem-decomposition", ...
     }) => {
@@ -634,10 +634,51 @@ export class CustomNodeFunctions {
           </div>
       );
   };
-*/  
+*/
 }
 
 // Rendering of nodes in ReactFlow
+const onCreateNewExample = ({
+  attributes = [],
+  dependencies = [],
+  targetPath = "/",
+} = {}) => {
+  if (typeof window === "undefined") {
+    return;
+  }
+
+  try {
+    const { localStorage, location, open } = window;
+    if (!localStorage || !open) {
+      return;
+    }
+
+    const safeAttributes = Array.isArray(attributes) ? attributes : [];
+    const safeDependencies = Array.isArray(dependencies) ? dependencies : [];
+
+    localStorage.setItem("prefillAttributes", JSON.stringify(safeAttributes));
+    localStorage.setItem(
+      "prefillDependencies",
+      JSON.stringify(safeDependencies)
+    );
+
+    const sanitizedPath =
+      typeof targetPath === "string" && targetPath.length > 0
+        ? targetPath.startsWith("/")
+          ? targetPath
+          : `/${targetPath}`
+        : "/";
+
+    const destinationUrl = `${location.origin}${sanitizedPath}`;
+    const newWindow = open(destinationUrl, "_blank", "noopener");
+
+    if (newWindow && typeof newWindow.focus === "function") {
+      newWindow.focus();
+    }
+  } catch (error) {
+    console.error("Failed to create new example", error);
+  }
+};
 
 const nodeWidth = "200px"; // Nastavení šířky
 
