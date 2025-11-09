@@ -34,8 +34,8 @@ function Synthesis() {
 
   const [rewrittenFDs, setRewrittenFDs] = useState(initialRewrittenFDs);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const MyAlert = () => {alert("Au!")}; 
-  
+  // const MyAlert = () => {alert("Au!")};
+
   const [tablesInfo, setTablesInfo] = useState([
     // MKOP it seems that an empty array works as well
     //{
@@ -525,7 +525,7 @@ function Synthesis() {
           problem={"problem-synthesis"}
           label={"tableDetail"}
           onClickCallback={() => setIsModalOpen(false)}
-        />  
+        />
         <CustomNodeFunctionsInstance.UiModalNodeInfo_AttrsKeysNF
           problem={"problem-synthesis"}
           node={modalContent}
@@ -534,7 +534,10 @@ function Synthesis() {
           problem={"problem-synthesis"}
           node={modalContent}
         />
-        {CustomNodeFunctionsInstance.UiModalNodeInfo_FaultyFDs("problem-synthesis", modalContent)}
+        {CustomNodeFunctionsInstance.UiModalNodeInfo_FaultyFDs(
+          "problem-synthesis",
+          modalContent
+        )}
       </ReactModal>
     </div>
   );
