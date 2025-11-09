@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { useAttributeContext } from "../../../../contexts/AttributeContext";
 import { useDependencyContext } from "../../../../contexts/DependencyContext";
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
@@ -23,19 +23,24 @@ const fPlusFunctionsInstance = new FPlusFunctions();
 const showFunctionsInstance = new ShowFunctions();
 const findingKeysFunctionsInstance = new FindingKeysFunctions();
 
+const reorderList = (list, startIndex, endIndex) => {
+  const result = Array.from(list);
+  const [removed] = result.splice(startIndex, 1);
+  result.splice(endIndex, 0, removed);
+  return result;
+};
+
 function Synthesis() {
   const { t } = useTranslation();
 
   const { attributes } = useAttributeContext();
   const { dependencies } = useDependencyContext();
 
-  const initialRewrittenFDs =
-    functionalDependencyFunctionsInstance.rewriteFDSingleRHS(dependencies);
-
-  const [rewrittenFDs, setRewrittenFDs] = useState(initialRewrittenFDs);
+  const [rewrittenFDs, setRewrittenFDs] = useState(() =>
+    functionalDependencyFunctionsInstance.rewriteFDSingleRHS(dependencies)
+  );
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const MyAlert = () => {alert("Au!")}; 
-  
+
   const [tablesInfo, setTablesInfo] = useState([
     // MKOP it seems that an empty array works as well
     //{
@@ -68,24 +73,35 @@ function Synthesis() {
     CustomNodeFunctionsInstance.emptyNode()
   );
 
-  const fPlus = fPlusFunctionsInstance.FPlus(dependencies, attributes);
+  const fPlus = useMemo(
+    () => fPlusFunctionsInstance.FPlus(dependencies, attributes),
+    [dependencies, attributes]
+  );
 
-  const singleRHS_fPlus =
-    functionalDependencyFunctionsInstance.rewriteFDSingleRHS(fPlus);
+  const singleRHS_fPlus = useMemo(
+    () => functionalDependencyFunctionsInstance.rewriteFDSingleRHS(fPlus),
+    [fPlus]
+  );
 
-  // Remove trivial FDs (those where the RHS is also in the LHS)
-  const nonTrivial_FDs =
-    functionalDependencyFunctionsInstance.removeTrivialFDs(rewrittenFDs);
+  const nonTrivial_FDs = useMemo(
+    () => functionalDependencyFunctionsInstance.removeTrivialFDs(rewrittenFDs),
+    [rewrittenFDs]
+  );
 
-  // Minimize LHS of each FD.
-  const minimizeLHS_FDs =
-    functionalDependencyFunctionsInstance.minimizeLHS(nonTrivial_FDs);
-  const removeRedundant_FDs =
-    functionalDependencyFunctionsInstance.removeRedundantFDs(minimizeLHS_FDs);
+  const minimizeLHS_FDs = useMemo(
+    () => functionalDependencyFunctionsInstance.minimizeLHS(nonTrivial_FDs),
+    [nonTrivial_FDs]
+  );
 
-  const originKeys = findingKeysFunctionsInstance.getAllKeys(
-    singleRHS_fPlus,
-    attributes
+  const removeRedundant_FDs = useMemo(
+    () =>
+      functionalDependencyFunctionsInstance.removeRedundantFDs(minimizeLHS_FDs),
+    [minimizeLHS_FDs]
+  );
+
+  const originKeys = useMemo(
+    () => findingKeysFunctionsInstance.getAllKeys(singleRHS_fPlus, attributes),
+    [singleRHS_fPlus, attributes]
   );
 
   // Transform FDs to condensed form G'
@@ -112,7 +128,10 @@ function Synthesis() {
     }));
   };
 
-  const condensedFDs = transformFDsToCondensedForm(removeRedundant_FDs);
+  const condensedFDs = useMemo(
+    () => transformFDsToCondensedForm(removeRedundant_FDs),
+    [removeRedundant_FDs]
+  );
 
   const checkIfTablesContainOriginKey = () => {
     const normalizedOriginKeys = originKeys.map((key) => key.sort());
@@ -146,14 +165,7 @@ function Synthesis() {
       return;
     }
 
-    const reorder = (list, startIndex, endIndex) => {
-      const result = Array.from(list);
-      const [removed] = result.splice(startIndex, 1);
-      result.splice(endIndex, 0, removed);
-      return result;
-    };
-
-    const reorderedFDs = reorder(
+    const reorderedFDs = reorderList(
       rewrittenFDs,
       result.source.index,
       result.destination.index
@@ -167,12 +179,9 @@ function Synthesis() {
 
   const mixRandomDependencies = () => {
     setRewrittenFDs((prevFDs) => {
-      // Copy the array to a new variable
-      let array = [...prevFDs];
+      const array = [...prevFDs];
       for (let i = array.length - 1; i > 0; i--) {
-        // Generate a random index from 0 to i
         const j = Math.floor(Math.random() * (i + 1));
-        // Swap elements array[i] and array[j]
         [array[i], array[j]] = [array[j], array[i]];
       }
       return array;
@@ -211,7 +220,7 @@ function Synthesis() {
 
     // Přidání nově vypočítaných informací do stávajícího stavu tablesInfo
     setTablesInfo((prevTablesInfo) => [...prevTablesInfo, ...newTablesInfo]);
-  }, [rewrittenFDs]);
+  }, [condensedFDs, singleRHS_fPlus]);
 
   CustomNodeFunctionsInstance.highlightSubsetNodes(tablesInfo, false);
 
@@ -525,7 +534,7 @@ function Synthesis() {
           problem={"problem-synthesis"}
           label={"tableDetail"}
           onClickCallback={() => setIsModalOpen(false)}
-        />  
+        />
         <CustomNodeFunctionsInstance.UiModalNodeInfo_AttrsKeysNF
           problem={"problem-synthesis"}
           node={modalContent}
@@ -534,7 +543,10 @@ function Synthesis() {
           problem={"problem-synthesis"}
           node={modalContent}
         />
-        {CustomNodeFunctionsInstance.UiModalNodeInfo_FaultyFDs("problem-synthesis", modalContent)}
+        {CustomNodeFunctionsInstance.UiModalNodeInfo_FaultyFDs(
+          "problem-synthesis",
+          modalContent
+        )}
       </ReactModal>
     </div>
   );
