@@ -1,5 +1,5 @@
 import React, {
-//EdgeLabelRenderer, // MKOP not needed yet
+  //EdgeLabelRenderer, // MKOP not needed yet
   useCallback,
   useState,
   useEffect,
@@ -110,9 +110,7 @@ const Decomposition = () => {
 
   const [lostFDs, setLostFDs] = useState([]);
 
-  const [faultlyDependenciesFooter, setFaultlyDependenciesFooter] = useState(
-    []
-  );
+  const [faultyDependenciesFooter, setFaultyDependenciesFooter] = useState([]);
 
   const minimalCover = minimalCoverFunctionInstance.minimalCover(dependencies);
   const fPlusOrigin = fPlusFunctionsInstance.FPlus(dependencies, attributes);
@@ -134,7 +132,7 @@ const Decomposition = () => {
     setIsModalMergeTablesAfterDecomposeOpen,
   ] = useState(false);
 
-  const [amnoutProblemSolvedInNode, setAmountProblemSolvedInNode] = useState(0); // Počet problémů vyřešených v daném vrcholu (správné odpovědi na NF a fautly dependencies)
+  const [amountProblemSolvedInNode, setAmountProblemSolvedInNode] = useState(0); // Počet problémů vyřešených v daném vrcholu (správné odpovědi na NF a faulty dependencies)
 
   const firstRender = useRef(true); // To track the first render
 
@@ -216,12 +214,10 @@ const Decomposition = () => {
 
   useEffect(() => {
     if (selectedNode) {
-      setFaultlyDependenciesFooter([]);
-      let faultyDependenciesTmp = [];
-
-      selectedNode.data.faultyFDs.forEach((faultyDependency) => {
-        faultyDependenciesTmp.push(faultyDependency.dependency);
-      });
+      setFaultyDependenciesFooter([]);
+      const faultyDependenciesTmp = selectedNode.data.faultyFDs.map(
+        (faultyDependency) => faultyDependency.dependency
+      );
 
       selectedNode.data.faultyFDs.forEach((faultyDependency) => {
         const closure = attributeFunctionsInstance.nonTrivialClosure(
@@ -232,7 +228,7 @@ const Decomposition = () => {
           left: faultyDependency.dependency.left,
           right: closure,
         };
-        setFaultlyDependenciesFooter((prev) => {
+        setFaultyDependenciesFooter((prev) => {
           // Kontrola, zda už v `prev` existuje záznam s totožným `left`
           const exists = prev.some(
             (dependency) => dependency.left === newDependency.left
@@ -334,9 +330,7 @@ const Decomposition = () => {
         node.id + "1" // Concatenation of strings
       );
       const newNode2 = CustomNodeFunctionsInstance.initNode(
-        node.data.attributes.filter(
-          (item) => !dependency.right.includes(item)
-          ),
+        node.data.attributes.filter((item) => !dependency.right.includes(item)),
         fPlusOriginSingleRHS,
         node.id + "2" // Concatenation of strings
       );
@@ -345,19 +339,15 @@ const Decomposition = () => {
 
       // MKOP 2025/09/09
       // Neztratila se tímto krokem dekompozice žádná FD?
-      let newLowerFDs = [];
-      newLowerFDs.push(...newNode1.data.FDs);
-      newLowerFDs.push(...newNode2.data.FDs);
+      const newLowerFDs = [...newNode1.data.FDs, ...newNode2.data.FDs];
 
-      let edgeLost = "";
-      if (
+      const edgeLost =
         functionalDependencyFunctionsInstance.lostDependencies(
           node.data.FDs, // original FDs from parent node // MKOP 2025/09/24 works even for non-canonical set of FDs
           newLowerFDs // new FDs from its children
         ).length > 0
-      ) {
-        edgeLost = String.fromCharCode(0x26a0) + " "; // MKOP 2025/09/14 Warning Sign U+26A0 (&#x26A0;)
-      }
+          ? String.fromCharCode(0x26a0) + " " // MKOP 2025/09/14 Warning Sign U+26A0 (&#x26A0;)
+          : "";
 
       // MKOP 2025/10/20 practiceMode is false (???) in case of original showRandomDecomposition() callback implementation
       // MKOP 2025/10/21 practiceMode is set correctly in handleRandomDecompositionClick() and new version of showRandomDecomposition()
@@ -373,8 +363,8 @@ const Decomposition = () => {
         target: newNode1.id,
         type: edgeType,
         zIndex: 1, // MKOP 2025/11/05 on foreground
-      //deletable: false, // MKOP 2025/11/05 not deleteable
-      //selectable: false, // MKOP 2025/11/05 not selectable	
+        //deletable: false, // MKOP 2025/11/05 not deleteable
+        //selectable: false, // MKOP 2025/11/05 not selectable
         label0: edgeLabel0,
         lost: edgeLost, // MKOP 2025/09/09
         label: practiceMode // isPracticeMode
@@ -388,8 +378,8 @@ const Decomposition = () => {
         target: newNode2.id,
         type: edgeType,
         zIndex: -1, // MKOP 2025/11/05 on background, not overlap newEdge1's label
-      //deletable: false, // MKOP 2025/11/05 not deleteable
-      //selectable: false, // MKOP 2025/11/05 not selectable
+        //deletable: false, // MKOP 2025/11/05 not deleteable
+        //selectable: false, // MKOP 2025/11/05 not selectable
       };
 
       setEdgesArray((prevEdges) => [...prevEdges, newEdge1, newEdge2]);
@@ -562,7 +552,7 @@ const Decomposition = () => {
       const checkButton = document.getElementById("checkButton_NF");
       checkButton.disabled = true;
 
-      if (amnoutProblemSolvedInNode === 1) {
+      if (amountProblemSolvedInNode === 1) {
         setAmountProblemSolvedInNode(0);
         showSelectedNodeResult(selectedNode);
       } else {
@@ -628,7 +618,7 @@ const Decomposition = () => {
       const checkButton = document.getElementById("checkButton_FaultyDep");
       checkButton.disabled = true;
 
-      if (amnoutProblemSolvedInNode === 1) {
+      if (amountProblemSolvedInNode === 1) {
         setAmountProblemSolvedInNode(0);
         showSelectedNodeResult(selectedNode);
       } else {
@@ -642,109 +632,107 @@ const Decomposition = () => {
       });
     }
   };
-  
+
   const UiModalNodePractice = ({
-    problem,         // "problem-synthesis", "problem-decomposition", ...
-    }) => {
-      return (
-          <div className="modal-content">
-            <div className="practiceDependenciesArea">
-              <p>{t("problem-decomposition.rewrittenDependenciesRHS")}</p>
-              <button
-                className="howButton"
-                onClick={() =>
-                  handleNavigateFromPracticeModal(
-                    selectedNode.data.attributes,
-                    "derivablity"
-                  )
-                }
-              >
-                <Trans
-                  i18nKey="problem-decomposition.howToIdentifyFplus"
-                  components={[<sup></sup>]}
-                />
-              </button>
+    problem, // "problem-synthesis", "problem-decomposition", ...
+  }) => {
+    return (
+      <div className="modal-content">
+        <div className="practiceDependenciesArea">
+          <p>{t("problem-decomposition.rewrittenDependenciesRHS")}</p>
+          <button
+            className="howButton"
+            onClick={() =>
+              handleNavigateFromPracticeModal(
+                selectedNode.data.attributes,
+                "derivablity"
+              )
+            }
+          >
+            <Trans
+              i18nKey="problem-decomposition.howToIdentifyFplus"
+              components={[<sup></sup>]}
+            />
+          </button>
 
-              {selectedNode && (
-                <ul className="practiceDependenisWrapperUL">
-                  {selectedNode.data.FDs.map((dependency, index) => {
-                    return (
-                      <li key={index} className="practiceDependencyRow">
-                        <div>
-                          <div
-                            style={{
-                              display: "flex",
-                              gap: "10px",
-                              alignItems: "center",
-                            }}
-                          >
-                            <p
-                              className="practiceDependency"
-                              id={`dependency${index}`}
+          {selectedNode && (
+            <ul className="practiceDependenisWrapperUL">
+              {selectedNode.data.FDs.map((dependency, index) => {
+                return (
+                  <li key={index} className="practiceDependencyRow">
+                    <div>
+                      <div
+                        style={{
+                          display: "flex",
+                          gap: "10px",
+                          alignItems: "center",
+                        }}
+                      >
+                        <p
+                          className="practiceDependency"
+                          id={`dependency${index}`}
+                        >
+                          {showFunctionsInstance.showTextDependencyWithArrow(
+                            dependency
+                          )}
+                        </p>
+                        <label>
+                          <div className="practiceCheckBoxViolate">
+                            <input
+                              type="checkbox"
+                              className={"violateCheckbox"}
+                              id={`violate${index}`}
+                              onChange={() => {
+                                document.getElementById(
+                                  `violateComboBox${index}`
+                                ).style.display = document.querySelector(
+                                  `#violate${index}`
+                                ).checked
+                                  ? "inline-block"
+                                  : "none";
+                              }}
+                              style={{ marginLeft: "5px" }}
+                            />
+                            <span>{t("problem-decomposition.violates")}</span>
+                            <div
+                              id={`violateComboBox${index}`}
+                              style={{ display: "none" }}
                             >
-                              {showFunctionsInstance.showTextDependencyWithArrow(
-                                dependency
-                              )}
-                            </p>
-                            <label>
-                              <div className="practiceCheckBoxViolate">
-                                <input
-                                  type="checkbox"
-                                  className={"violateCheckbox"}
-                                  id={`violate${index}`}
-                                  onChange={() => {
-                                    document.getElementById(
-                                      `violateComboBox${index}`
-                                    ).style.display = document.querySelector(
-                                      `#violate${index}`
-                                    ).checked
-                                      ? "inline-block"
-                                      : "none";
-                                  }}
-                                  style={{ marginLeft: "5px" }}
-                                />
-                                <span>
-                                  {t("problem-decomposition.violates")}
-                                </span>
-                                <div
-                                  id={`violateComboBox${index}`}
-                                  style={{ display: "none" }}
-                                >
-                                  <select
-                                    name="cBox_normalForm"
-                                    id={`cBox_normalForm${index}`}
-                                  >
-                                    <option value="2NF">2NF</option>
-                                    <option value="3NF">3NF</option>
-                                    <option value="BCNF">BCNF</option>
-                                  </select>
-                                </div>
-                              </div>
-                            </label>
+                              <select
+                                name="cBox_normalForm"
+                                id={`cBox_normalForm${index}`}
+                              >
+                                <option value="2NF">2NF</option>
+                                <option value="3NF">3NF</option>
+                                <option value="BCNF">BCNF</option>
+                              </select>
+                            </div>
                           </div>
-                        </div>
-                      </li>
-                    );
-                  })}
-                </ul>
-              )}
+                        </label>
+                      </div>
+                    </div>
+                  </li>
+                );
+              })}
+            </ul>
+          )}
 
-              <button
-                className="checkButton"
-                id="checkButton_FaultyDep"
-                onClick={() => checkDependenciesViolateAnswer(selectedNode)}
-              >
-                {t("problem-decomposition.checkChosenDependencies")}
-              </button>
-            </div>
-          </div>
-      );
+          <button
+            className="checkButton"
+            id="checkButton_FaultyDep"
+            onClick={() => checkDependenciesViolateAnswer(selectedNode)}
+          >
+            {t("problem-decomposition.checkChosenDependencies")}
+          </button>
+        </div>
+      </div>
+    );
   };
-  
+
   const showMergeTableModal = () => {
     setIsModalMergeTablesAfterDecomposeOpen(true);
   };
-  
+
   // MKOP 2025/11/03 recompute redundant leaf nodes when closing the dialog
   // do not keep nodes redundant with respect to added lost FDs in MergeTablesAfterDecompose.jsx
   const hideMergeTableModal = () => {
@@ -887,7 +875,7 @@ const Decomposition = () => {
             problem={"problem-decomposition"}
             label={"tableDetail"}
             onClickCallback={() => setIsModalOpen(false)}
-          />  
+          />
           <CustomNodeFunctionsInstance.UiModalNodeInfo_AttrsKeysNF
             problem={"problem-decomposition"}
             node={selectedNode}
@@ -900,7 +888,7 @@ const Decomposition = () => {
             onClickCallbackDRNDN={handleRandomDecompositionClick}
             onClickCallbackDRNDS={handleRandomDecompositionClick}
             onClickCallbackDM={() => setIsModalDecompositeOwnWayOpen(true)}
-          />  
+          />
           <CustomNodeFunctionsInstance.UiModalNodeInfo_FDs
             problem={"problem-decomposition"}
             node={selectedNode}
@@ -909,15 +897,23 @@ const Decomposition = () => {
             problem={"problem-decomposition"}
             label={"unwantedDependencies"}
             node={selectedNode}
-            faultyDependencies={selectedNode ? selectedNode.data.faultyFDs.map((fd) => fd.dependency) : []}
-            violations={selectedNode ? selectedNode.data.faultyFDs.map((fd) => fd.violates) : []}
+            faultyDependencies={
+              selectedNode
+                ? selectedNode.data.faultyFDs.map((fd) => fd.dependency)
+                : []
+            }
+            violations={
+              selectedNode
+                ? selectedNode.data.faultyFDs.map((fd) => fd.violates)
+                : []
+            }
             onClickCallbackDN={handleDependencyClick}
           />
           <CustomNodeFunctionsInstance.UiModalNodeActions_FaultyFDs
             problem={"problem-decomposition"}
             label={"moreWayHowToDecomposite"}
             node={selectedNode}
-            faultyDependencies={faultlyDependenciesFooter}
+            faultyDependencies={faultyDependenciesFooter}
             violations={[]}
             onClickCallbackDN={handleDependencyClick}
           />
@@ -932,7 +928,7 @@ const Decomposition = () => {
             problem={"problem-decomposition"}
             label={"tableDetail"}
             onClickCallback={() => setIsPracticeModalOpen(false)}
-          />  
+          />
           <CustomNodeFunctionsInstance.UiModalNodeInfo_AttrsKeysNF
             problem={"problem-decomposition"}
             node={selectedNode}
@@ -946,7 +942,7 @@ const Decomposition = () => {
             onClickCallbackDRNDN={handleRandomDecompositionClick}
             onClickCallbackDRNDS={handleRandomDecompositionClick}
             onClickCallbackDM={() => setIsModalDecompositeOwnWayOpen(true)}
-          />  
+          />
 
           <CustomNodeFunctionsInstance.UiModalNodePractice_NF
             problem={"problem-decomposition"}
@@ -955,10 +951,7 @@ const Decomposition = () => {
             onClickCallbackHowTo={handleNavigateFromPracticeModal}
           />
 
-          <UiModalNodePractice
-            problem={"problem-decomposition"}
-          />
-            
+          <UiModalNodePractice problem={"problem-decomposition"} />
         </ReactModal>
 
         <ReactModal
@@ -970,7 +963,7 @@ const Decomposition = () => {
             problem={"problem-decomposition"}
             label={"insertYourDependency"}
             onClickCallback={() => setIsModalDecompositeOwnWayOpen(false)}
-          />  
+          />
 
           <div className="modal-content">
             {practiceMode && (
@@ -1010,7 +1003,7 @@ const Decomposition = () => {
             problem={"problem-decomposition"}
             label={"tablesAfterDecomposition"}
             onClickCallback={() => hideMergeTableModal()} // setIsModalMergeTablesAfterDecomposeOpen(false)
-          />  
+          />
 
           <div className="modal-content">
             <MergeTablesAfterDecompose
