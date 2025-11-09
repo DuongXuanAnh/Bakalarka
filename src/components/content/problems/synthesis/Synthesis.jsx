@@ -534,6 +534,16 @@ function Synthesis() {
           problem={"problem-synthesis"}
           label={"tableDetail"}
           onClickCallback={() => setIsModalOpen(false)}
+          prefillAttributes={
+            modalContent && modalContent.data
+              ? modalContent.data.attributes
+              : attributes
+          }
+          prefillDependencies={
+            modalContent && modalContent.data
+              ? modalContent.data.FDs
+              : dependencies
+          }
         />
         <CustomNodeFunctionsInstance.UiModalNodeInfo_AttrsKeysNF
           problem={"problem-synthesis"}

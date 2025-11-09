@@ -875,6 +875,12 @@ const Decomposition = () => {
             problem={"problem-decomposition"}
             label={"tableDetail"}
             onClickCallback={() => setIsModalOpen(false)}
+            prefillAttributes={
+              selectedNode ? selectedNode.data.attributes : attributes
+            }
+            prefillDependencies={
+              selectedNode ? selectedNode.data.FDs : dependencies
+            }
           />
           <CustomNodeFunctionsInstance.UiModalNodeInfo_AttrsKeysNF
             problem={"problem-decomposition"}
@@ -928,6 +934,12 @@ const Decomposition = () => {
             problem={"problem-decomposition"}
             label={"tableDetail"}
             onClickCallback={() => setIsPracticeModalOpen(false)}
+            prefillAttributes={
+              selectedNode ? selectedNode.data.attributes : attributes
+            }
+            prefillDependencies={
+              selectedNode ? selectedNode.data.FDs : dependencies
+            }
           />
           <CustomNodeFunctionsInstance.UiModalNodeInfo_AttrsKeysNF
             problem={"problem-decomposition"}
@@ -963,6 +975,12 @@ const Decomposition = () => {
             problem={"problem-decomposition"}
             label={"insertYourDependency"}
             onClickCallback={() => setIsModalDecompositeOwnWayOpen(false)}
+            prefillAttributes={
+              selectedNode ? selectedNode.data.attributes : attributes
+            }
+            prefillDependencies={
+              selectedNode ? selectedNode.data.FDs : dependencies
+            }
           />
 
           <div className="modal-content">
@@ -1003,6 +1021,20 @@ const Decomposition = () => {
             problem={"problem-decomposition"}
             label={"tablesAfterDecomposition"}
             onClickCallback={() => hideMergeTableModal()} // setIsModalMergeTablesAfterDecomposeOpen(false)
+            prefillAttributes={
+              currLeafNodesList.length > 0
+                ? currLeafNodesList[0].data.attributes
+                : nodes.length > 0
+                ? nodes[0].data.attributes
+                : attributes
+            }
+            prefillDependencies={
+              currLeafNodesList.length > 0
+                ? currLeafNodesList[0].data.FDs
+                : nodes.length > 0
+                ? nodes[0].data.FDs
+                : dependencies
+            }
           />
 
           <div className="modal-content">
