@@ -48,6 +48,7 @@ export class CustomNodeFunctions {
     this.initNode = this.initNode.bind(this);
     this.mergeTables = this.mergeTables.bind(this);
     this.highlightSubsetNodes = this.highlightSubsetNodes.bind(this);
+    this.onCreateNewExample = this.onCreateNewExample.bind(this);
     this.UiModalNodeInfo_Header = this.UiModalNodeInfo_Header.bind(this);
     this.UiModalNodeInfo_AttrsKeysNF =
       this.UiModalNodeInfo_AttrsKeysNF.bind(this);
@@ -184,6 +185,48 @@ export class CustomNodeFunctions {
     });
   };
 
+  onCreateNewExample = ({
+    attributes = [],
+    dependencies = [],
+    targetPath = "/",
+  } = {}) => {
+    if (typeof window === "undefined") {
+      return;
+    }
+
+    try {
+      const { localStorage, location, open } = window;
+      if (!localStorage || !open) {
+        return;
+      }
+
+      const safeAttributes = Array.isArray(attributes) ? attributes : [];
+      const safeDependencies = Array.isArray(dependencies) ? dependencies : [];
+
+      localStorage.setItem("prefillAttributes", JSON.stringify(safeAttributes));
+      localStorage.setItem(
+        "prefillDependencies",
+        JSON.stringify(safeDependencies)
+      );
+
+      const sanitizedPath =
+        typeof targetPath === "string" && targetPath.length > 0
+          ? targetPath.startsWith("/")
+            ? targetPath
+            : `/${targetPath}`
+          : "/";
+
+      const destinationUrl = `${location.origin}${sanitizedPath}`;
+      const newWindow = open(destinationUrl, "_blank", "noopener");
+
+      if (newWindow && typeof newWindow.focus === "function") {
+        newWindow.focus();
+      }
+    } catch (error) {
+      console.error("Failed to create new example", error);
+    }
+  };
+
   // MKOP 2025/10/22 User Interface fragments - unified rendering of screens
   // Header of node info modal window
   UiModalNodeInfo_Header = ({
@@ -196,7 +239,7 @@ export class CustomNodeFunctions {
   }) => {
     const { t } = useTranslation();
     const handleCreateNewExample = () => {
-      onCreateNewExample({
+      this.onCreateNewExample({
         attributes: prefillAttributes,
         dependencies: prefillDependencies,
         targetPath: prefillTargetPath,
@@ -638,48 +681,6 @@ export class CustomNodeFunctions {
 }
 
 // Rendering of nodes in ReactFlow
-const onCreateNewExample = ({
-  attributes = [],
-  dependencies = [],
-  targetPath = "/",
-} = {}) => {
-  if (typeof window === "undefined") {
-    return;
-  }
-
-  try {
-    const { localStorage, location, open } = window;
-    if (!localStorage || !open) {
-      return;
-    }
-
-    const safeAttributes = Array.isArray(attributes) ? attributes : [];
-    const safeDependencies = Array.isArray(dependencies) ? dependencies : [];
-
-    localStorage.setItem("prefillAttributes", JSON.stringify(safeAttributes));
-    localStorage.setItem(
-      "prefillDependencies",
-      JSON.stringify(safeDependencies)
-    );
-
-    const sanitizedPath =
-      typeof targetPath === "string" && targetPath.length > 0
-        ? targetPath.startsWith("/")
-          ? targetPath
-          : `/${targetPath}`
-        : "/";
-
-    const destinationUrl = `${location.origin}${sanitizedPath}`;
-    const newWindow = open(destinationUrl, "_blank", "noopener");
-
-    if (newWindow && typeof newWindow.focus === "function") {
-      newWindow.focus();
-    }
-  } catch (error) {
-    console.error("Failed to create new example", error);
-  }
-};
-
 const nodeWidth = "200px"; // Nastavení šířky
 
 export default memo(({ node, practiceMode }) => {
