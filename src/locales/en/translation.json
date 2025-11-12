@@ -268,7 +268,9 @@
     "customeNode": {
       "keys": "Keys: ",
       "isSubsetOf": "Subset of: "
-    }
+    },
+    "CanNotSynthesize": "Synthesis cannot be used",
+    "CanNotSynthesize-reason": "because one of the resulting relations will be identical to the original one"
   },
 
   "problem-synthesis": {
@@ -392,7 +394,8 @@
     "stillDecompose": "Decompose anyway",
     "doNotDecompose": "Revoke relation's decomposition",
     "decomposeRandomlyNode": "Decompose node randomly",
-    "decomposeRandomlySubtree": "Decompose subtree randomly"
+    "decomposeRandomlySubtree": "Decompose subtree randomly",
+    "doSynthesis": "Normalize by Synthesis"
   },
 
   "mergeTablesAfterDecompose": {

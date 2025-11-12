@@ -138,7 +138,7 @@ export class CustomNodeFunctions {
   // MKOP 2025/10/04 Rewritten to match to Synthesis code as much as possible
   // MKOP 2025/10/06 Rewritten to unify code in Synthesis, Decomposition and MergeTablesAfterDecompose
   // MKOP 2025/10/06 Moved to CustomNodeFunctiosn.jsx
-  highlightSubsetNodes = (tablesInfo, onlyBCNF = false) => {
+  highlightSubsetNodes = (tablesInfo, onlyLeaves = false) => { // onlyLeaves = {false | array of leaf nodes)
     tablesInfo.forEach((table, index) => {
       let isSubset = false;
       let subsetOfIndex = null;
@@ -146,11 +146,16 @@ export class CustomNodeFunctions {
       let maxLength = 0;
 
       tablesInfo.forEach((otherTable, otherIndex) => {
-        // Skip non-BCNF tables in Decomposition tree
+        // Skip non-Leaf tables in Decomposition tree
+      //if (
+      //  onlyBCNF &&
+      //  (table.data.normalForm !== "BCNF" ||
+      //    otherTable.data.normalForm !== "BCNF")
+      //)
         if (
-          onlyBCNF &&
-          (table.data.normalForm !== "BCNF" ||
-            otherTable.data.normalForm !== "BCNF")
+          onlyLeaves &&
+          (!onlyLeaves.find(node => node.id === table.id) ||
+            !onlyLeaves.find(node => node.id === otherTable.id))
         )
           return;
 
@@ -399,6 +404,7 @@ export class CustomNodeFunctions {
     onClickCallbackDRNDN, // Decompose RaNDomly Node
     onClickCallbackDRNDS, // Decompose RaNDomly Subtree
     onClickCallbackDM, // Decompose Manually
+    onClickCallbackSYN,   // do SYNthesis
   }) => {
     const { t } = useTranslation();
     const handleOnClickEventDND = (event) => {
@@ -409,6 +415,9 @@ export class CustomNodeFunctions {
     };
     const handleOnClickEventDRNDS = (event) => {
       onClickCallbackDRNDS(node, null); // handleRandomDecompositionClick - Decompose RaNDomly Subtree
+    };
+    const handleOnClickEventSYN = (event) => {
+      onClickCallbackSYN(node); // handleSynthesisClick - do SYNthesis of the node
     };
     return (
       <div className="modal-content">
@@ -440,6 +449,13 @@ export class CustomNodeFunctions {
               <p key="dm">
                 <button onClick={onClickCallbackDM}>
                   {t(problem + ".decomposeManually")}
+                </button>
+              </p>
+            )}
+            {node.data.normalForm !== "BCNF" && (
+              <p key="syn">
+                <button onClick={handleOnClickEventSYN}>
+                  {t(problem+".doSynthesis")}
                 </button>
               </p>
             )}

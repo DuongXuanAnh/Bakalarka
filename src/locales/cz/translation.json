@@ -268,7 +268,9 @@
     "customeNode": {
       "keys": "Klíče: ",
       "isSubsetOf": "Je podmnožinou: "
-    }
+    },
+    "CanNotSynthesize": "Syntézu nelze použít",
+    "CanNotSynthesize-reason": "protože jedna z výsledných relací bude shodná s původní"
   },
 
   "problem-synthesis": {
@@ -393,7 +395,8 @@
     "stillDecompose": "Přesto dekomponovat",
     "doNotDecompose": "Zrušit dekompozici relace",
     "decomposeRandomlyNode": "Dekomponovat uzel náhodně",
-    "decomposeRandomlySubtree": "Dekomponovat podstrom náhodně"
+    "decomposeRandomlySubtree": "Dekomponovat podstrom náhodně",
+    "doSynthesis": "Normalizovat syntézou"
   },
 
   "mergeTablesAfterDecompose": {

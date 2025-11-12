@@ -36,6 +36,7 @@ import { AttributeFunctions } from "../../../../algorithm/AttributeFunctions";
 import { MinimalCoverFunction } from "../../../../algorithm/MinimalCoverFunction";
 import { FunctionalDependencyFunctions } from "../../../../algorithm/FunctionalDependencyFunctions";
 import { ShowFunctions } from "../../../../algorithm/ShowFunctions";
+import { FindingKeysFunctions } from "../../../../algorithm/FindingKeysFunctions";
 
 const CustomNodeFunctionsInstance = new CustomNodeFunctions();
 const fPlusFunctionsInstance = new FPlusFunctions();
@@ -45,6 +46,7 @@ const minimalCoverFunctionInstance = new MinimalCoverFunction();
 const functionalDependencyFunctionsInstance =
   new FunctionalDependencyFunctions();
 const showFunctionsInstance = new ShowFunctions();
+const findingKeysFunctionsInstance = new FindingKeysFunctions();
 
 //const position = { x: 0, y: 0 };
 const edgeType = "smoothstep";
@@ -209,7 +211,7 @@ const Decomposition = () => {
       );
     }
 
-    CustomNodeFunctionsInstance.highlightSubsetNodes(currLeafNodesList, true);
+    CustomNodeFunctionsInstance.highlightSubsetNodes(currLeafNodesList, currLeafNodesList);
   }, [currLeafNodesList]);
 
   useEffect(() => {
@@ -477,6 +479,234 @@ const Decomposition = () => {
     // MKOP 2025/10/10 expand only leaf nodes with ID starting by node.id, ie. its subtree
     // MKOP 2025/10/10 limit expansion to given number of levels, null means unlimited
     randomDecomposition(selectedNode.id, depth); // node.id
+  };
+
+  // MKOP 2025/11/11
+  const handleSynthesisClick = (node, random = false) => {
+    // Synthesis of the selectedNode
+    removeNodeDescendants(node.id);
+    //////////////////////////////////////////////
+    // Taken from Synthesis.jsx::Synthesis() START
+    //////////////////////////////////////////////
+    let myDependencies = node.data.FDs;
+    let myAttributes = node.data.attributes;
+
+    if (random)
+    { // MKOP 2025/11/12 TODO: randomize myAttributes and myDependencies
+    };
+    
+    let tablesInfo = []; // new tables added by synthesis
+    // puvodni zadane zavislosti v elementarnim tvaru (s jednim atributem napravo) 
+    const globalFDSingleRHS = 
+      functionalDependencyFunctionsInstance.rewriteFDSingleRHS(dependencies);
+    // zavislosti platne ve zvolenem uzlu v elementarnim tvaru (s jednim atributem napravo) 
+    const localFDSingleRHS = 
+      functionalDependencyFunctionsInstance.rewriteFDSingleRHS(myDependencies);
+    let rewrittenFDs = [];
+    // lokalni FDs pridane oproti globalnim na zacatku, odstrani se jako redundantni
+    localFDSingleRHS.forEach((locFD) => {
+      if (!globalFDSingleRHS.find(gloFD => 
+            JSON.stringify(gloFD.left.sort()) == JSON.stringify(locFD.left.sort()) &&
+            JSON.stringify(gloFD.right.sort()) == JSON.stringify(locFD.right.sort())  
+            ))
+      {
+//alert("NE: " + JSON.stringify(locFD.left.sort()) + " / " + JSON.stringify(locFD.right.sort()))
+        rewrittenFDs.push(locFD);
+      };
+    });
+    // puvodni na konci, zustanou, takze synteza korene dopadne jako v problemu Synteza
+    localFDSingleRHS.forEach((locFD) => {
+      if (globalFDSingleRHS.find(gloFD => 
+            JSON.stringify(gloFD.left.sort()) == JSON.stringify(locFD.left.sort()) &&
+            JSON.stringify(gloFD.right.sort()) == JSON.stringify(locFD.right.sort())  
+            ))
+      {
+//alert("ANO: " + JSON.stringify(locFD.left.sort()) + " / " + JSON.stringify(locFD.right.sort()))
+        rewrittenFDs.push(locFD);
+      };
+    });
+//alert(JSON.stringify(globalFDSingleRHS));
+//alert(JSON.stringify(localFDSingleRHS));
+//alert(JSON.stringify(rewrittenFDs));
+    
+    const fPlus = fPlusFunctionsInstance.FPlus(myDependencies, myAttributes);
+//alert(JSON.stringify(fPlus));
+
+    const singleRHS_fPlus =
+      functionalDependencyFunctionsInstance.rewriteFDSingleRHS(fPlus);
+//alert(JSON.stringify(singleRHS_fPlus));
+
+    // Remove trivial FDs (those where the RHS is also in the LHS)
+    const nonTrivial_FDs =
+      functionalDependencyFunctionsInstance.removeTrivialFDs(rewrittenFDs);
+//alert(JSON.stringify(nonTrivial_FDs));
+
+    // Minimize LHS of each FD.
+    const minimizeLHS_FDs =
+      functionalDependencyFunctionsInstance.minimizeLHS(nonTrivial_FDs);
+//alert(JSON.stringify(minimizeLHS_FDs));
+    const removeRedundant_FDs =
+      functionalDependencyFunctionsInstance.removeRedundantFDs(minimizeLHS_FDs);
+//alert(JSON.stringify(removeRedundant_FDs));
+
+    const originKeys = findingKeysFunctionsInstance.getAllKeys(
+      singleRHS_fPlus,
+      myAttributes
+    );
+//alert(JSON.stringify(originKeys));
+
+    // Transform FDs to condensed form G'
+    const transformFDsToCondensedForm = (fds) => {
+      // Akumulace FD seskupených podle jejich LHS
+      const groupedFDs = fds.reduce((accumulator, currentFD) => {
+        // Vytvoří unikátní klíč z LHS spojením prvků pole čárkou
+        const key = currentFD.left.join(",");
+        // Inicializuje množinu pro znaky na RHS, pokud tato LHS nebyla ještě viděna
+        if (!accumulator[key]) {
+          accumulator[key] = new Set();
+        }
+        // Přidá všechny znaky z RHS do množiny, čímž zajišťuje jejich unikátnost
+        currentFD.right.forEach((char) => accumulator[key].add(char));
+        return accumulator;
+      }, {});
+
+      // Převede seskupené FD do požadovaného formátu pole
+      return Object.entries(groupedFDs).map(([lhs, rhsChars]) => ({
+        // Rozdělí LHS zpět na pole
+        left: lhs.split(","),
+        // Převede množinu znaků na RHS do seřazeného pole
+        right: Array.from(rhsChars).sort(),
+      }));
+    };
+
+    const condensedFDs = transformFDsToCondensedForm(removeRedundant_FDs);
+
+    const checkIfTablesContainOriginKey = () => {
+      const normalizedOriginKeys = originKeys.map((key) => key.sort());
+      // Prochází všechny tabulky
+      for (const table of tablesInfo) {
+        // Prochází všechny klíče v dané tabulce
+        for (const keys of table.data.keys) {
+        // Normalizace aktuálního klíče tabulky tím, že jej seřadíme
+          const normalizedKeys = [...keys].sort();
+
+          // Kontrola, zda se normalizovaný klíč tabulky shoduje s některým z normalizovaných originKeys
+          for (const normalizedOriginKey of normalizedOriginKeys) {
+            // Pokud mají stejnou délku a všechny prvky jsou shodné (bez ohledu na pořadí)
+            if (
+              normalizedKeys.length === normalizedOriginKey.length &&
+              normalizedKeys.every(
+                (element, index) => element === normalizedOriginKey[index]
+              )
+            ) {
+              return true; // Klíč byl nalezen v tabulce
+            }
+          }
+        }
+      }
+      // Žádná tabulka neobsahuje klíč
+      return false;
+    };
+    /////////////////////////////////////////////
+    // Taken from Synthesis.jsx::Synthesis() STOP
+    /////////////////////////////////////////////
+    
+    // MKOP 2025/11/12 pokud by syntezou vznikla ta sama tabulka
+    // napriklad R(H,U,P); F={H,U->P; P->U}; 3NF
+    // tak ji neprovest
+    if (condensedFDs && 
+        condensedFDs.find(fd => fd.left.length + fd.right.length == myAttributes.length)
+       )
+    {
+      Swal.fire({
+        icon: "error",
+        title: t("problem-decomposition.CanNotSynthesize"),
+        text: t("problem-decomposition.CanNotSynthesize-reason"),
+      });
+      
+      setIsModalOpen(false);
+      setIsPracticeModalOpen(false);
+      return;
+    };  
+    
+    ///////////////////////////////////////////
+    // Inspired by handleDependencyClick() START
+    ///////////////////////////////////////////
+    
+    // delete node from currLeafNodesList if it is there
+    let updatedLeafNodes = currLeafNodesList.filter(
+      (currNode) => currNode.id !== node.id
+    );
+
+    if (condensedFDs) {
+      condensedFDs.forEach((dependency, index) => {
+        const newNode = CustomNodeFunctionsInstance.initNode(
+          [...dependency.left, ...dependency.right],
+          singleRHS_fPlus,
+          node.id + index.toString().padStart(2, "0") // Concatenation of strings
+        );
+        setNodesArray((prevNodes) => [...prevNodes, newNode]);
+        updatedLeafNodes.push(newNode);
+        tablesInfo.push(newNode);
+      });
+
+      // MKOP 2025/11/12
+      // Syntézou se žádná FD neztratila
+
+      const edgeLabel0 =
+        t("content-problems.synthesis"); // Syntéza/Synthesis
+
+      condensedFDs.forEach((dependency, index) => {
+        const newEdge = {
+          id: node.id + index.toString().padStart(2, "0"),
+          source: node.id,
+          target: node.id + index.toString().padStart(2, "0"),
+          type: edgeType,
+          zIndex: index == 0 ? 1 : -1,
+        //deletable: false,
+        //selectable: false,	
+          label0: index == 0 ? edgeLabel0 : undefined,
+          lost: index == 0 ? "" : undefined,
+          label: index == 0 ? edgeLabel0 : undefined,
+        };
+        setEdgesArray((prevEdges) => [...prevEdges, newEdge]);
+      });
+    } else {
+      // neni definovana zavislost pro rozdeleni
+      updatedLeafNodes.push(node);
+    }
+
+    if (!checkIfTablesContainOriginKey())
+    {
+      const kk = tablesInfo.length;
+      const newNode = CustomNodeFunctionsInstance.initNode(
+        originKeys[0],
+        [], // FDs
+        node.id + kk.toString().padStart(2, "0"), // Concatenation of strings
+      );
+      setNodesArray((prevNodes) => [...prevNodes, newNode]);
+      updatedLeafNodes.push(newNode);
+      tablesInfo.push(newNode);
+      
+      const newEdge = {
+        id: node.id + kk.toString().padStart(2, "0"),
+        source: node.id,
+        target: node.id + kk.toString().padStart(2, "0"),
+        type: edgeType,
+        zIndex: -1,
+      //deletable: false,
+      //selectable: false,	
+        label0: undefined,
+        lost: undefined,
+        label: undefined,
+      };
+      setEdgesArray((prevEdges) => [...prevEdges, newEdge]);
+    }
+
+    setIsModalOpen(false);
+    setIsPracticeModalOpen(false);
+
+    currLeafNodesList = updatedLeafNodes;
   };
 
   const handleNavigate = (fd) => {
@@ -894,6 +1124,7 @@ const Decomposition = () => {
             onClickCallbackDRNDN={handleRandomDecompositionClick}
             onClickCallbackDRNDS={handleRandomDecompositionClick}
             onClickCallbackDM={() => setIsModalDecompositeOwnWayOpen(true)}
+            onClickCallbackSYN={handleSynthesisClick}
           />
           <CustomNodeFunctionsInstance.UiModalNodeInfo_FDs
             problem={"problem-decomposition"}
