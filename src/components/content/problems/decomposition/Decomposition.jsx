@@ -967,7 +967,7 @@ const Decomposition = () => {
   // do not keep nodes redundant with respect to added lost FDs in MergeTablesAfterDecompose.jsx
   const hideMergeTableModal = () => {
     setIsModalMergeTablesAfterDecomposeOpen(false);
-    CustomNodeFunctionsInstance.highlightSubsetNodes(currLeafNodesList, true);
+    CustomNodeFunctionsInstance.highlightSubsetNodes(currLeafNodesList, currLeafNodesList);
   };
 
   return (
