@@ -188,7 +188,7 @@ function MergeTablesAfterDecompose({ tables, originKeys, lostFDs }) {
                         {...provided.draggableProps}
                         {...provided.dragHandleProps}
                         className={`table ${
-                          table.isSubset ? "SubsetTable" : ""
+                          table.data.isSubset ? "SubsetTable" : ""
                         }`}
                         style={{
                           userSelect: "none",
@@ -223,13 +223,13 @@ function MergeTablesAfterDecompose({ tables, originKeys, lostFDs }) {
                             )}{" "}
                             ]
                           </p>
-                          {table.isSubset && (
+                          {table.data.isSubset && (
                             <p>
                               {
                                 <span className="note" style={{ color: "red" }}>
                                   {t("mergeTablesAfterDecompose.isSubsetOf", {
                                     table: showFunctionsInstance.showKeysAsText(
-                                      table.subsetOf
+                                      table.data.subsetOf
                                     ),
                                   })}
                                 </span>

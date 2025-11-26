@@ -149,7 +149,7 @@ const Decomposition = () => {
   const nodeTypes = useMemo(
     () => ({
       customNode: (nodeData) => (
-        <CustomNode node={nodeData} practiceMode={practiceMode} />
+        <CustomNode node={nodeData} practiceMode={practiceMode} onClickCallbackRevokeDecomposition={(node) => {handleDependencyClick(null,node)}} />
       ),
     }),
     [practiceMode]
@@ -324,6 +324,8 @@ const Decomposition = () => {
     let updatedLeafNodes = currLeafNodesList.filter(
       (currNode) => currNode.id !== node.id
     );
+    
+    node.data.isLeaf = false;
 
     if (dependency) {
       const newNode1 = CustomNodeFunctionsInstance.initNode(
@@ -390,6 +392,7 @@ const Decomposition = () => {
     } else {
       // neni definovana zavislost pro rozdeleni
       updatedLeafNodes.push(node);
+      node.data.isLeaf = true;
     }
 
     setIsModalOpen(false);
@@ -632,6 +635,8 @@ const Decomposition = () => {
     ///////////////////////////////////////////
     // Inspired by handleDependencyClick() START
     ///////////////////////////////////////////
+    
+    node.data.isLeaf = false;
     
     // delete node from currLeafNodesList if it is there
     let updatedLeafNodes = currLeafNodesList.filter(

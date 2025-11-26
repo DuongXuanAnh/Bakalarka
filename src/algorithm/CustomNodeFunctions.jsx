@@ -21,9 +21,9 @@ const findingKeysFunctionsInstance = new FindingKeysFunctions();
 // class node{
 //   id: String,  ... Node ID ... "1", "2", ...
 //   type: String, ... "customNode"
-//   isSubset: Boolean, ... Is this node a subset of another node T/F?
-//   subsetOfIndex: Integer, ... Zero-based index of the node this one is subset of
-//   subsetOf: Array of Array of String, ... Set of longest nodes this one is a subset of ... TODO: Used by MergeTablesAfterDecompose.jsx, not by Decomposition.jsx.
+// x isSubset: Boolean, ... Is this node a subset of another node T/F?
+// x subsetOfIndex: Integer, ... Zero-based index of the node this one is subset of
+// x subsetOf: Array of Array of String, ... Set of longest nodes this one is a subset of ... TODO: Used by MergeTablesAfterDecompose.jsx, not by Decomposition.jsx.
 //   data { // calss node.data
 //     attributes: Array of String, ... Set of attributes
 //     label: String, ... Text representation of attributes
@@ -35,6 +35,8 @@ const findingKeysFunctionsInstance = new FindingKeysFunctions();
 //       dependency: {left: Array of String, right: Array of String}, // TODO: check if it is correct
 //       violates: String, ... "2NF", "3NF", "BCNF"
 //       }, ... faulty functional dependencies (??? in canonical form ???) ... (originally faultyDependencies)
+//     isSubset: Boolean, ... Is this node a subset of another node T/F?
+//     subsetOfIndex: Integer, ... Zero-based index of the node this one is subset of
 //     subsetOf: Array of Array of String, ... Set of longest nodes this one is a subset of ... TODO: Used by Decomposition.jsx. Move to node, not keep in data
 //     }
 //   }
@@ -49,6 +51,10 @@ export class CustomNodeFunctions {
     this.mergeTables = this.mergeTables.bind(this);
     this.highlightSubsetNodes = this.highlightSubsetNodes.bind(this);
     this.onCreateNewExample = this.onCreateNewExample.bind(this);
+    this.ButtonMakeNewExample = this.ButtonMakeNewExample.bind(this);
+    this.ButtonDecomposeRndN = this.ButtonDecomposeRndN.bind(this);
+    this.ButtonDecomposeRndT = this.ButtonDecomposeRndT.bind(this);
+    this.ButtonRevokeDecomposition = this.ButtonRevokeDecomposition.bind(this);
     this.UiModalNodeInfo_Header = this.UiModalNodeInfo_Header.bind(this);
     this.UiModalNodeInfo_AttrsKeysNF =
       this.UiModalNodeInfo_AttrsKeysNF.bind(this);
@@ -68,7 +74,10 @@ export class CustomNodeFunctions {
       keysLabel: showFunctionsInstance.showKeysAsText([]),
       normalForm: "",
       faultyFDs: [],
+      isSubset: false,
+      subsetOfIndex: null,
       subsetOf: [],
+      isLeaf: true,
     };
 
     return data;
@@ -90,7 +99,10 @@ export class CustomNodeFunctions {
       keysLabel: showFunctionsInstance.showKeysAsText(keys),
       normalForm: normalForm.type,
       faultyFDs: normalForm.faultyDependencies,
+      isSubset: false,
+      subsetOfIndex: null,
       subsetOf: [],
+      isLeaf: true,
     };
 
     return data;
@@ -103,8 +115,8 @@ export class CustomNodeFunctions {
     const node = {
       id: "",
       type: "customNode",
-      isSubset: false,
-      subsetOf: [],
+//  x isSubset: false,
+//  x subsetOf: [],
       data: nodeData,
       position,
     };
@@ -118,8 +130,8 @@ export class CustomNodeFunctions {
     const node = {
       id: id, // MKOP 2025/10/08 was "1"
       type: "customNode",
-      isSubset: false, // MKOP newly initialized
-      subsetOf: [], // MKOP new
+//  x isSubset: false, // MKOP newly initialized
+//  x subsetOf: [], // MKOP new
       data: nodeData,
       position,
     };
@@ -183,10 +195,10 @@ export class CustomNodeFunctions {
         }
       });
 
-      table.isSubset = isSubset;
-      table.subsetOfIndex = subsetOfIndex; // MKOP 2025/10/03 Synthesis uses index
+      table.data.isSubset = isSubset;
+      table.data.subsetOfIndex = subsetOfIndex; // MKOP 2025/10/03 Synthesis uses index
       table.data.subsetOf = longestSubsets; // MKOP 2025/10/03 Decomposition uses longestSubsets array
-      table.subsetOf = longestSubsets; // MKOP 2025/10/07 MergeTablesAfterDecompose uses this array
+    //table.subsetOf = longestSubsets; // MKOP 2025/10/07 MergeTablesAfterDecompose uses this array
     });
   };
 
@@ -233,6 +245,175 @@ export class CustomNodeFunctions {
   };
 
   // MKOP 2025/10/22 User Interface fragments - unified rendering of screens
+  ButtonMakeNewExample = ({
+    background,
+    opacity,
+    onClickCallback,
+  }) => {
+    const { t } = useTranslation();
+    return (
+      <button 
+        onClick={onClickCallback} 
+        title={"Make this a new example"}
+        style={{
+          width: "16px",
+          height: "14px",
+          padding: "0",
+          spacing: "0",
+          position: "absolute",
+          background: background,
+          top: "-4px",
+          right: "5px",        
+          zIndex: +2,
+        }}
+      >
+        <div 
+          style={{
+          //fontWeight: "bold",
+            fontSize: "16px",
+            textAlign: "center",
+            justifyContent: "center",
+            position: "absolute", 
+            top: "-6px", 
+            right: "50%",        
+            transform: "translateX(+50%)",
+            }}>
+          {String.fromCharCode(0xbb)} {false && (String.fromCharCode(0x2197))}
+        </div>
+      </button>
+    );
+  };
+  
+  ButtonDecomposeRndN = ({
+    normalForm,
+    practiceMode,
+    background,
+    opacity,
+    onClickCallback,
+  }) => {
+    const { t } = useTranslation();
+    if (false && (normalForm != "BCNF" || practiceMode))
+      return (
+        <button 
+          onClick={onClickCallback} 
+          title={t("ownDecomposition.decomposeRandomlyNode")}
+          style={{
+            width: "32px",
+            height: "14px",
+            padding: "0",
+            spacing: "0",
+            position: "absolute",
+            background: helperColorFunctionsInstance.nodeBackgroundColor(
+              normalForm,
+              practiceMode
+              ),
+            top: "-4px",
+            right: "23px",        
+            zIndex: +2,
+          }}
+        >
+          <div 
+            style={{
+            //fontWeight: "bold",
+              fontSize: "16px",
+              textAlign: "center",
+              justifyContent: "center",
+              position: "absolute", 
+              top: "-7px", 
+              right: "50%",        
+              transform: "translateX(+50%)",
+              }}>
+            {String.fromCharCode(0x2681)}
+          </div>
+        </button>
+      );
+  };
+  
+  ButtonDecomposeRndT = ({
+    normalForm,
+    practiceMode,
+    opacity,
+    onClickCallback,
+  }) => {
+    const { t } = useTranslation();
+    if (false && (normalForm != "BCNF" || practiceMode))
+      return (
+        <button 
+          onClick={onClickCallback} 
+          title={t("ownDecomposition.decomposeRandomlySubtree")}
+          style={{
+            width: "32px",
+            height: "14px",
+            padding: "0",
+            spacing: "0",
+            position: "absolute",
+            background: helperColorFunctionsInstance.nodeBackgroundColor(
+              normalForm,
+              practiceMode
+              ),
+            top: "-4px",
+            right: "57px",        
+            zIndex: +2,
+          }}
+        >
+          <div 
+            style={{
+            //fontWeight: "bold",
+              fontSize: "16px",
+              textAlign: "center",
+              justifyContent: "center",
+              position: "absolute", 
+              top: "-7px", 
+              right: "50%",        
+              transform: "translateX(+50%)",
+              }}>
+            {String.fromCharCode(0x2682)+String.fromCharCode(0x2684)}
+          </div>
+        </button>
+      );
+  };
+  
+  ButtonRevokeDecomposition = ({
+    node,
+    background,
+    opacity,
+    onClickCallback,
+  }) => {
+    const { t } = useTranslation();
+    return (
+      <button 
+        onClick={onClickCallback} 
+        title={t("ownDecomposition.doNotDecompose")}
+        style={{
+          width: "16px",
+          height: "14px",
+          padding: "0",
+          spacing: "0",
+          position: "absolute",
+          background: background,
+          bottom: "-4px",
+          right: "50%",        
+          transform: "translateX(+50%)",
+          zIndex: +2,
+        }}
+      >
+        <div 
+          style={{
+          //fontWeight: "bold",
+            fontSize: "14px",
+            textAlign: "center",
+            justifyContent: "center",
+            position: "absolute", 
+            top: "-5px", 
+            right: "50%",        
+            transform: "translateX(+50%)",
+            }}>
+          {String.fromCharCode(0x2A2F)}
+        </div>
+      </button>
+    );
+  };
+  
   // Header of node info modal window
   UiModalNodeInfo_Header = ({
     problem, // "problem-synthesis", "problem-decomposition", ...
@@ -243,17 +424,9 @@ export class CustomNodeFunctions {
     prefillTargetPath = "/",
   }) => {
     const { t } = useTranslation();
-    const handleCreateNewExample = () => {
-      this.onCreateNewExample({
-        attributes: prefillAttributes,
-        dependencies: prefillDependencies,
-        targetPath: prefillTargetPath,
-      });
-    };
     return (
       <div className="modal-header">
         <h2 className="black">{t(problem + "." + label)}</h2>
-        <button onClick={handleCreateNewExample}>Create new example</button>
         <button onClick={onClickCallback} className="close-button">
           X
         </button>
@@ -696,12 +869,29 @@ export class CustomNodeFunctions {
 */
 }
 
+const CustomNodeFunctionsInstance = new CustomNodeFunctions();
+
 // Rendering of nodes in ReactFlow
 const nodeWidth = "200px"; // Nastavení šířky
 
-export default memo(({ node, practiceMode }) => {
+export default memo(({ 
+    node, 
+    practiceMode, 
+    onClickCallbackRevokeDecomposition, 
+    prefillTargetPath = "/",
+    }) => {
   const { t } = useTranslation();
   const showFunctionsInstance = new ShowFunctions();
+  const handleCreateNewExample = () => {
+    CustomNodeFunctionsInstance.onCreateNewExample({
+      attributes: node.data.attributes,
+      dependencies: node.data.FDs,
+      targetPath: prefillTargetPath,
+    });
+  };
+  const handleOnClicRevokeDecomposition = (event) => {
+    onClickCallbackRevokeDecomposition(node); // handleDependencyClick - Do Not Necompose
+  };
 
   return (
     <div
@@ -724,7 +914,37 @@ export default memo(({ node, practiceMode }) => {
       }}
     >
       <Handle type="target" position={Position.Top} />
-      <div>
+      <div style={{justifyContent: "center"}}>
+        <CustomNodeFunctionsInstance.ButtonMakeNewExample
+          background={helperColorFunctionsInstance.nodeBackgroundColor(
+            node.data.normalForm,
+            practiceMode
+            )}
+          opacity={node.data.subsetOf.length > 0 ? 0.5 : 1}
+          onClickCallback={handleCreateNewExample}
+        />
+        <CustomNodeFunctionsInstance.ButtonDecomposeRndN
+          normalForm={node.data.normalForm}
+          practiceMode={practiceMode}
+          opacity={node.data.subsetOf.length > 0 ? 0.5 : 1}
+          onClickCallback={handleCreateNewExample}
+        />
+        <CustomNodeFunctionsInstance.ButtonDecomposeRndT
+          normalForm={node.data.normalForm}
+          practiceMode={practiceMode}
+          opacity={node.data.subsetOf.length > 0 ? 0.5 : 1}
+          onClickCallback={handleCreateNewExample}
+        />
+        {!node.data.isLeaf && (
+          <CustomNodeFunctionsInstance.ButtonRevokeDecomposition
+            background={helperColorFunctionsInstance.nodeBackgroundColor(
+              node.data.normalForm,
+              practiceMode
+              )}
+            opacity={node.data.subsetOf.length > 0 ? 0.5 : 1}
+            onClickCallback={handleOnClicRevokeDecomposition}
+          />
+        )}
         <div
           style={{
             fontWeight: "bold",

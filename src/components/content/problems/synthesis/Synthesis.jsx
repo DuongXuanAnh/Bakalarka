@@ -406,9 +406,9 @@ function Synthesis() {
                           {...provided.draggableProps}
                           {...provided.dragHandleProps}
                           className={`TableButton ${
-                            table.isSubset ? "SubsetTable" : ""
+                            table.data.isSubset ? "SubsetTable" : ""
                           }`}
-                          disabled={table.isSubset}
+                          disabled={table.data.isSubset}
                           onClick={() => {
                             showInformationModal(table);
                           }}
@@ -449,7 +449,7 @@ function Synthesis() {
                               )}{" "}
                               ]
                             </p>
-                            {table.isSubset && (
+                            {table.data.isSubset && (
                               <p>
                                 {
                                   <span
@@ -460,7 +460,7 @@ function Synthesis() {
                                       "problem-synthesis.unnecessaryTableSubet",
                                       {
                                         index1: index + 1,
-                                        index2: table.subsetOfIndex + 1,
+                                        index2: table.data.subsetOfIndex + 1,
                                       }
                                     )}
                                     .
