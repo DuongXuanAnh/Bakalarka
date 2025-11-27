@@ -308,6 +308,14 @@ function Synthesis() {
       }
     }
   };
+  
+  const handleOnClickCreateNewExample = (node) => {
+    CustomNodeFunctionsInstance.onCreateNewExample({
+      attributes: node.data.attributes,
+      dependencies: node.data.FDs,
+      targetPath: "/", //prefillTargetPath
+    });
+  };
 
   return (
     <div className="systhesis-container">
@@ -414,7 +422,7 @@ function Synthesis() {
                           }}
                           style={{
                             userSelect: "none",
-                            padding: 16,
+                            padding: "0 16px 16px 16px",
                             margin: "0 0 8px 0",
                             backgroundColor:
                               index === draggingOverIndex &&
@@ -432,6 +440,24 @@ function Synthesis() {
                           }}
                         >
                           <div>
+                            <table width="100%" border="0" cellpadding="0" cellspacing="0">
+                              <tr height="21px" style={{fontSize: "16px"}}>
+                                <td />
+                                <td width="24px">
+                                  <button
+                                    onClick={() => handleOnClickCreateNewExample(table)} 
+                                    title={t("global.makeNewExample")}
+                                    style={{
+                                      width: "24px",
+                                      height: "21px",
+                                      background: "transparent",
+                                    }}
+                                  >
+                                    {String.fromCharCode(0xbb)}
+                                  </button>
+                                </td>
+                              </tr>
+                            </table>
                             <p>
                               {t("problem-synthesis.table")} {index + 1}:
                             </p>
@@ -479,7 +505,7 @@ function Synthesis() {
                       className="TableButton"
                       style={{
                         userSelect: "none",
-                        padding: 16,
+                        padding: "0 16px 16px 16px",
                         margin: "0 0 8px 0",
                         backgroundColor:
                           helperColorFunctionsInstance.nodeBackgroundColor(
@@ -490,6 +516,30 @@ function Synthesis() {
                         transform: "none",
                       }}
                     >
+                      <table width="100%" border="0" cellpadding="0" cellspacing="0">
+                        <tr height="21px" style={{fontSize: "16px"}}>
+                          <td />
+                          <td width="24px">
+                            <button
+                              onClick={() => handleOnClickCreateNewExample(
+                                CustomNodeFunctionsInstance.initNode(
+                                  originKeys[0],
+                                  [],
+                                  "RK"
+                                  )
+                                )} 
+                              title={t("global.makeNewExample")}
+                              style={{
+                                width: "24px",
+                                height: "21px",
+                                background: "transparent",
+                              }}
+                            >
+                              {String.fromCharCode(0xbb)}
+                            </button>
+                          </td>
+                        </tr>
+                      </table>
                       <p>
                         {t("problem-synthesis.table")} {tablesInfo.length + 1}:
                       </p>

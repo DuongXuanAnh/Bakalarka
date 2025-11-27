@@ -3,7 +3,8 @@
     "fillAllAttributes": "Vyplnit všechny atributy",
     "mixDependenciesRandomly": "Zamíchat náhodně",
     "attributeClosure": "atributový uzávěr",
-    "reverseAttributes": "Otočit pořadí"
+    "reverseAttributes": "Otočit pořadí",
+    "makeNewExample": "Otevřít jako nový příklad" 
   },
 
   "App": {

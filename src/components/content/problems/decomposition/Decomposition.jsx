@@ -149,7 +149,13 @@ const Decomposition = () => {
   const nodeTypes = useMemo(
     () => ({
       customNode: (nodeData) => (
-        <CustomNode node={nodeData} practiceMode={practiceMode} onClickCallbackRevokeDecomposition={(node) => {handleDependencyClick(null,node)}} />
+        <CustomNode
+          node={nodeData}
+          practiceMode={practiceMode}
+          onClickCallbackRevokeDecomposition={(node) => {handleDependencyClick(null,node)}}
+          onClickCallbackDecomposeRndN={handleRandomDecompositionClick} 
+          onClickCallbackDecomposeRndS={handleRandomDecompositionClick} 
+        />
       ),
     }),
     [practiceMode]

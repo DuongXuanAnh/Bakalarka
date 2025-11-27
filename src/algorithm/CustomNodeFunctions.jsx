@@ -53,7 +53,7 @@ export class CustomNodeFunctions {
     this.onCreateNewExample = this.onCreateNewExample.bind(this);
     this.ButtonMakeNewExample = this.ButtonMakeNewExample.bind(this);
     this.ButtonDecomposeRndN = this.ButtonDecomposeRndN.bind(this);
-    this.ButtonDecomposeRndT = this.ButtonDecomposeRndT.bind(this);
+    this.ButtonDecomposeRndS = this.ButtonDecomposeRndS.bind(this);
     this.ButtonRevokeDecomposition = this.ButtonRevokeDecomposition.bind(this);
     this.UiModalNodeInfo_Header = this.UiModalNodeInfo_Header.bind(this);
     this.UiModalNodeInfo_AttrsKeysNF =
@@ -246,23 +246,27 @@ export class CustomNodeFunctions {
 
   // MKOP 2025/10/22 User Interface fragments - unified rendering of screens
   ButtonMakeNewExample = ({
-    background,
+    attributes,
+    normalForm,
+    practiceMode,
     opacity,
     onClickCallback,
   }) => {
     const { t } = useTranslation();
+    if (attributes.length || practiceMode)
     return (
       <button 
         onClick={onClickCallback} 
-        title={"Make this a new example"}
+        title={t("global.makeNewExample")}
         style={{
           width: "16px",
-          height: "14px",
+          height: "12px",
           padding: "0",
           spacing: "0",
+          borderWidth: "1px",
           position: "absolute",
-          background: background,
-          top: "-4px",
+          background: "transparent",
+          top: "1px", /*"-4px"*/
           right: "5px",        
           zIndex: +2,
         }}
@@ -278,7 +282,7 @@ export class CustomNodeFunctions {
             right: "50%",        
             transform: "translateX(+50%)",
             }}>
-          {String.fromCharCode(0xbb)} {false && (String.fromCharCode(0x2197))}
+          {String.fromCharCode(0xbb)} {/*String.fromCharCode(0x2197)*/}
         </div>
       </button>
     );
@@ -287,27 +291,24 @@ export class CustomNodeFunctions {
   ButtonDecomposeRndN = ({
     normalForm,
     practiceMode,
-    background,
     opacity,
     onClickCallback,
   }) => {
     const { t } = useTranslation();
-    if (false && (normalForm != "BCNF" || practiceMode))
+    if (normalForm !== "BCNF" || practiceMode)
       return (
         <button 
           onClick={onClickCallback} 
           title={t("ownDecomposition.decomposeRandomlyNode")}
           style={{
             width: "32px",
-            height: "14px",
+            height: "12px",
             padding: "0",
             spacing: "0",
+            borderWidth: "1px",
             position: "absolute",
-            background: helperColorFunctionsInstance.nodeBackgroundColor(
-              normalForm,
-              practiceMode
-              ),
-            top: "-4px",
+            background: "transparent",
+            top: "1px", /*"-4px"*/
             right: "23px",        
             zIndex: +2,
           }}
@@ -329,29 +330,27 @@ export class CustomNodeFunctions {
       );
   };
   
-  ButtonDecomposeRndT = ({
+  ButtonDecomposeRndS = ({
     normalForm,
     practiceMode,
     opacity,
     onClickCallback,
   }) => {
     const { t } = useTranslation();
-    if (false && (normalForm != "BCNF" || practiceMode))
+    if (normalForm !== "BCNF" || practiceMode)
       return (
         <button 
           onClick={onClickCallback} 
           title={t("ownDecomposition.decomposeRandomlySubtree")}
           style={{
             width: "32px",
-            height: "14px",
+            height: "12px",
             padding: "0",
             spacing: "0",
+            borderWidth: "1px",
             position: "absolute",
-            background: helperColorFunctionsInstance.nodeBackgroundColor(
-              normalForm,
-              practiceMode
-              ),
-            top: "-4px",
+            background: "transparent",
+            top: "1px", /*"-4px"*/
             right: "57px",        
             zIndex: +2,
           }}
@@ -385,10 +384,11 @@ export class CustomNodeFunctions {
         onClick={onClickCallback} 
         title={t("ownDecomposition.doNotDecompose")}
         style={{
-          width: "16px",
-          height: "14px",
+          width: "14px",
+          height: "12px",
           padding: "0",
           spacing: "0",
+          borderWidth: "1px",
           position: "absolute",
           background: background,
           bottom: "-4px",
@@ -573,22 +573,22 @@ export class CustomNodeFunctions {
     problem, // "problem-synthesis", "problem-decomposition", ...
     node,
     leafNodes, // MKOP TODO: set isLeaf flag in nodes instead
-    onClickCallbackDND, // Do Not Necompose
-    onClickCallbackDRNDN, // Decompose RaNDomly Node
-    onClickCallbackDRNDS, // Decompose RaNDomly Subtree
+//  onClickCallbackDND, // Do Not Necompose
+//  onClickCallbackDRNDN, // Decompose RaNDomly Node
+//  onClickCallbackDRNDS, // Decompose RaNDomly Subtree
     onClickCallbackDM, // Decompose Manually
     onClickCallbackSYN,   // do SYNthesis
   }) => {
     const { t } = useTranslation();
-    const handleOnClickEventDND = (event) => {
-      onClickCallbackDND(null, node); // handleDependencyClick - Do Not Necompose
-    };
-    const handleOnClickEventDRNDN = (event) => {
-      onClickCallbackDRNDN(node, 1); // handleRandomDecompositionClick - Decompose RaNDomly Node
-    };
-    const handleOnClickEventDRNDS = (event) => {
-      onClickCallbackDRNDS(node, null); // handleRandomDecompositionClick - Decompose RaNDomly Subtree
-    };
+//  const handleOnClickEventDND = (event) => {
+//    onClickCallbackDND(null, node); // handleDependencyClick - Do Not Necompose
+//  };
+//  const handleOnClickEventDRNDN = (event) => {
+//    onClickCallbackDRNDN(node, 1); // handleRandomDecompositionClick - Decompose RaNDomly Node
+//  };
+//  const handleOnClickEventDRNDS = (event) => {
+//    onClickCallbackDRNDS(node, null); // handleRandomDecompositionClick - Decompose RaNDomly Subtree
+//  };
     const handleOnClickEventSYN = (event) => {
       onClickCallbackSYN(node); // handleSynthesisClick - do SYNthesis of the node
     };
@@ -596,6 +596,7 @@ export class CustomNodeFunctions {
       <div className="modal-content">
         {node && (
           <>
+{/*
             {leafNodes.length > 0 &&
               !leafNodes.some((leafNode) => leafNode.id === node.id) && (
                 <p key="dnd">
@@ -618,6 +619,7 @@ export class CustomNodeFunctions {
                 </button>
               </p>
             )}
+*/}
             {node.data.normalForm !== "BCNF" && (
               <p key="dm">
                 <button onClick={onClickCallbackDM}>
@@ -877,21 +879,34 @@ const nodeWidth = "200px"; // Nastavení šířky
 export default memo(({ 
     node, 
     practiceMode, 
-    onClickCallbackRevokeDecomposition, 
+    onClickCallbackRevokeDecomposition, // handleDependencyClick - Do Not Necompose 
+    onClickCallbackDecomposeRndN, // handleRandomDecompositionClick - Decompose RaNDomly Node 
+    onClickCallbackDecomposeRndS, // handleRandomDecompositionClick - Decompose RaNDomly Subtree 
     prefillTargetPath = "/",
     }) => {
   const { t } = useTranslation();
   const showFunctionsInstance = new ShowFunctions();
-  const handleCreateNewExample = () => {
+  
+  const handleOnClickCreateNewExample = (node) => {
     CustomNodeFunctionsInstance.onCreateNewExample({
       attributes: node.data.attributes,
       dependencies: node.data.FDs,
       targetPath: prefillTargetPath,
     });
   };
-  const handleOnClicRevokeDecomposition = (event) => {
+  
+  const handleOnClickRevokeDecomposition = (event) => {
     onClickCallbackRevokeDecomposition(node); // handleDependencyClick - Do Not Necompose
   };
+  
+  const handleOnClickDecomposeRndN = (event) => {
+    onClickCallbackDecomposeRndN(node, 1); // handleRandomDecompositionClick - Decompose RaNDomly Node
+  };
+  
+  const handleOnClickDecomposeRndS = (event) => {
+    onClickCallbackDecomposeRndS(node, null); // handleRandomDecompositionClick - Decompose RaNDomly Subtree
+  };
+  
 
   return (
     <div
@@ -916,24 +931,23 @@ export default memo(({
       <Handle type="target" position={Position.Top} />
       <div style={{justifyContent: "center"}}>
         <CustomNodeFunctionsInstance.ButtonMakeNewExample
-          background={helperColorFunctionsInstance.nodeBackgroundColor(
-            node.data.normalForm,
-            practiceMode
-            )}
+          attributes={node.data.attributes}
+          normalForm={node.data.normalForm}
+          practiceMode={practiceMode}
           opacity={node.data.subsetOf.length > 0 ? 0.5 : 1}
-          onClickCallback={handleCreateNewExample}
+          onClickCallback={() => handleOnClickCreateNewExample(node)}
         />
         <CustomNodeFunctionsInstance.ButtonDecomposeRndN
           normalForm={node.data.normalForm}
           practiceMode={practiceMode}
           opacity={node.data.subsetOf.length > 0 ? 0.5 : 1}
-          onClickCallback={handleCreateNewExample}
+          onClickCallback={handleOnClickDecomposeRndN}
         />
-        <CustomNodeFunctionsInstance.ButtonDecomposeRndT
+        <CustomNodeFunctionsInstance.ButtonDecomposeRndS
           normalForm={node.data.normalForm}
           practiceMode={practiceMode}
           opacity={node.data.subsetOf.length > 0 ? 0.5 : 1}
-          onClickCallback={handleCreateNewExample}
+          onClickCallback={handleOnClickDecomposeRndS}
         />
         {!node.data.isLeaf && (
           <CustomNodeFunctionsInstance.ButtonRevokeDecomposition
@@ -942,7 +956,7 @@ export default memo(({
               practiceMode
               )}
             opacity={node.data.subsetOf.length > 0 ? 0.5 : 1}
-            onClickCallback={handleOnClicRevokeDecomposition}
+            onClickCallback={handleOnClickRevokeDecomposition}
           />
         )}
         <div

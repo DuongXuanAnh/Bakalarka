@@ -3,7 +3,8 @@
     "fillAllAttributes": "Fill all attributes",
     "mixDependenciesRandomly": "Mix randomly",
     "attributeClosure": "attribute closure",
-    "reverseAttributes": "Reverse attributes"
+    "reverseAttributes": "Reverse attributes",
+    "makeNewExample": "Open as a new Example"
   },
 
   "App": {
